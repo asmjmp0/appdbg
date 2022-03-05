@@ -6,10 +6,17 @@ group 'org.example'
 version '1.0-SNAPSHOT'
 
 repositories {
+    maven { url 'https://maven.aliyun.com/repository/public/' }
+    maven { url 'https://maven.aliyun.com/repository/spring/'}
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
+    test.useJUnitPlatform()
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    api project(":dex-reader")
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
+    implementation project(":dex-reader")
+    implementation project(":dex-translator")
 }

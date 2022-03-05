@@ -1,4 +1,6 @@
 rootProject.name = 'appdbg'
 include 'dex-reader-api'
 include 'dex-reader'
+include 'dex-ir'
+include 'dex-translator'
 

@@ -81,6 +81,103 @@ public class Dex2jar {
         readerConfig |= DexFileReader.SKIP_DEBUG;
     }
 
+    public void eachClassData(IEachClassDataCallBack eachClassDataCallBack){
+        DexFileNode fileNode = new DexFileNode();
+        try {
+            reader.accept(fileNode, readerConfig | DexFileReader.IGNORE_READ_EXCEPTION);
+        } catch (Exception ex) {
+            exceptionHandler.handleFileException(ex);
+        }
+        ClassVisitorFactory cvf = new ClassVisitorFactory() {
+            @Override
+            public ClassVisitor create(final String name) {
+                final ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+                final LambadaNameSafeClassAdapter rca = new LambadaNameSafeClassAdapter(cw);
+                return new ClassVisitor(Opcodes.ASM5, rca) {
+                    @Override
+                    public void visitEnd() {
+                        super.visitEnd();
+                        String className = rca.getClassName();
+                        byte[] data;
+                        try {
+                            // FIXME handle 'java.lang.RuntimeException: Method code too large!'
+                            data = cw.toByteArray();
+                        } catch (Exception ex) {
+                            System.err.println(String.format("ASM fail to generate .class file: %s", className));
+                            exceptionHandler.handleFileException(ex);
+                            return;
+                        }
+                        eachClassDataCallBack.result(data,className);
+                    }
+                };
+            }
+        };
+
+        new ExDex2Asm(exceptionHandler) {
+            public void convertCode(DexMethodNode methodNode, MethodVisitor mv, ClzCtx clzCtx) {
+                if ((readerConfig & DexFileReader.SKIP_CODE) != 0 && methodNode.method.getName().equals("<clinit>")) {
+                    // also skip clinit
+                    return;
+                }
+                super.convertCode(methodNode, mv, clzCtx);
+            }
+
+            @Override
+            public void optimize(IrMethod irMethod) {
+                T_cleanLabel.transform(irMethod);
+                if (0 != (v3Config & V3.TOPOLOGICAL_SORT)) {
+                    // T_topologicalSort.transform(irMethod);
+                }
+                T_deadCode.transform(irMethod);
+                T_removeLocal.transform(irMethod);
+                T_removeConst.transform(irMethod);
+                T_zero.transform(irMethod);
+                if (T_npe.transformReportChanged(irMethod)) {
+                    T_deadCode.transform(irMethod);
+                    T_removeLocal.transform(irMethod);
+                    T_removeConst.transform(irMethod);
+                }
+                T_new.transform(irMethod);
+                T_fillArray.transform(irMethod);
+                T_agg.transform(irMethod);
+                T_multiArray.transform(irMethod);
+                T_voidInvoke.transform(irMethod);
+                if (0 != (v3Config & V3.PRINT_IR)) {
+                    int i = 0;
+                    for (Stmt p : irMethod.stmts) {
+                        if (p.st == Stmt.ST.LABEL) {
+                            LabelStmt labelStmt = (LabelStmt) p;
+                            labelStmt.displayName = "L" + i++;
+                        }
+                    }
+                    System.out.println(irMethod);
+                }
+                {
+                    // https://github.com/pxb1988/dex2jar/issues/477
+                    // dead code found in unssa, clean up
+                    T_deadCode.transform(irMethod);
+                    T_removeLocal.transform(irMethod);
+                    T_removeConst.transform(irMethod);
+                }
+                T_type.transform(irMethod);
+                T_unssa.transform(irMethod);
+                T_ir2jRegAssign.transform(irMethod);
+                T_trimEx.transform(irMethod);
+            }
+
+            @Override
+            public void ir2j(IrMethod irMethod, MethodVisitor mv, ClzCtx clzCtx) {
+                new IR2JConverter()
+                        .optimizeSynchronized(0 != (V3.OPTIMIZE_SYNCHRONIZED & v3Config))
+                        .clzCtx(clzCtx)
+                        .ir(irMethod)
+                        .asm(mv)
+                        .convert();
+            }
+        }.convertDex(fileNode, cvf);
+
+    }
+
     private void doTranslate(final Path dist) throws IOException {
 
         DexFileNode fileNode = new DexFileNode();
