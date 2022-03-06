@@ -5,6 +5,7 @@ import java.io.File.separator
 
 object CommonConf {
     const val tempDirName = "temp"
+    const val toolDirName = "tools"
 
     //framework
     val frameworkFileName = "libs${separator}android${separator}framework.jar"
