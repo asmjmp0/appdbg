@@ -44,16 +44,15 @@ class Main {
                 })
             //
 
-            var ret = androidEnvironment.loadClass("com.example.myapplication.MainActivity")!!
-            logger.debug(androidEnvironment.androidInvokeUtils.setNowClass(ret).getConstructor().newInstance())
-
-
-//            var ret = androidEnvironment.loadClass("com.example.myapplication.TestJava")!!
+//            var ret = androidEnvironment.loadClass("com.example.myapplication.MainActivity")!!
 //            logger.debug(androidEnvironment.androidInvokeUtils.setNowClass(ret).getConstructor().newInstance())
-//            logger.debug(ret)
-//            logger.info(androidEnvironment.androidInvokeUtils.setNowClass(ret).run {
-//                invoke(ret.getDeclaredMethod("getStr"),newInstance(getConstructor(String::class.java),"123434")!!)
-//            })
+
+
+            var ret = androidEnvironment.loadClass("com.example.myapplication.TestJava")!!
+            logger.debug(androidEnvironment.androidInvokeUtils.setNowClass(ret).getConstructor().newInstance())
+            logger.info(androidEnvironment.androidInvokeUtils.setNowClass(ret).run {
+                invoke(ret.getDeclaredMethod("getStr"),newInstance(getConstructor(String::class.java),"123434")!!)
+            })
 
         }
     }
