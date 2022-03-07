@@ -1,9 +1,9 @@
 package jmp0.app
 
+import javassist.ClassPool
 import jmp0.apk.ApkFile
-import jmp0.app.interceptor.ClassNativeInterceptor
-import jmp0.app.interceptor.INativeInterceptor
-import jmp0.app.runtinme.AbsAndroidRuntimeClass
+import jmp0.app.interceptor.mtd.INativeInterceptor
+import jmp0.app.interceptor.runtime.AndroidRuntimeClassInterceptorBase
 import jmp0.conf.CommonConf
 import jmp0.util.DexUtils
 import org.apache.log4j.Logger
@@ -11,11 +11,14 @@ import java.io.File
 
 class AndroidEnvironment(private val apkFile: ApkFile,
                          nativeInterceptor: INativeInterceptor,
-                         private val absAndroidRuntimeClass: AbsAndroidRuntimeClass = object :AbsAndroidRuntimeClass(){}) {
+                         private val absAndroidRuntimeClass: AndroidRuntimeClassInterceptorBase = object :
+                             AndroidRuntimeClassInterceptorBase(){}) {
     private val logger = Logger.getLogger(javaClass)
     private val loader = XAndroidDexClassLoader(this)
+    val androidInvokeUtils = AndroidInvokeUtils(this)
     companion object{
-        var gNativeInterceptor:INativeInterceptor? = null
+        var gNativeInterceptor: INativeInterceptor? = null
+        var gAbsAndroidRuntimeClass:AndroidRuntimeClassInterceptorBase? = null
     }
 
     init {
@@ -23,6 +26,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         checkAndReleaseFramework()
         gNativeInterceptor = nativeInterceptor
+        gAbsAndroidRuntimeClass = absAndroidRuntimeClass
     }
 
     private fun checkAndReleaseFramework(){
@@ -37,8 +41,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
 
     private fun privateDefineClass(name: String?,data: ByteArray,off:Int,size:Int): DefineStatus {
         return try {
-            val rData = ClassNativeInterceptor(data).doChange()
-            DefineStatus(loader.xDefineClass(name,rData,off,rData.size),"")
+            DefineStatus(loader.xDefineClass(name,data,off,data.size),"")
         }catch (e:ClassNotFoundException){
             DefineStatus(null,e.message!!)
         }catch (e:NoClassDefFoundError){
@@ -67,7 +70,9 @@ class AndroidEnvironment(private val apkFile: ApkFile,
 
 
     private fun loadClass(file: File): Class<*>? {
-        val data = file.readBytes()
+        val data = absAndroidRuntimeClass.afterFindClassFile(
+            ClassPool.getDefault().makeClass(file.inputStream())
+        ).toBytecode()
         val res = privateDefineClass(null,data,0,data.size)
         if(res.clazz != null) return res.clazz
         logger.error("${res.className} load error")
@@ -79,8 +84,11 @@ class AndroidEnvironment(private val apkFile: ApkFile,
      * @return class类对象
      */
     fun loadClass(className: String): Class<*>? {
-        val res = androidFindClass(className) ?: return  absAndroidRuntimeClass.resolveClass(className)
-        return loadClass(res).apply { logger.debug("$this loaded!") }
+       return absAndroidRuntimeClass.beforeResolveClass(className,loader)
+           ?:loadClass(androidFindClass(className)!!).apply { logger.debug("$this loaded!") }
     }
+
+    fun findClass(className: String):Class<*>? =
+        Class.forName(className,false,loader)
 
 }

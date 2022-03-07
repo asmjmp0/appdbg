@@ -17,8 +17,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
-    implementation project(":dex-reader")
-    implementation project(":dex-translator")
     implementation group: 'log4j', name: 'log4j', version: '1.2.17'
     implementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    implementation project(":core")
 }

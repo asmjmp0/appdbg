@@ -32,7 +32,7 @@ object DexUtils {
      */
     fun releaseApkClassFile(apkFile: File,out:File){
         ZipFile(apkFile).apply {
-            entries().asIterator().forEach {
+            entries().iterator().forEach {
                 if (it.name.endsWith(".dex")){
                     logger.debug("releaseApkClassFile release ${it.name}...")
                     releaseByteArrDexClassFile(getInputStream(it).readBytes(),it.name,out)

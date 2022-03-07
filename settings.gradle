@@ -3,4 +3,6 @@ include 'dex-reader-api'
 include 'dex-reader'
 include 'dex-ir'
 include 'dex-translator'
+include 'system-inject'
+include 'core'
 

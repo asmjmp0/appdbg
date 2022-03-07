@@ -9,6 +9,7 @@ import java.net.URL
 import java.net.URLClassLoader
 
 class XAndroidDexClassLoader(private val androidEnvironment: AndroidEnvironment):URLClassLoader(emptyArray(), Thread.currentThread().contextClassLoader) {
+    private val logger = Logger.getLogger(javaClass)
 
     override fun findClass(name: String?): Class<*>? {
         try {
@@ -19,6 +20,11 @@ class XAndroidDexClassLoader(private val androidEnvironment: AndroidEnvironment)
             //try to load class
             return androidEnvironment.loadClass(name!!)
         }
+    }
+
+    override fun findLibrary(libname: String?): String {
+        logger.debug("want to load $libname load fake lib")
+        return "${System.getProperty("user.dir")}/tools/fake.dylib"
     }
 
     fun xDefineClass(name: String?,data:ByteArray,off:Int,size: Int):Class<*> =
