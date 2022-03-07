@@ -32,11 +32,12 @@ class InvokeImplementation(private val implPath:String,private val packageName:S
     fun invoke(){
         //get each class
         File(implPath).listFiles()!!.forEach {
-            classInfoList.add(fileClassInfo(it.name))
+            if (it.isFile)
+                classInfoList.add(fileClassInfo(it.name))
         }
 
 
-        val zipInputStream = ZipOutputStream(BufferedOutputStream(FileOutputStream(File("libs/dbg_inject.jar"))))
+        val zipInputStream = ZipOutputStream(BufferedOutputStream(FileOutputStream(File("libs${File.separator}dbg_inject.jar"))))
         classInfoList.forEach {
             println("generate ${it.name} class")
             zipInputStream.putNextEntry(ZipEntry(it.name.replace('.','/')+".class"))

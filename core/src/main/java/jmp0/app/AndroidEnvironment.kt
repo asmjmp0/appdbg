@@ -18,7 +18,6 @@ class AndroidEnvironment(private val apkFile: ApkFile,
     val androidInvokeUtils = AndroidInvokeUtils(this)
     companion object{
         var gNativeInterceptor: INativeInterceptor? = null
-        var gAbsAndroidRuntimeClass:AndroidRuntimeClassInterceptorBase? = null
     }
 
     init {
@@ -26,7 +25,28 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         checkAndReleaseFramework()
         gNativeInterceptor = nativeInterceptor
-        gAbsAndroidRuntimeClass = absAndroidRuntimeClass
+        loadUserSystemClass()
+    }
+
+    /**
+     * must bypass jdk security check
+     * must bypass jdk security check
+     * must bypass jdk security check
+     *  ${jdkPath}/Home/jre/lib/server/libjvm.dylib
+     *  characteristic string => Prohibited package name:
+     *  modify java/ to xxxxx before characteristic string
+     */
+    private fun loadUserSystemClass(){
+        val path = "core/src/main/java/jmp0/app/runtime/system".replace("/",File.separator)
+        val packageName = "jmp0.app.runtime.system"
+        File(path).listFiles()!!.forEach {
+            if (it.isFile){
+                val fullClassName = packageName +'.'+ it.name.split('.')[0]
+                val systemName = Class.forName(fullClassName).getDeclaredField("xxClassName").get(null) as String
+                absAndroidRuntimeClass.loadToClass(systemName,fullClassName,loader)
+            }
+        }
+
     }
 
     private fun checkAndReleaseFramework(){

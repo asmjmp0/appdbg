@@ -1,4 +1,5 @@
 package jmp0
+import javassist.ClassPool
 import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
@@ -17,7 +18,7 @@ class Main {
         val logger = Logger.getLogger(javaClass)
         @JvmStatic
         fun main(args:Array<String>){
-//            Logger.getRootLogger().level = Level
+            System.setSecurityManager(null)
             val androidEnvironment = AndroidEnvironment(ApkFile(File("test_data/app-debug.apk")),
                 absAndroidRuntimeClass = object : AndroidRuntimeClassInterceptorBase(){
                     override fun afterFindClassFile(ctClass: CtClass): CtClass {
@@ -39,10 +40,6 @@ class Main {
                     else
                         null
                 }
-
-                    override fun nativeVoidCalled(className: String, funcName: String, param: Array<Any>) {
-                        TODO("Not yet implemented")
-                    }
 
                 })
             //

@@ -6,11 +6,10 @@ import jmp0.app.XAndroidDexClassLoader
 import jmp0.app.interceptor.mtd.ClassNativeInterceptor
 import jmp0.app.interceptor.mtd.HookMethodInterceptor
 import org.apache.log4j.Logger
-import java.util.*
 
 abstract class AndroidRuntimeClassInterceptorBase {
 
-    protected fun replaceClass(what:String,replace:String,classLoader: XAndroidDexClassLoader):Class<*>
+     fun loadToClass(what:String, replace:String, classLoader: XAndroidDexClassLoader):Class<*>
         = ClassPool.getDefault().getCtClass(replace).apply {
             replaceClassName(replace,what)
         }.toBytecode().run { classLoader.xDefineClass(null,this,0,size) }
@@ -33,7 +32,7 @@ abstract class AndroidRuntimeClassInterceptorBase {
         //before xclassloader find the class file,you can replace or implement the class
         if (className == "androidx.appcompat.app.AppCompatActivity"){
             //use my class
-            return replaceClass("androidx.appcompat.app.AppCompatActivity","jmp0.app.runtime.AppCompatActivity",classLoader)
+            return loadToClass("androidx.appcompat.app.AppCompatActivity","jmp0.app.runtime.android.AppCompatActivity",classLoader)
         }
         return null
     }
