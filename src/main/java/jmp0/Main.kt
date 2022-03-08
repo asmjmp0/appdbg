@@ -6,6 +6,7 @@ import jmp0.app.AndroidEnvironment
 import jmp0.app.XAndroidDexClassLoader
 import jmp0.app.interceptor.mtd.INativeInterceptor
 import jmp0.app.interceptor.runtime.AndroidRuntimeClassInterceptorBase
+import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Logger
 import java.io.File
 
@@ -44,15 +45,14 @@ class Main {
                 })
             //
 
-//            var ret = androidEnvironment.loadClass("com.example.myapplication.MainActivity")!!
-//            logger.debug(androidEnvironment.androidInvokeUtils.setNowClass(ret).getConstructor().newInstance())
+            val MainActivityClazz = androidEnvironment.loadClass("com.example.myapplication.MainActivity")!!
+            logger.debug(MainActivityClazz.getConstructor().newInstance())
 
 
-            var ret = androidEnvironment.loadClass("com.example.myapplication.TestJava")!!
-            logger.debug(androidEnvironment.androidInvokeUtils.setNowClass(ret).getConstructor().newInstance())
-            logger.info(androidEnvironment.androidInvokeUtils.setNowClass(ret).run {
-                invoke(ret.getDeclaredMethod("getStr"),newInstance(getConstructor(String::class.java),"123434")!!)
-            })
+            val TestJavaclazz = androidEnvironment.loadClass("com.example.myapplication.TestJava")!!
+            val ins = TestJavaclazz.getConstructor().newInstance()
+            val ret = TestJavaclazz.getDeclaredMethod("getStr").invokeEx(ins)
+            logger.debug(ret)
 
         }
     }

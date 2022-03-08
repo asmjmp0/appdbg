@@ -15,8 +15,9 @@ class AndroidEnvironment(private val apkFile: ApkFile,
                              AndroidRuntimeClassInterceptorBase(){}) {
     private val logger = Logger.getLogger(javaClass)
     private val loader = XAndroidDexClassLoader(this)
-    val androidInvokeUtils = AndroidInvokeUtils(this)
     companion object{
+        //callback from native call of app
+        // TODO: 2022/3/8 pass the instance to interceptor, support for program isolation.
         var gNativeInterceptor: INativeInterceptor? = null
     }
 
@@ -107,8 +108,5 @@ class AndroidEnvironment(private val apkFile: ApkFile,
        return absAndroidRuntimeClass.beforeResolveClass(className,loader)
            ?:loadClass(androidFindClass(className)!!).apply { logger.debug("$this loaded!") }
     }
-
-    fun findClass(className: String):Class<*>? =
-        Class.forName(className,false,loader)
 
 }
