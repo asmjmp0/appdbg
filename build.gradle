@@ -1,3 +1,5 @@
+import com.sun.xml.internal.bind.v2.TODO
+
 buildscript {
     repositories {
         maven { url 'https://maven.aliyun.com/repository/public/' }
@@ -30,6 +32,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
     implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+    //todo 调整项目架构多个模块依赖公共库
     implementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    compileOnly fileTree(dir:'libs',includes:['*jar'])
     implementation project(":core")
 }

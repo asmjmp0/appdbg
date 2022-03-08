@@ -1,6 +1,7 @@
 package jmp0.app
 
 import jmp0.app.AndroidEnvironment
+import jmp0.app.clazz.ClassLoadedCallbackBase
 import jmp0.conf.CommonConf
 import org.apache.log4j.Logger
 import java.io.File
@@ -12,7 +13,7 @@ import java.net.URLClassLoader
  * each application has their own classloader
  * which make program isolation possible
  */
-class XAndroidDexClassLoader(private val androidEnvironment: AndroidEnvironment):ClassLoader(Thread.currentThread().contextClassLoader) {
+class XAndroidDexClassLoader(private val androidEnvironment: AndroidEnvironment,private val callbackBase: ClassLoadedCallbackBase):ClassLoader(Thread.currentThread().contextClassLoader) {
     private val logger = Logger.getLogger(javaClass)
 
     override fun findClass(name: String): Class<*>? {

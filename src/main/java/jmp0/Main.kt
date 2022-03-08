@@ -37,12 +37,6 @@ class Main {
                 absAndroidRuntimeClass = object : ClassLoadedCallbackBase(){
                     override fun afterResolveClass(androidEnvironment: AndroidEnvironment, ctClass: CtClass): CtClass {
                         super.afterResolveClass(androidEnvironment,ctClass)
-                        if (ctClass.name == "jmp0.test.testapp.MainActivity"){
-                            ctClass.addMethod(CtNewMethod.make(return_type,"getContentResolver", arrayOf(), arrayOf(),"return null;",ctClass))
-                        }
-                        if (ctClass.name == "android.provider.Settings\$Secure"){
-
-                        }
                         return ctClass
                     }
                     override fun beforeResolveClass(
@@ -50,18 +44,9 @@ class Main {
                         className: String,
                         classLoader: XAndroidDexClassLoader
                     ): Class<*>? {
-                        val res = super.beforeResolveClass(androidEnvironment,className, classLoader)
+                        val res = super.beforeResolveClass(androidEnvironment, className, classLoader)
                         if (className == "android.provider.Settings\$Secure"){
-                            val clazz =  ClassPool.getDefault().makeClass("android.provider.Settings\$Secure")
-                            clazz.defrost()
-                            val mt = CtNewMethod.make(ClassPool.getDefault().getCtClass("java.lang.String"),
-                                "getString", arrayOf(return_type,string_ret_type), arrayOf(),"return \"Android_jdjsbjhbdj2\";",clazz)
-                            mt.modifiers = (mt.modifiers or Opcodes.ACC_STATIC)
-                            clazz.addMethod(mt)
-                            return clazz.toClass(classLoader)
-                        }
-                        if (className == "android.content.Context"){
-                            return ClassPool.getDefault().makeClass("android.content.Context").toClass(classLoader)
+
                         }
                         return res
                     }

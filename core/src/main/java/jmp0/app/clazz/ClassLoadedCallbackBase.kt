@@ -48,15 +48,11 @@ abstract class ClassLoadedCallbackBase {
      * not call afterResolveClass
      */
      open fun beforeResolveClass(androidEnvironment: AndroidEnvironment,className:String,classLoader: XAndroidDexClassLoader):Class<*>?{
-        if (className == "androidx.appcompat.app.AppCompatActivity"){
-            //use my class
-            return loadToClass("androidx.appcompat.app.AppCompatActivity","jmp0.app.clazz.android.AppCompatActivity",classLoader)
-        }
         if (className == "android.support.v7.app.AppCompatActivity"){
             return  loadToClass("android.support.v7.app.AppCompatActivity","jmp0.app.clazz.android.AppCompatActivity",classLoader)
         }
-        if (className == "android.support.v7.app.AppCompatCallback"){
-            return  loadToClass("android.support.v7.app.AppCompatCallback","jmp0.app.clazz.android.AppCompatActivity",classLoader)
+        if (className=="android.provider.Settings\$Secure"){
+            return loadToClass("android.provider.Settings\$Secure","jmp0.app.clazz.android.Settings\$Secure",classLoader)
         }
         return null
     }

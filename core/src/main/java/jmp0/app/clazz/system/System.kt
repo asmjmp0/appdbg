@@ -34,6 +34,11 @@ class System  {
         fun currentTimeMillis():Long =
             java.lang.System.currentTimeMillis()
 
+        @JvmStatic
+        fun arraycopy(any: Any,a:Int,b:Any,c:Int,d:Int){
+            java.lang.System.arraycopy(any,a,b,c,d)
+        }
+
         private fun xGetSystemStd(std:String):Any =
             xxClassName.findSystemClass().getDeclaredField(std).get(null)
     }

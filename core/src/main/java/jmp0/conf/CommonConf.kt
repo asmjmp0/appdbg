@@ -8,6 +8,6 @@ object CommonConf {
     const val toolDirName = "tools"
 
     //framework
-    val frameworkFileName = "libs${separator}android${separator}framework.jar"
+    val frameworkFileName = "libs${separator}android-all-9-robolectric.jar"
     const val frameworkDirName = "framework"
 }

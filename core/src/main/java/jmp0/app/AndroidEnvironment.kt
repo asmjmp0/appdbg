@@ -1,11 +1,13 @@
 package jmp0.app
 
+import com.googlecode.d2j.reader.zip.ZipUtil
 import javassist.ClassPool
 import jmp0.apk.ApkFile
 import jmp0.app.interceptor.intf.INativeInterceptor
 import jmp0.app.clazz.ClassLoadedCallbackBase
 import jmp0.conf.CommonConf
 import jmp0.util.DexUtils
+import jmp0.util.UnzipUtility
 import org.apache.log4j.Logger
 import java.io.File
 import java.util.*
@@ -15,15 +17,15 @@ class AndroidEnvironment(private val apkFile: ApkFile,
                          private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
                              ClassLoadedCallbackBase(){}) {
     private val logger = Logger.getLogger(javaClass)
-    private val loader = XAndroidDexClassLoader(this)
+    private val loader = XAndroidDexClassLoader(this,absAndroidRuntimeClass)
     val id = UUID.randomUUID().toString()
     var processName = id
 
     init {
         //create temp dir
         File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
-        checkAndReleaseFramework()
         loadUserSystemClass()
+        checkAndReleaseFramework()
         registerToContext()
     }
 
@@ -62,34 +64,39 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         }
 
     }
-
     private fun checkAndReleaseFramework(){
         val frameworkDir = File("${CommonConf.tempDirName}${File.separator}${CommonConf.frameworkDirName}")
         if(!frameworkDir.exists()){
             frameworkDir.mkdir()
-            DexUtils.releaseApkClassFile(File(CommonConf.frameworkFileName),frameworkDir)
+            UnzipUtility.unzip(CommonConf.frameworkFileName,frameworkDir.canonicalPath)
         }
     }
-
 
     private fun androidFindClass(className: String):File?=
         findFromApkFile(className)?:findFromAndroidFramework(className)
 
 
-    private fun findFromDir(dir:File,className:String):File?{
-        val fileName = className.replace('.','_').replace('/','_')+".class"
-        dir.listFiles()!!.forEach {
-            if(it.name == fileName)
-                return it
+    private fun findFromDir(dir:File,className:String,flag:Boolean=false):File?{
+        if (flag){
+            val filePath = className.replace('.','/')+".class"
+            val f = File(dir,filePath)
+            if (f.exists()) return f
+            return null
+        }else{
+            val fileName = className.replace('.','/').replace('/','_')+".class"
+            dir.listFiles()!!.forEach {
+                if(it.name == fileName)
+                    return it
+            }
+            return null
         }
-        return null
     }
 
     private fun findFromApkFile(className: String):File? =
         findFromDir(apkFile.classesDir,className)
 
     private fun findFromAndroidFramework(className: String): File? =
-        findFromDir(File(CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className)
+        findFromDir(File(CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className,true)
 
 
     private fun loadClass(file: File): Class<*> {
