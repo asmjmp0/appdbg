@@ -7,22 +7,32 @@ import org.apache.log4j.Logger
 import java.io.File
 import java.lang.Exception
 
-class ApkFile(private val apkFile: File) {
+class ApkFile(private val apkFile: File,private val force:Boolean = false) {
     private val logger = Logger.getLogger(javaClass)
     private val dir = File("${CommonConf.tempDirName}${File.separator}${apkFile.name}")
     val classesDir = File(dir,"classes")
 
     init {
         if (!dir.exists()){
-            val ret = ApkToolUtils.releaseApkFile(apkFile)
-            if (ret!=0) {
-                logger.error("apkfile decoding error")
-                throw Exception("apkfile decoding error")
-            }
+            releaseApkFile()
             releaseDex()
         }else{
-            logger.debug("apk dir exists, just use it")
+            if (force){
+                dir.deleteRecursively()
+                releaseApkFile()
+                logger.debug("force enabled, delete the dir")
+            }else {
+                logger.debug("apk dir exists, just use it")
+            }
             releaseDex()
+        }
+    }
+
+    private fun releaseApkFile(){
+        val ret = ApkToolUtils.releaseApkFile(apkFile)
+        if (ret!=0) {
+            logger.error("apkfile decoding error")
+            throw Exception("apkfile decoding error")
         }
     }
 

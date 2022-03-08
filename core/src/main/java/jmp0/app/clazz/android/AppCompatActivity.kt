@@ -1,4 +1,4 @@
-package jmp0.app.runtime.android
+package jmp0.app.clazz.android
 
 /**
  * @author jmp0 <jmp0@qq.com>

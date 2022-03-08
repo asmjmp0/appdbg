@@ -19,8 +19,13 @@ object DbgContext {
     }
 
     @JvmStatic
+    fun getAndroidEnvironment(uuid: String) = synchronized(hashMap){
+        hashMap[uuid]
+    }
+
+    @JvmStatic
     fun getNativeCallBack(uuid: String) = synchronized(hashMap) {
-        hashMap[uuid]!!.nativeInterceptor
+        getAndroidEnvironment(uuid)?.nativeInterceptor
     }
 
     override fun toString(): String = synchronized(hashMap) {

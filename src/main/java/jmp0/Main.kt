@@ -1,17 +1,19 @@
 package jmp0
 import javassist.ClassPool
 import javassist.CtClass
+import javassist.CtMethod
+import javassist.CtNewMethod
+import javassist.bytecode.Opcode
+import jdk.internal.org.objectweb.asm.Opcodes
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
-import jmp0.app.DbgContext
 import jmp0.app.XAndroidDexClassLoader
-import jmp0.app.interceptor.mtd.INativeInterceptor
-import jmp0.app.interceptor.runtime.AndroidRuntimeClassInterceptorBase
+import jmp0.app.interceptor.intf.INativeInterceptor
+import jmp0.app.clazz.ClassLoadedCallbackBase
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Logger
-import sun.misc.GC
 import java.io.File
-import kotlin.concurrent.thread
+import java.lang.reflect.Method
 
 class Main {
     /**
@@ -29,40 +31,59 @@ class Main {
     companion object{
         val logger = Logger.getLogger(javaClass)
         fun test(){
-            val androidEnvironment = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
-                absAndroidRuntimeClass = object : AndroidRuntimeClassInterceptorBase(){
-                    override fun afterFindClassFile(androidEnvironment: AndroidEnvironment, ctClass: CtClass): CtClass {
-                        super.afterFindClassFile(androidEnvironment,ctClass)
-                        //insert your code
+            val return_type = ClassPool.getDefault().makeClass("android.content.ContentResolver")
+            val string_ret_type = ClassPool.getDefault().getCtClass("java.lang.String")
+            val androidEnvironment = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"),false),
+                absAndroidRuntimeClass = object : ClassLoadedCallbackBase(){
+                    override fun afterResolveClass(androidEnvironment: AndroidEnvironment, ctClass: CtClass): CtClass {
+                        super.afterResolveClass(androidEnvironment,ctClass)
+                        if (ctClass.name == "jmp0.test.testapp.MainActivity"){
+                            ctClass.addMethod(CtNewMethod.make(return_type,"getContentResolver", arrayOf(), arrayOf(),"return null;",ctClass))
+                        }
+                        if (ctClass.name == "android.provider.Settings\$Secure"){
+
+                        }
                         return ctClass
                     }
-
                     override fun beforeResolveClass(
                         androidEnvironment: AndroidEnvironment,
                         className: String,
                         classLoader: XAndroidDexClassLoader
                     ): Class<*>? {
-                        return super.beforeResolveClass(androidEnvironment,className, classLoader)
+                        val res = super.beforeResolveClass(androidEnvironment,className, classLoader)
+                        if (className == "android.provider.Settings\$Secure"){
+                            val clazz =  ClassPool.getDefault().makeClass("android.provider.Settings\$Secure")
+                            clazz.defrost()
+                            val mt = CtNewMethod.make(ClassPool.getDefault().getCtClass("java.lang.String"),
+                                "getString", arrayOf(return_type,string_ret_type), arrayOf(),"return \"Android_jdjsbjhbdj2\";",clazz)
+                            mt.modifiers = (mt.modifiers or Opcodes.ACC_STATIC)
+                            clazz.addMethod(mt)
+                            return clazz.toClass(classLoader)
+                        }
+                        if (className == "android.content.Context"){
+                            return ClassPool.getDefault().makeClass("android.content.Context").toClass(classLoader)
+                        }
+                        return res
                     }
                 },
                 nativeInterceptor =  object : INativeInterceptor {
-                    override fun nativeCalled(className: String, funcName: String, param: Array<Any>): Any? {
+                    override fun nativeCalled(className: String, funcName: String, param: Array<out Any?>): INativeInterceptor.ImplStatus {
                         // TODO: 2022/3/7 use unidbg emulate native func
                         return if ((className =="com.example.myapplication.TestJava")
                             and (funcName == "stringFromJNI"))
-                            "jni hooked by jmp0 "
+                            INativeInterceptor.ImplStatus(true,"hooked by asmjmp0")
                         else
-                            null
+                            INativeInterceptor.ImplStatus(false,null)
                     }
 
                 })
             //
 
-            val TestJavaclazz = androidEnvironment.loadClass("jmp0.test.testapp.TestKotlin")
+            val TestJavaclazz = androidEnvironment.loadClass("jmp0.test.testapp.MainActivity")
             val ins = TestJavaclazz.getConstructor().newInstance()
-            val ret = TestJavaclazz.getDeclaredMethod("testString").invokeEx(ins)
+            val ret = TestJavaclazz.getDeclaredMethod("getStr").invokeEx(ins)
             logger.debug(ret)
-            androidEnvironment.destroy()
+//            androidEnvironment.destroy()
         }
         @JvmStatic
         fun main(args:Array<String>){

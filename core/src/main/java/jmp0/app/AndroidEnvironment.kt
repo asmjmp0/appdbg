@@ -2,19 +2,18 @@ package jmp0.app
 
 import javassist.ClassPool
 import jmp0.apk.ApkFile
-import jmp0.app.interceptor.mtd.INativeInterceptor
-import jmp0.app.interceptor.runtime.AndroidRuntimeClassInterceptorBase
+import jmp0.app.interceptor.intf.INativeInterceptor
+import jmp0.app.clazz.ClassLoadedCallbackBase
 import jmp0.conf.CommonConf
 import jmp0.util.DexUtils
 import org.apache.log4j.Logger
 import java.io.File
 import java.util.*
 
-// TODO: 2022/3/8 add flag to froce clear the dir
 class AndroidEnvironment(private val apkFile: ApkFile,
                          val nativeInterceptor: INativeInterceptor,
-                         private val absAndroidRuntimeClass: AndroidRuntimeClassInterceptorBase = object :
-                             AndroidRuntimeClassInterceptorBase(){}) {
+                         private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
+                             ClassLoadedCallbackBase(){}) {
     private val logger = Logger.getLogger(javaClass)
     private val loader = XAndroidDexClassLoader(this)
     val id = UUID.randomUUID().toString()
@@ -51,8 +50,9 @@ class AndroidEnvironment(private val apkFile: ApkFile,
      *  modify java/ to xxxxx before characteristic string
      */
     private fun loadUserSystemClass(){
-        val path = "core/src/main/java/jmp0/app/runtime/system".replace("/",File.separator)
-        val packageName = "jmp0.app.runtime.system"
+        // TODO: 2022/3/8 模块化这个功能
+        val path = "core/src/main/java/jmp0/app/clazz/system".replace("/",File.separator)
+        val packageName = "jmp0.app.clazz.system"
         File(path).listFiles()!!.forEach {
             if (it.isFile){
                 val fullClassName = packageName +'.'+ it.name.split('.')[0]
@@ -93,7 +93,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
 
 
     private fun loadClass(file: File): Class<*> {
-        val data = absAndroidRuntimeClass.afterFindClassFile(
+        val data = absAndroidRuntimeClass.afterResolveClass(
             this,ClassPool.getDefault().makeClass(file.inputStream(),false)
         ).toBytecode()
         return loader.xDefineClass(null,data,0,data.size)
@@ -106,8 +106,10 @@ class AndroidEnvironment(private val apkFile: ApkFile,
     fun loadClass(className: String): Class<*> {
        return absAndroidRuntimeClass.beforeResolveClass(this,className,loader)
        // TODO: 2022/3/8 找不到的时候throw出异常
-           ?:loadClass(androidFindClass(className)!!).apply { logger.debug("$this loaded!") }
+           ?:loadClass(androidFindClass(className)?:throw Exception("$className not find from frame work")).apply { logger.debug("$this loaded!") }
     }
+
+    fun findClass(name: String) = Class.forName(name,false,loader)
 
     override fun toString(): String =
         "${javaClass.simpleName}[$processName ]"

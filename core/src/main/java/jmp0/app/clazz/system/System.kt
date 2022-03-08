@@ -1,4 +1,4 @@
-package jmp0.app.runtime.system
+package jmp0.app.clazz.system
 
 import jmp0.util.SystemReflectUtils.findSystemClass
 import org.apache.log4j.Logger
@@ -29,6 +29,10 @@ class System  {
         fun loadLibrary(libName: String){
             logger.debug("want to load $libName...")
         }
+
+        @JvmStatic
+        fun currentTimeMillis():Long =
+            java.lang.System.currentTimeMillis()
 
         private fun xGetSystemStd(std:String):Any =
             xxClassName.findSystemClass().getDeclaredField(std).get(null)

@@ -17,6 +17,7 @@ class XAndroidDexClassLoader(private val androidEnvironment: AndroidEnvironment)
 
     override fun findClass(name: String): Class<*>? {
         try {
+            logger.info("try to load $name")
             return super.findClass(name)
         }catch (e:ClassNotFoundException){
             val res = findLoadedClass(name)

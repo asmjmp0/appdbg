@@ -1,13 +1,13 @@
-package jmp0.app.interceptor.mtd
+package jmp0.app.interceptor.mtd.impl
 
 import javassist.CtClass
 import jmp0.app.AndroidEnvironment
-import jmp0.app.interceptor.runtime.RuntimeClassInterceptorBase
+import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import org.apache.log4j.Logger
 
 
 class ClassNativeInterceptor(private val androidEnvironment: AndroidEnvironment,private val ctClass: CtClass)
-    :RuntimeClassInterceptorBase(androidEnvironment,ctClass) {
+    : RuntimeClassInterceptorBase(androidEnvironment,ctClass) {
     private val logger = Logger.getLogger(javaClass)
 
     override fun doChange():CtClass{
@@ -16,14 +16,13 @@ class ClassNativeInterceptor(private val androidEnvironment: AndroidEnvironment,
             if(checkNativeFlag(it.modifiers)){
                 //创建到java的bridge
                 it.modifiers = eraseNativeFlag(it.modifiers)
-                // TODO: 2022/3/7 处理 returnType为void的情况
-                val retTypeName = it.returnType.name
+                val retTypeName = replaceType(it.returnType.name)
                 val funcName = it.name
                 val className = it.declaringClass.name
-                it.setBody("{\n"+
-                    "return jmp0.app.DbgContext.getNativeCallBack(\"${androidEnvironment.id}\")\n"+
-                        ".nativeCalled(\"$className\",\"$funcName\",\$args);"+
-                "}")
+                val signature = it.signature
+                it.setBody(
+                    "{return ($retTypeName) jmp0.app.interceptor.mtd.CallBridge" +
+                            ".nativeCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
 
             }
         }
