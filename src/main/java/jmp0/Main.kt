@@ -4,7 +4,6 @@ import javassist.CtClass
 import javassist.CtMethod
 import javassist.CtNewMethod
 import javassist.bytecode.Opcode
-import jdk.internal.org.objectweb.asm.Opcodes
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
 import jmp0.app.XAndroidDexClassLoader
