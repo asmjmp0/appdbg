@@ -16,6 +16,7 @@ abstract class AndroidRuntimeClassInterceptorBase {
 
     private val logger = Logger.getLogger(javaClass)
 
+    // TODO: 2022/3/8 add apk android env,to support program isolation.
      open fun afterFindClassFile(ctClass: CtClass):CtClass{
         //after  xclassloader find the class file,you can modify the class
 
@@ -28,6 +29,7 @@ abstract class AndroidRuntimeClassInterceptorBase {
         return pass
     }
 
+    // TODO: 2022/3/8 add apk android env,to support program isolation.
      open fun beforeResolveClass(className:String,classLoader: XAndroidDexClassLoader):Class<*>?{
         //before xclassloader find the class file,you can replace or implement the class
         if (className == "androidx.appcompat.app.AppCompatActivity"){
