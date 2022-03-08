@@ -1,11 +1,13 @@
 package jmp0.app.interceptor.mtd
 
 import javassist.CtClass
+import jmp0.app.AndroidEnvironment
 import jmp0.app.interceptor.runtime.RuntimeClassInterceptorBase
 import org.apache.log4j.Logger
 
 
-class ClassNativeInterceptor(private val ctClass: CtClass):RuntimeClassInterceptorBase(ctClass) {
+class ClassNativeInterceptor(private val androidEnvironment: AndroidEnvironment,private val ctClass: CtClass)
+    :RuntimeClassInterceptorBase(androidEnvironment,ctClass) {
     private val logger = Logger.getLogger(javaClass)
 
     override fun doChange():CtClass{
@@ -19,7 +21,7 @@ class ClassNativeInterceptor(private val ctClass: CtClass):RuntimeClassIntercept
                 val funcName = it.name
                 val className = it.declaringClass.name
                 it.setBody("{\n"+
-                    "return ($retTypeName) jmp0.app.AndroidEnvironment.Companion.getGNativeInterceptor()\n"+
+                    "return jmp0.app.DbgContext.getNativeCallBack(\"${androidEnvironment.id}\")\n"+
                         ".nativeCalled(\"$className\",\"$funcName\",\$args);"+
                 "}")
 

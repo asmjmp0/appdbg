@@ -1,0 +1,11 @@
+plugins {
+  id 'org.jetbrains.kotlin.jvm'
+}
+description = 'Dex Translator'
+repositories {
+  mavenCentral()
+}
+dependencies {
+  api project(':thirdparty:dex-reader-api')
+}
+

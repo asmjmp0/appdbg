@@ -4,3 +4,4 @@ build/
 temp/
 .DS_Store
 */.DS_Store
+local.properties

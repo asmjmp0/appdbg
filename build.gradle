@@ -1,17 +1,29 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/spring/'}
+        mavenCentral()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
+    }
+}
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.10'
 }
 
 group 'org.example'
 version '1.0-SNAPSHOT'
-
-repositories {
-    maven { url 'https://maven.aliyun.com/repository/public/' }
-    maven { url 'https://maven.aliyun.com/repository/spring/'}
-    mavenCentral()
-    jcenter()
+allprojects {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/spring/'}
+        mavenCentral()
+        google()
+    }
 }
-
 dependencies {
     test.useJUnitPlatform()
     implementation "org.jetbrains.kotlin:kotlin-stdlib"

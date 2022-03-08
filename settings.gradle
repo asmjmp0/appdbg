@@ -1,8 +1,8 @@
 rootProject.name = 'appdbg'
-include 'dex-reader-api'
-include 'dex-reader'
-include 'dex-ir'
-include 'dex-translator'
+include ':thirdparty:dex-reader-api'
+include ':thirdparty:dex-reader'
+include ':thirdparty:dex-ir'
+include ':thirdparty:dex-translator'
 include 'system-inject'
 include 'core'
-
+include ':test-app'

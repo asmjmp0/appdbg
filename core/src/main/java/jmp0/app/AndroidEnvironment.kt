@@ -8,25 +8,38 @@ import jmp0.conf.CommonConf
 import jmp0.util.DexUtils
 import org.apache.log4j.Logger
 import java.io.File
+import java.util.*
 
+// TODO: 2022/3/8 add flag to froce clear the dir
 class AndroidEnvironment(private val apkFile: ApkFile,
-                         nativeInterceptor: INativeInterceptor,
+                         val nativeInterceptor: INativeInterceptor,
                          private val absAndroidRuntimeClass: AndroidRuntimeClassInterceptorBase = object :
                              AndroidRuntimeClassInterceptorBase(){}) {
     private val logger = Logger.getLogger(javaClass)
     private val loader = XAndroidDexClassLoader(this)
-    companion object{
-        //callback from native call of app
-        // TODO: 2022/3/8 pass the instance to interceptor, support for program isolation.
-        var gNativeInterceptor: INativeInterceptor? = null
-    }
+    val id = UUID.randomUUID().toString()
+    var processName = id
 
     init {
         //create temp dir
         File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         checkAndReleaseFramework()
-        gNativeInterceptor = nativeInterceptor
         loadUserSystemClass()
+        registerToContext()
+    }
+
+    /**
+     * if you don't want to use any more,
+     * please invoke this method
+     */
+    fun destroy(){
+        DbgContext.unRegister(id)
+    }
+
+    fun setProcessName(name: String) = apply { processName = name }
+
+    private fun registerToContext(){
+        DbgContext.register(uuid = id,this)
     }
 
     /**
@@ -81,7 +94,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
 
     private fun loadClass(file: File): Class<*> {
         val data = absAndroidRuntimeClass.afterFindClassFile(
-            ClassPool.getDefault().makeClass(file.inputStream())
+            this,ClassPool.getDefault().makeClass(file.inputStream(),false)
         ).toBytecode()
         return loader.xDefineClass(null,data,0,data.size)
     }
@@ -91,9 +104,12 @@ class AndroidEnvironment(private val apkFile: ApkFile,
      * @return class类对象
      */
     fun loadClass(className: String): Class<*> {
-       return absAndroidRuntimeClass.beforeResolveClass(className,loader)
+       return absAndroidRuntimeClass.beforeResolveClass(this,className,loader)
        // TODO: 2022/3/8 找不到的时候throw出异常
            ?:loadClass(androidFindClass(className)!!).apply { logger.debug("$this loaded!") }
     }
+
+    override fun toString(): String =
+        "${javaClass.simpleName}[$processName ]"
 
 }
