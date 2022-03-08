@@ -58,17 +58,6 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         }
     }
 
-    private data class DefineStatus(val clazz: Class<*>?,val className:String)
-
-    private fun privateDefineClass(name: String?,data: ByteArray,off:Int,size:Int): DefineStatus {
-        return try {
-            DefineStatus(loader.xDefineClass(name,data,off,data.size),"")
-        }catch (e:ClassNotFoundException){
-            DefineStatus(null,e.message!!)
-        }catch (e:NoClassDefFoundError){
-            DefineStatus(null,e.message!!)
-        }
-    }
 
     private fun androidFindClass(className: String):File?=
         findFromApkFile(className)?:findFromAndroidFramework(className)
@@ -90,22 +79,20 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         findFromDir(File(CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className)
 
 
-    private fun loadClass(file: File): Class<*>? {
+    private fun loadClass(file: File): Class<*> {
         val data = absAndroidRuntimeClass.afterFindClassFile(
             ClassPool.getDefault().makeClass(file.inputStream())
         ).toBytecode()
-        val res = privateDefineClass(null,data,0,data.size)
-        if(res.clazz != null) return res.clazz
-        logger.error("${res.className} load error")
-        return null
+        return loader.xDefineClass(null,data,0,data.size)
     }
 
     /**
      * @param className 形如 com.example.myapplication.TestJava
      * @return class类对象
      */
-    fun loadClass(className: String): Class<*>? {
+    fun loadClass(className: String): Class<*> {
        return absAndroidRuntimeClass.beforeResolveClass(className,loader)
+       // TODO: 2022/3/8 找不到的时候throw出异常
            ?:loadClass(androidFindClass(className)!!).apply { logger.debug("$this loaded!") }
     }
 

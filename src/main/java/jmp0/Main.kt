@@ -45,11 +45,11 @@ class Main {
                 })
             //
 
-            val MainActivityClazz = androidEnvironment.loadClass("com.example.myapplication.MainActivity")!!
+            val MainActivityClazz = androidEnvironment.loadClass("com.example.myapplication.MainActivity")
             logger.debug(MainActivityClazz.getConstructor().newInstance())
 
 
-            val TestJavaclazz = androidEnvironment.loadClass("com.example.myapplication.TestJava")!!
+            val TestJavaclazz = androidEnvironment.loadClass("com.example.myapplication.TestJava")
             val ins = TestJavaclazz.getConstructor().newInstance()
             val ret = TestJavaclazz.getDeclaredMethod("getStr").invokeEx(ins)
             logger.debug(ret)
