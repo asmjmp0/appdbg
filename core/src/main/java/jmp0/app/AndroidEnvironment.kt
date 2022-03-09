@@ -11,6 +11,7 @@ import org.apache.log4j.Logger
 import java.io.File
 import java.util.*
 
+// TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
 class AndroidEnvironment(private val apkFile: ApkFile,
                          val nativeInterceptor: IInterceptor,
                          private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
@@ -19,7 +20,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
                                  androidEnvironment: AndroidEnvironment,
                                  ctClass: CtClass
                              ): CtClass {
-                                 TODO("Not yet implemented")
+                                 return ctClass
                              }
 
                              override fun beforeResolveClassImpl(
@@ -27,7 +28,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
                                  className: String,
                                  classLoader: XAndroidDexClassLoader
                              ): Class<*>? {
-                                 TODO("Not yet implemented")
+                                 return null
                              }
                          }) {
     private val logger = Logger.getLogger(javaClass)

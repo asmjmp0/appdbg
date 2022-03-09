@@ -13,7 +13,6 @@ class HookMethodInterceptor(private val androidEnvironment: AndroidEnvironment,p
     : RuntimeClassInterceptorBase(androidEnvironment,ctClass) {
 
     override fun doChange(): CtClass {
-        // TODO: 2022/3/7 支持普通函数的hook 用INativeInterceptor接口实现
         for (declaredMethod in ctClass.declaredMethods) {
 
             //native function can't be hooked,se ClassNativeInterceptor

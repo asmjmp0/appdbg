@@ -28,7 +28,6 @@ class XAndroidDexClassLoader(private val androidEnvironment: AndroidEnvironment,
         }
     }
 
-    // TODO: 2022/3/8 增加不同app 环境的异常throw
     fun xDefineClass(name: String?,data:ByteArray,off:Int,size: Int):Class<*> =
         defineClass(name,data,0,size)
 }
