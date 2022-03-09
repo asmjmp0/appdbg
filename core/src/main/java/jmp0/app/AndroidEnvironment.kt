@@ -1,6 +1,7 @@
 package jmp0.app
 
 import javassist.ClassPool
+import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.clazz.ClassLoadedCallbackBase
@@ -13,7 +14,22 @@ import java.util.*
 class AndroidEnvironment(private val apkFile: ApkFile,
                          val nativeInterceptor: IInterceptor,
                          private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
-                             ClassLoadedCallbackBase(){}) {
+                             ClassLoadedCallbackBase(){
+                             override fun afterResolveClassImpl(
+                                 androidEnvironment: AndroidEnvironment,
+                                 ctClass: CtClass
+                             ): CtClass {
+                                 TODO("Not yet implemented")
+                             }
+
+                             override fun beforeResolveClassImpl(
+                                 androidEnvironment: AndroidEnvironment,
+                                 className: String,
+                                 classLoader: XAndroidDexClassLoader
+                             ): Class<*>? {
+                                 TODO("Not yet implemented")
+                             }
+                         }) {
     private val logger = Logger.getLogger(javaClass)
     private val loader = XAndroidDexClassLoader(this,absAndroidRuntimeClass)
     val id = UUID.randomUUID().toString()

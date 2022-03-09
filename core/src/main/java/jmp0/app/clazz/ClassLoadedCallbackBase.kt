@@ -13,7 +13,7 @@ import org.apache.log4j.Logger
  */
 abstract class ClassLoadedCallbackBase {
 
-     protected fun loadToClass(what:String, replace:String, classLoader: XAndroidDexClassLoader):Class<*>{
+      fun loadToClass(what:String, replace:String, classLoader: XAndroidDexClassLoader):Class<*>{
          val clazz = ClassPool.getDefault().getCtClass(replace)
          val ba = clazz.apply {
              replaceClassName(replace,what)
