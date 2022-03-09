@@ -8,30 +8,45 @@ import java.util.*
  * Create on 2022/3/8
  */
 object DbgContext {
-    private val hashMap = hashMapOf<String,AndroidEnvironment>()
+    private val contextHashMap = hashMapOf<String,AndroidEnvironment>()
 
-    fun register(uuid: String,androidEnvironment: AndroidEnvironment) = synchronized(hashMap){
-        hashMap.put(uuid,androidEnvironment)
+    data class MethodHookInfo(val signature:String,val replace:Boolean)
+
+    private val methodHookHashMap = hashMapOf<String,ArrayList<MethodHookInfo>>()
+
+    fun register(uuid: String,androidEnvironment: AndroidEnvironment){
+        //init context map
+        contextHashMap[uuid] = androidEnvironment
+        //init method hook map
+        methodHookHashMap[uuid] = ArrayList()
+
     }
 
-    fun unRegister(uuid: String) = synchronized(hashMap){
-        hashMap.remove(uuid)
+    fun unRegister(uuid: String) = synchronized(contextHashMap){
+        contextHashMap.remove(uuid)
     }
 
     @JvmStatic
-    fun getAndroidEnvironment(uuid: String) = synchronized(hashMap){
-        hashMap[uuid]
+    fun getAndroidEnvironment(uuid: String) = synchronized(contextHashMap){
+        contextHashMap[uuid]
     }
 
     @JvmStatic
-    fun getNativeCallBack(uuid: String) = synchronized(hashMap) {
+    fun getNativeCallBack(uuid: String) = synchronized(contextHashMap) {
         getAndroidEnvironment(uuid)?.nativeInterceptor
     }
 
-    override fun toString(): String = synchronized(hashMap) {
+    fun registerMethodHook(uuid: String,signature:String,replace:Boolean) = synchronized(methodHookHashMap){
+        methodHookHashMap[uuid]?.add(MethodHookInfo(signature,replace))
+    }
+
+    fun getMethodHookList(uuid: String)
+        = methodHookHashMap[uuid]
+
+    override fun toString(): String = synchronized(contextHashMap) {
         StringBuilder().apply {
             append('\n')
-            hashMap.values.forEach{
+            contextHashMap.values.forEach{
                 append("$it is running\n")
             }
         }.toString()

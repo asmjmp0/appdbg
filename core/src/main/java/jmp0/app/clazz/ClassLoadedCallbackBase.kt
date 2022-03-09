@@ -32,12 +32,12 @@ abstract class ClassLoadedCallbackBase {
      * such as insert interceptor or just modify some static field
      */
      open fun afterResolveClass(androidEnvironment: AndroidEnvironment,ctClass: CtClass):CtClass{
-         // TODO: 2022/3/8 use reflection to invoke form jmp0.app.interceptor.mtd.impl
-        //erase native function acess flag and insert callback
-        var pass =  ClassNativeInterceptor(androidEnvironment,ctClass).doChange()
 
-         //make hook java method possible
-         pass = HookMethodInterceptor(androidEnvironment,pass).doChange()
+        //make hook java method possible,native function can not be hooked
+        var pass = HookMethodInterceptor(androidEnvironment,ctClass).doChange()
+
+        //erase native function access flag and insert callback
+        pass =  ClassNativeInterceptor(androidEnvironment,pass).doChange()
 
         return pass
     }

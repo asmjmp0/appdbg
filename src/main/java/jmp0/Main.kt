@@ -1,18 +1,14 @@
 package jmp0
 import javassist.ClassPool
 import javassist.CtClass
-import javassist.CtMethod
-import javassist.CtNewMethod
-import javassist.bytecode.Opcode
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
 import jmp0.app.XAndroidDexClassLoader
-import jmp0.app.interceptor.intf.INativeInterceptor
+import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.clazz.ClassLoadedCallbackBase
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Logger
 import java.io.File
-import java.lang.reflect.Method
 
 class Main {
     /**
@@ -50,18 +46,27 @@ class Main {
                         return res
                     }
                 },
-                nativeInterceptor =  object : INativeInterceptor {
-                    override fun nativeCalled(className: String, funcName: String, param: Array<out Any?>): INativeInterceptor.ImplStatus {
+                nativeInterceptor =  object : IInterceptor {
+                    override fun nativeCalled(className: String, funcName: String, signature: String, param: Array<out Any?>)
+                    : IInterceptor.ImplStatus {
                         // TODO: 2022/3/7 use unidbg emulate native func
-                        return if ((className =="com.example.myapplication.TestJava")
-                            and (funcName == "stringFromJNI"))
-                            INativeInterceptor.ImplStatus(true,"hooked by asmjmp0")
+                        return if ((className =="com.example.myapplication.TestJava") and (funcName == "stringFromJNI"))
+                            IInterceptor.ImplStatus(true,"hooked by asmjmp0")
                         else
-                            INativeInterceptor.ImplStatus(false,null)
+                            IInterceptor.ImplStatus(false,null)
+                    }
+
+                    override fun methodCalled(className: String, funcName: String, signature: String, param: Array<out Any?>): Any? {
+                        if (funcName == "getStr"){
+                            logger.debug("class")
+                            return null
+                        }
+                        return null
                     }
 
                 })
             //
+            androidEnvironment.registerMethodHook("jmp0.test.testapp.MainActivity.getStr()V",false)
 
             val TestJavaclazz = androidEnvironment.loadClass("jmp0.test.testapp.MainActivity")
             val ins = TestJavaclazz.getConstructor().newInstance()

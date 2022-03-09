@@ -10,4 +10,8 @@ object CommonConf {
     //framework
     val frameworkFileName = "libs${separator}android-all-9-robolectric.jar"
     const val frameworkDirName = "framework"
+
+    //system
+    val userSystemClass = "core/src/main/java/jmp0/app/clazz/system".replace("/",File.separator)
+    val userSystemClassPackageName= "jmp0/app/clazz/system".replace('/','.')
 }

@@ -24,8 +24,14 @@ object CallBridge {
         val implMethod = NativeMethodManager.get(sig)
         return if (implMethod!=null) implMethod.invoke(null,*param)
 
-        else callback.nativeCalled(className,funcName,param).apply {
+        else callback.nativeCalled(className,funcName,signature,param).apply {
                 if (!implemented) throw NativeMethodNotImplementException(sig) }.result
+    }
+
+    @JvmStatic
+    fun methodCalled(uuid: String, className: String, funcName: String, signature: String, vararg param: Any?): Any? {
+        val callback = DbgContext.getNativeCallBack(uuid) ?: throw Exception("callback no found!!")
+        return callback.methodCalled(className, funcName,signature, param)
     }
 
 }

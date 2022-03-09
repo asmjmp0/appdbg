@@ -1,19 +1,17 @@
 package jmp0.app
 
-import com.googlecode.d2j.reader.zip.ZipUtil
 import javassist.ClassPool
 import jmp0.apk.ApkFile
-import jmp0.app.interceptor.intf.INativeInterceptor
+import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.clazz.ClassLoadedCallbackBase
 import jmp0.conf.CommonConf
-import jmp0.util.DexUtils
 import jmp0.util.UnzipUtility
 import org.apache.log4j.Logger
 import java.io.File
 import java.util.*
 
 class AndroidEnvironment(private val apkFile: ApkFile,
-                         val nativeInterceptor: INativeInterceptor,
+                         val nativeInterceptor: IInterceptor,
                          private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
                              ClassLoadedCallbackBase(){}) {
     private val logger = Logger.getLogger(javaClass)
@@ -52,9 +50,8 @@ class AndroidEnvironment(private val apkFile: ApkFile,
      *  modify java/ to xxxxx before characteristic string
      */
     private fun loadUserSystemClass(){
-        // TODO: 2022/3/8 模块化这个功能
-        val path = "core/src/main/java/jmp0/app/clazz/system".replace("/",File.separator)
-        val packageName = "jmp0.app.clazz.system"
+        val path = CommonConf.userSystemClass
+        val packageName = CommonConf.userSystemClassPackageName
         File(path).listFiles()!!.forEach {
             if (it.isFile){
                 val fullClassName = packageName +'.'+ it.name.split('.')[0]
@@ -112,11 +109,18 @@ class AndroidEnvironment(private val apkFile: ApkFile,
      */
     fun loadClass(className: String): Class<*> {
        return absAndroidRuntimeClass.beforeResolveClass(this,className,loader)
-       // TODO: 2022/3/8 找不到的时候throw出异常
            ?:loadClass(androidFindClass(className)?:throw Exception("$className not find from frame work")).apply { logger.debug("$this loaded!") }
     }
 
-    fun findClass(name: String) = Class.forName(name,false,loader)
+    fun findClass(name: String)
+        = Class.forName(name,false,loader)
+
+    /**
+     * @param signature which looks like xxxxx
+     * @param implemented if it is ture the method while be replace by your method
+     */
+    fun registerMethodHook(signature:String,replace:Boolean)
+        = DbgContext.registerMethodHook(id,signature,replace)
 
     override fun toString(): String =
         "${javaClass.simpleName}[$processName ]"

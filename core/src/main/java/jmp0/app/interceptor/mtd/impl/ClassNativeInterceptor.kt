@@ -20,9 +20,15 @@ class ClassNativeInterceptor(private val androidEnvironment: AndroidEnvironment,
                 val funcName = it.name
                 val className = it.declaringClass.name
                 val signature = it.signature
-                it.setBody(
-                    "{return ($retTypeName) jmp0.app.interceptor.mtd.CallBridge" +
+                val sig = getSignature(it)
+                logger.info("set native hook to $sig")
+                if (retTypeName == "Void"){
+                    it.setBody("{jmp0.app.interceptor.mtd.CallBridge" +
                             ".nativeCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
+                }else{
+                    it.setBody("{return ($retTypeName) jmp0.app.interceptor.mtd.CallBridge" +
+                            ".nativeCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
+                }
 
             }
         }
