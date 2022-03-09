@@ -3,8 +3,8 @@ package jmp0.app.clazz
 import javassist.ClassPool
 import javassist.CtClass
 import jmp0.app.AndroidEnvironment
-import jmp0.app.XAndroidDexClassLoader
-import jmp0.app.interceptor.mtd.impl.ClassNativeInterceptor
+import jmp0.app.XAndroidClassLoader
+import jmp0.app.interceptor.mtd.impl.NativeMethodInterceptor
 import jmp0.app.interceptor.mtd.impl.HookMethodInterceptor
 import org.apache.log4j.Logger
 
@@ -13,7 +13,7 @@ import org.apache.log4j.Logger
  */
 abstract class ClassLoadedCallbackBase {
 
-      fun loadToClass(what:String, replace:String, classLoader: XAndroidDexClassLoader):Class<*>{
+      fun loadToClass(what:String, replace:String, classLoader: XAndroidClassLoader):Class<*>{
          val clazz = ClassPool.getDefault().getCtClass(replace)
          val ba = clazz.apply {
              replaceClassName(replace,what)
@@ -36,7 +36,7 @@ abstract class ClassLoadedCallbackBase {
          var pass = HookMethodInterceptor(androidEnvironment,ctClass).doChange()
 
          //erase native function access flag and insert callback
-         pass =  ClassNativeInterceptor(androidEnvironment,pass).doChange()
+         pass =  NativeMethodInterceptor(androidEnvironment,pass).doChange()
 
          pass = afterResolveClassImpl(androidEnvironment,pass)
          return pass
@@ -51,7 +51,7 @@ abstract class ClassLoadedCallbackBase {
      * if you implement the class and return
      * not call afterResolveClass
      */
-    fun beforeResolveClass(androidEnvironment: AndroidEnvironment, className:String, classLoader: XAndroidDexClassLoader):Class<*>?{
+    fun beforeResolveClass(androidEnvironment: AndroidEnvironment, className:String, classLoader: XAndroidClassLoader):Class<*>?{
         if (className == "android.support.v7.app.AppCompatActivity"){
             return  loadToClass("android.support.v7.app.AppCompatActivity","jmp0.app.clazz.android.AppCompatActivity",classLoader)
         }
@@ -61,6 +61,6 @@ abstract class ClassLoadedCallbackBase {
         return beforeResolveClassImpl(androidEnvironment,className,classLoader)
     }
 
-    abstract fun beforeResolveClassImpl(androidEnvironment: AndroidEnvironment,className:String,classLoader: XAndroidDexClassLoader):Class<*>?
+    abstract fun beforeResolveClassImpl(androidEnvironment: AndroidEnvironment,className:String,classLoader: XAndroidClassLoader):Class<*>?
 
 }

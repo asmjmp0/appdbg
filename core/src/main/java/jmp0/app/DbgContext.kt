@@ -10,11 +10,12 @@ import java.util.*
 object DbgContext {
     private val contextHashMap = hashMapOf<String,AndroidEnvironment>()
 
-    data class MethodHookInfo(val signature:String,val replace:Boolean)
-
     private val methodHookHashMap = hashMapOf<String,ArrayList<MethodHookInfo>>()
 
-    fun register(uuid: String,androidEnvironment: AndroidEnvironment){
+    data class MethodHookInfo(val signature:String,val replace:Boolean)
+
+    fun register(uuid: String,androidEnvironment: AndroidEnvironment)
+        = synchronized(DbgContext::class.java){
         //init context map
         contextHashMap[uuid] = androidEnvironment
         //init method hook map
@@ -22,8 +23,9 @@ object DbgContext {
 
     }
 
-    fun unRegister(uuid: String) = synchronized(contextHashMap){
+    fun unRegister(uuid: String) = synchronized(DbgContext::class.java){
         contextHashMap.remove(uuid)
+        methodHookHashMap.remove(uuid)
     }
 
     @JvmStatic
@@ -33,7 +35,7 @@ object DbgContext {
 
     @JvmStatic
     fun getNativeCallBack(uuid: String) = synchronized(contextHashMap) {
-        getAndroidEnvironment(uuid)?.nativeInterceptor
+        getAndroidEnvironment(uuid)?.methodInterceptor
     }
 
     fun registerMethodHook(uuid: String,signature:String,replace:Boolean) = synchronized(methodHookHashMap){

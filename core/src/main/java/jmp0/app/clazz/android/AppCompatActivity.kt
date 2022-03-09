@@ -28,7 +28,7 @@ open class AppCompatActivity:Context() {
     }
 
     override fun getResources(): Resources {
-        TODO("Not yet implemented")
+        return Resources(Thread.currentThread().contextClassLoader)
     }
 
     override fun getPackageManager(): PackageManager {
@@ -61,7 +61,8 @@ open class AppCompatActivity:Context() {
     }
 
     override fun getPackageName(): String {
-        TODO("Not yet implemented")
+        logger.debug("getPackageName called")
+        return "jmp0.test.packageName"
     }
 
     override fun getBasePackageName(): String {

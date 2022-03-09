@@ -1,4 +1,8 @@
 buildscript {
+    ext{
+        log4j_version = '1.2.17'
+        javassist_version = '3.28.0-GA'
+    }
     repositories {
         maven { url 'https://maven.aliyun.com/repository/public/' }
         maven { url 'https://maven.aliyun.com/repository/spring/'}
@@ -29,9 +33,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
-    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
-    //todo 调整项目架构多个模块依赖公共库
-    implementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    implementation group: 'log4j', name: 'log4j', version: log4j_version
+    implementation group: 'org.javassist', name: 'javassist', version: javassist_version
     compileOnly fileTree(dir:'libs',includes:['*jar'])
     implementation project(":core")
 }

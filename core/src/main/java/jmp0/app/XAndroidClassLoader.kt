@@ -13,14 +13,14 @@ import java.net.URLClassLoader
  * each application has their own classloader
  * which make program isolation possible
  */
-class XAndroidDexClassLoader(private val androidEnvironment: AndroidEnvironment,private val callbackBase: ClassLoadedCallbackBase):ClassLoader(Thread.currentThread().contextClassLoader) {
+class XAndroidClassLoader(private val androidEnvironment: AndroidEnvironment, private val callbackBase: ClassLoadedCallbackBase):ClassLoader(Thread.currentThread().contextClassLoader) {
     private val logger = Logger.getLogger(javaClass)
 
-    override fun findClass(name: String): Class<*>? {
+    override fun findClass(name: String): Class<*> {
         try {
             logger.info("try to load $name")
             return super.findClass(name)
-        }catch (e:ClassNotFoundException){
+        }catch (e:Throwable){
             val res = findLoadedClass(name)
             if (res != null) return res
             //try to load class

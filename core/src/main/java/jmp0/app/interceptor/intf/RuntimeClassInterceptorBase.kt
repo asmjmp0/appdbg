@@ -21,6 +21,7 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
     protected fun getSignature(method:CtMethod) =
         "${method.declaringClass.name}.${method.name}${method.signature}"
 
+
     protected fun replaceType(type:String):String =
          when(type){
              "byte"->"Byte"

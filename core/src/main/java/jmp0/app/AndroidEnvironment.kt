@@ -13,7 +13,7 @@ import java.util.*
 
 // TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
 class AndroidEnvironment(private val apkFile: ApkFile,
-                         val nativeInterceptor: IInterceptor,
+                         val methodInterceptor: IInterceptor,
                          private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
                              ClassLoadedCallbackBase(){
                              override fun afterResolveClassImpl(
@@ -26,13 +26,13 @@ class AndroidEnvironment(private val apkFile: ApkFile,
                              override fun beforeResolveClassImpl(
                                  androidEnvironment: AndroidEnvironment,
                                  className: String,
-                                 classLoader: XAndroidDexClassLoader
+                                 classLoader: XAndroidClassLoader
                              ): Class<*>? {
                                  return null
                              }
                          }) {
     private val logger = Logger.getLogger(javaClass)
-    private val loader = XAndroidDexClassLoader(this,absAndroidRuntimeClass)
+    private val androidLoader = XAndroidClassLoader(this,absAndroidRuntimeClass)
     val id = UUID.randomUUID().toString()
     var processName = id
 
@@ -73,7 +73,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
             if (it.isFile){
                 val fullClassName = packageName +'.'+ it.name.split('.')[0]
                 val systemName = Class.forName(fullClassName).getDeclaredField("xxClassName").get(null) as String
-                absAndroidRuntimeClass.loadToClass(systemName,fullClassName,loader)
+                absAndroidRuntimeClass.loadToClass(systemName,fullClassName,androidLoader)
             }
         }
 
@@ -117,20 +117,36 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         val data = absAndroidRuntimeClass.afterResolveClass(
             this,ClassPool.getDefault().makeClass(file.inputStream(),false)
         ).toBytecode()
-        return loader.xDefineClass(null,data,0,data.size)
+        return androidLoader.xDefineClass(null,data,0,data.size)
     }
 
     /**
+     * look for it from apk path
      * @param className 形如 com.example.myapplication.TestJava
      * @return class类对象
      */
     fun loadClass(className: String): Class<*> {
-       return absAndroidRuntimeClass.beforeResolveClass(this,className,loader)
-           ?:loadClass(androidFindClass(className)?:throw Exception("$className not find from frame work")).apply { logger.debug("$this loaded!") }
+        val mClassName = className.replace("[]","")
+        return absAndroidRuntimeClass.beforeResolveClass(this,mClassName,androidLoader)
+           ?:loadClass(androidFindClass(mClassName)?:throw Exception("$mClassName not find from frame work")).apply { logger.debug("$this loaded!") }
+    }
+
+    /**
+     * look for it from this project
+     * this will not pass the resolve-callback
+     * @param className 形如 com.example.myapplication.TestJava
+     * @return class类对象
+     */
+    fun loadClassProject(className: String): Class<*>{
+        val ctClass = ClassPool.getDefault().getCtClass(className)
+        return ctClass.toBytecode().run {
+            ctClass.defrost()
+            androidLoader.xDefineClass(null,this,0,size)
+        }
     }
 
     fun findClass(name: String)
-        = Class.forName(name,false,loader)
+        = Class.forName(name,false,androidLoader)
 
     /**
      * @param signature which looks like xxxxx

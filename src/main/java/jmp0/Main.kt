@@ -1,13 +1,17 @@
 package jmp0
-import javassist.ClassPool
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
-import jmp0.app.XAndroidDexClassLoader
+import jmp0.app.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.clazz.ClassLoadedCallbackBase
+import jmp0.app.clazz.android.AppCompatActivity
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Logger
+import sun.jvm.hotspot.prims.JvmtiExport
 import java.io.File
 
 class Main {
@@ -26,8 +30,6 @@ class Main {
     companion object{
         val logger = Logger.getLogger(javaClass)
         fun test(){
-            val return_type = ClassPool.getDefault().makeClass("android.content.ContentResolver")
-            val string_ret_type = ClassPool.getDefault().getCtClass("java.lang.String")
             val androidEnvironment = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"),false),
                 absAndroidRuntimeClass = object : ClassLoadedCallbackBase(){
                     override fun afterResolveClassImpl(androidEnvironment: AndroidEnvironment, ctClass: CtClass): CtClass {
@@ -35,15 +37,15 @@ class Main {
                     }
                     override fun beforeResolveClassImpl(androidEnvironment: AndroidEnvironment,
                         className: String,
-                        classLoader: XAndroidDexClassLoader
+                        classLoader: XAndroidClassLoader
                     ): Class<*>? {
                         return null
                     }
                 },
-                nativeInterceptor =  object : IInterceptor {
+                methodInterceptor =  object : IInterceptor {
                     override fun nativeCalled(className: String, funcName: String, signature: String, param: Array<out Any?>)
                     : IInterceptor.ImplStatus {
-                        // TODO: 2022/3/7 use unidbg emulate native func
+                        // TODO: 2022/3/7 use unidbg emulate native func.it should be loaded by android classloader
                         return if ((className =="com.example.myapplication.TestJava") and (funcName == "stringFromJNI"))
                             IInterceptor.ImplStatus(true,"hooked by asmjmp0")
                         else
@@ -51,7 +53,7 @@ class Main {
                     }
 
                     override fun methodCalled(className: String, funcName: String, signature: String, param: Array<out Any?>): Any? {
-                        if (funcName == "getStr"){
+                        if (funcName == "testString"){
                             logger.debug("class")
                             return null
                         }
@@ -60,17 +62,55 @@ class Main {
 
                 })
             //
-            androidEnvironment.registerMethodHook("jmp0.test.testapp.MainActivity.getStr()V",false)
+//            androidEnvironment.registerMethodHook("jmp0.test.testapp.MainActivity.getStr()V",false)
+            val TestJavaclazz = androidEnvironment.loadClass("jmp0.test.testapp.TestKotlin")
+            val contextIns = androidEnvironment.loadClassProject("jmp0.app.clazz.android.AppCompatActivity").getConstructor().newInstance()
+            var ret = TestJavaclazz.getDeclaredMethod("testString",
+                androidEnvironment.findClass("android.content.Context"))
+                .invokeEx( TestJavaclazz.getConstructor().newInstance(), contextIns)
+            logger.debug("testString => $ret")
 
-            val TestJavaclazz = androidEnvironment.loadClass("jmp0.test.testapp.MainActivity")
-            val ins = TestJavaclazz.getConstructor().newInstance()
-            val ret = TestJavaclazz.getDeclaredMethod("getStr").invokeEx(ins)
-            logger.debug(ret)
+            ret = TestJavaclazz.getDeclaredMethod("testLopper")
+                .invokeEx( TestJavaclazz.getConstructor().newInstance())
+
+            logger.debug("testLopper => $ret")
+
+
+
 //            androidEnvironment.destroy()
+        }
+        fun testBase64(){
+            val androidEnvironment = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"),false),
+            object :IInterceptor{
+                override fun nativeCalled(
+                    className: String,
+                    funcName: String,
+                    signature: String,
+                    param: Array<out Any?>
+                ): IInterceptor.ImplStatus {
+                    TODO("Not yet implemented")
+                }
+
+                override fun methodCalled(
+                    className: String,
+                    funcName: String,
+                    signature: String,
+                    param: Array<out Any?>
+                ): Any? {
+                    TODO("Not yet implemented")
+                }
+
+            })
+            val clazz = androidEnvironment.loadClass("jmp0.test.testapp.TestKotlin")
+            val ins = clazz.getDeclaredConstructor().newInstance()
+            val res = clazz.getDeclaredMethod("testBase64").invokeEx(ins)
+            logger.debug(res)
         }
         @JvmStatic
         fun main(args:Array<String>){
-                test()
-            }
+            test()
+//            testBase64()
+
+        }
         }
 }
