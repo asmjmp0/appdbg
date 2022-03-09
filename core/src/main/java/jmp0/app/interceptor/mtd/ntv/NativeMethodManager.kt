@@ -1,10 +1,6 @@
 package jmp0.app.interceptor.mtd.ntv
 
-import jmp0.app.interceptor.mtd.ntv.app.Binder
-import jmp0.app.interceptor.mtd.ntv.app.Linux
-import jmp0.app.interceptor.mtd.ntv.app.Log
-import jmp0.app.interceptor.mtd.ntv.app.MessageQueue
-import jmp0.app.interceptor.mtd.ntv.app.SystemProperties
+import jmp0.app.interceptor.mtd.ntv.app.*
 import java.lang.reflect.Method
 
 /**
@@ -28,6 +24,12 @@ object NativeMethodManager {
                 Linux.javaClass.getDeclaredMethod("getuid")
             this["android.os.SystemProperties.native_get_int(Ljava/lang/String;I)I"]=
                 SystemProperties.javaClass.getDeclaredMethod("native_get_int",String::class.java,Int::class.java)
+            this["android.os.MessageQueue.nativePollOnce(JI)V"]=
+                MessageQueue.javaClass.getDeclaredMethod("nativePollOnce",Long::class.java,Int::class.java)
+            this["android.os.SystemClock.uptimeMillis()J"]=
+                SystemClock.javaClass.getDeclaredMethod("uptimeMillis")
+            this["android.os.Binder.flushPendingCommands()V"]=
+                Binder.javaClass.getDeclaredMethod("flushPendingCommands")
 
         }
 

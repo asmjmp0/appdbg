@@ -14,4 +14,9 @@ object Binder {
         logger.debug("called")
         return 1111
     }
+
+    @JvmStatic
+    fun flushPendingCommands(){
+        logger.debug("called")
+    }
 }
