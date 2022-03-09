@@ -30,20 +30,14 @@ class Main {
             val string_ret_type = ClassPool.getDefault().getCtClass("java.lang.String")
             val androidEnvironment = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"),false),
                 absAndroidRuntimeClass = object : ClassLoadedCallbackBase(){
-                    override fun afterResolveClass(androidEnvironment: AndroidEnvironment, ctClass: CtClass): CtClass {
-                        super.afterResolveClass(androidEnvironment,ctClass)
+                    override fun afterResolveClassImpl(androidEnvironment: AndroidEnvironment, ctClass: CtClass): CtClass {
                         return ctClass
                     }
-                    override fun beforeResolveClass(
-                        androidEnvironment: AndroidEnvironment,
+                    override fun beforeResolveClassImpl(androidEnvironment: AndroidEnvironment,
                         className: String,
                         classLoader: XAndroidDexClassLoader
                     ): Class<*>? {
-                        val res = super.beforeResolveClass(androidEnvironment, className, classLoader)
-                        if (className == "android.provider.Settings\$Secure"){
-
-                        }
-                        return res
+                        return null
                     }
                 },
                 nativeInterceptor =  object : IInterceptor {

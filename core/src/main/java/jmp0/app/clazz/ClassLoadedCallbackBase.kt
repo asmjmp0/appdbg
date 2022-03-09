@@ -13,7 +13,7 @@ import org.apache.log4j.Logger
  */
 abstract class ClassLoadedCallbackBase {
 
-     fun loadToClass(what:String, replace:String, classLoader: XAndroidDexClassLoader):Class<*>{
+     protected fun loadToClass(what:String, replace:String, classLoader: XAndroidDexClassLoader):Class<*>{
          val clazz = ClassPool.getDefault().getCtClass(replace)
          val ba = clazz.apply {
              replaceClassName(replace,what)
@@ -31,30 +31,36 @@ abstract class ClassLoadedCallbackBase {
      * after xclassloader find the class file,you can modify the class
      * such as insert interceptor or just modify some static field
      */
-     open fun afterResolveClass(androidEnvironment: AndroidEnvironment,ctClass: CtClass):CtClass{
+     fun afterResolveClass(androidEnvironment: AndroidEnvironment,ctClass: CtClass):CtClass{
+         //make hook java method possible,native function can not be hooked
+         var pass = HookMethodInterceptor(androidEnvironment,ctClass).doChange()
 
-        //make hook java method possible,native function can not be hooked
-        var pass = HookMethodInterceptor(androidEnvironment,ctClass).doChange()
+         //erase native function access flag and insert callback
+         pass =  ClassNativeInterceptor(androidEnvironment,pass).doChange()
 
-        //erase native function access flag and insert callback
-        pass =  ClassNativeInterceptor(androidEnvironment,pass).doChange()
+         pass = afterResolveClassImpl(androidEnvironment,pass)
+         return pass
+     }
 
-        return pass
-    }
+    abstract fun afterResolveClassImpl(androidEnvironment: AndroidEnvironment,ctClass: CtClass):CtClass
+
+
 
     /**
      * before xclassloader find the class file,you can replace or implement the class
      * if you implement the class and return
      * not call afterResolveClass
      */
-     open fun beforeResolveClass(androidEnvironment: AndroidEnvironment,className:String,classLoader: XAndroidDexClassLoader):Class<*>?{
+    fun beforeResolveClass(androidEnvironment: AndroidEnvironment, className:String, classLoader: XAndroidDexClassLoader):Class<*>?{
         if (className == "android.support.v7.app.AppCompatActivity"){
             return  loadToClass("android.support.v7.app.AppCompatActivity","jmp0.app.clazz.android.AppCompatActivity",classLoader)
         }
         if (className=="android.provider.Settings\$Secure"){
             return loadToClass("android.provider.Settings\$Secure","jmp0.app.clazz.android.Settings\$Secure",classLoader)
         }
-        return null
+        return beforeResolveClassImpl(androidEnvironment,className,classLoader)
     }
+
+    abstract fun beforeResolveClassImpl(androidEnvironment: AndroidEnvironment,className:String,classLoader: XAndroidDexClassLoader):Class<*>?
 
 }
