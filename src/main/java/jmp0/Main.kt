@@ -9,10 +9,10 @@ import jmp0.app.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.clazz.ClassLoadedCallbackBase
 import jmp0.app.clazz.android.AppCompatActivity
+import jmp0.util.SystemReflectUtils.getMethodWithSignature
 import jmp0.util.SystemReflectUtils.invokeEx
 import libcore.io.Linux
 import org.apache.log4j.Logger
-import sun.jvm.hotspot.prims.JvmtiExport
 import java.io.File
 
 class Main {
@@ -109,7 +109,8 @@ class Main {
         }
         @JvmStatic
         fun main(args:Array<String>){
-            test()
+            Main::class.java.getMethodWithSignature("android.util.Log.println_native(IILjava/lang/String;Ljava/lang/String;)[I")
+//            test()
 //            testBase64()
 
         }

@@ -11,7 +11,7 @@ object MessageQueue {
     private val logger = Logger.getLogger(javaClass)
     @JvmStatic
     fun nativeInit():Long{
-        return 1111111
+        return 0L
     }
 
     @JvmStatic
