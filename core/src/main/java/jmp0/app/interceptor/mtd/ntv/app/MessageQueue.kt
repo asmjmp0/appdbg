@@ -13,7 +13,7 @@ object MessageQueue {
     private lateinit var latch:CountDownLatch
     @JvmStatic
     fun nativeInit():Long{
-        return 0L
+        return 1234328478L
     }
 
     @JvmStatic

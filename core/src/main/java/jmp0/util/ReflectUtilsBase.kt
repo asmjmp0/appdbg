@@ -1,6 +1,5 @@
 package jmp0.util
 
-import sun.jvm.hotspot.utilities.TwoOopHashtable
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.time.temporal.Temporal

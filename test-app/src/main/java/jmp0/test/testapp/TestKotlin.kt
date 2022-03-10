@@ -29,11 +29,12 @@ class TestKotlin() {
 
     public fun testLopper(): Int {
         val _msgThread = MsgThread()
-        Log.d("mpt test",_msgThread.toString())
+        Log.d("jmp0 test",_msgThread.toString())
         _msgThread.start()
-        Thread.sleep(2000)
-        _msgThread.sendMsg(0,"11111")
         Thread.sleep(1000)
+        _msgThread.sendMsg(123456789,"asm jmp0")
+        _msgThread.sendMsg(238974893,"asm jmp0 mocked")
+        Thread.sleep(3000)
         return 0
     }
 

@@ -3,6 +3,7 @@ package jmp0.app.interceptor.intf
 import javassist.CtClass
 import javassist.CtMethod
 import javassist.Modifier
+import javassist.NotFoundException
 import jmp0.app.AndroidEnvironment
 
 /**
@@ -22,19 +23,91 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
         "${method.declaringClass.name}.${method.name}${method.signature}"
 
 
-    protected fun replaceType(type:String):String =
-         when(type){
-             "byte"->"Byte"
-             "short"->"Short"
-             "int"->"Integer"
-             "long"->"Long"
-             "float"->"Float"
-             "double"->"Double"
-             "char"->"Char"
-             "boolean"->"Boolean"
-             "void"->"Void"
-             else->type
-         }
+    protected fun replaceType(type:String):String {
+        var arr = false
+        var temp = type
+        if (temp.contains("[]")) {
+            arr = true
+            temp = temp.replace("[]", "")
+        }
+        return when(temp){
+            "byte"->"Byte"
+            "short"->"Short"
+            "int"->"Integer"
+            "long"->"Long"
+            "float"->"Float"
+            "double"->"Double"
+            "boolean"->"Boolean"
+            "void"->"Void"
+            else->temp
+        } + if (arr) "[]" else ""
+    }
+
+
+    protected fun safeGetReturnType(method: CtMethod): String {
+        return try {
+              replaceType(method.returnType.name)
+        }catch (e: NotFoundException){
+            //is it array type?
+            if (e.message!!.contains("[]")){
+                androidEnvironment.loadClass(e.message!!.replace("[]","")).name + "[]"
+            }else{
+                androidEnvironment.loadClass(e.message!!).name
+            }
+        }
+    }
+
+    /**
+     * @param returnValueName the return value name
+     * @param returnType which looks like Long Void xxx
+     * @return return sentence of the ctMethod
+     */
+    private data class BaseTypeBody(val method:String,val type: String)
+    private fun generateToBaseTypeBody(returnValueName: String,returnType: String):String{
+        val arr = returnType.contains("[]")
+        var returnTypeTemp = returnType;
+        if(arr){
+            returnTypeTemp = returnTypeTemp.replace("[]","")
+        }
+        val baseToType = when(returnTypeTemp){
+                "Byte"->BaseTypeBody(".byteValue()","byte")
+                "Short"->BaseTypeBody(".shortValue()","short")
+                "Integer"->BaseTypeBody(".intValue()","int")
+                "Long"->BaseTypeBody(".longValue()","long")
+                "Float"->BaseTypeBody(".floatValue()","float")
+                "Double"->BaseTypeBody(".doubleValue()","double")
+                "Boolean"->BaseTypeBody(".booleanValue()","boolean")
+                else -> return "return $returnValueName;"
+        }
+        return if (arr){
+            """
+                   ${baseToType.type}[] bbXX = new int[$returnValueName.length];
+                   for (${baseToType.type} i=0;i<$returnValueName.length;i++){
+                          bbXX[i] = ($returnValueName[i])${baseToType.method};
+                   }
+                    return bbXX;
+                """.trimIndent()
+        }else{
+            "return $returnValueName${baseToType.method};"
+        }
+    }
+
+    /**
+     * @param hookFunc which function need to goto,which looks like "jmp0.app.interceptor.mtd.CallBridge.nativeCalled"
+     * @param className origin class name
+     * @param funcName origin function name
+     * @param signature origin function signature,which looks like (II[J)V
+     * @param returnType return type
+     * @return the body of ctMethod
+     */
+    protected fun generateHookBody(hookFunc:String,className: String,funcName:String,
+                                   signature:String,returnType:String):String =
+        if (returnType == "Void"){
+            "{$hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}"
+        }else{
+            "{" + "$returnType ret = ($returnType) $hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);" +
+                    generateToBaseTypeBody("ret",returnType) + "}"
+        }
 
     abstract fun doChange():CtClass
 }

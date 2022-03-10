@@ -17,47 +17,23 @@ class NativeMethodInterceptor(private val androidEnvironment: AndroidEnvironment
             if(checkNativeFlag(it.modifiers)){
                 //创建到java的bridge
                 it.modifiers = eraseNativeFlag(it.modifiers)
-                // TODO: 2022/3/9 单独抽函数
-                var retTypeName:String? =null
-                try {
-                    retTypeName = replaceType(it.returnType.name)
-                }catch (e:NotFoundException){
-                    var name:String? =null
-                    if (e.message!!.contains("[]")){
-                        name = e.message!!.replace("[]","")
-                        retTypeName = androidEnvironment.loadClass(name).name + "[]"
-                    }else{
-                        name = e.message!!
-                        retTypeName = androidEnvironment.loadClass(name).name
-                    }
-                }
+                val retTypeName = safeGetReturnType(it)
                 val funcName = it.name
                 val className = it.declaringClass.name
                 val signature = it.signature
                 val sig = getSignature(it)
                 logger.info("set native hook to $sig")
-                // TODO: 2022/3/9 单独抽函数
-                // FIXME: 2022/3/10 kotlin type to java type,because of Object type to native type
                 try {
-                    if (retTypeName == "Void"){
-                        it.setBody("{jmp0.app.interceptor.mtd.CallBridge" +
-                                ".nativeCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
-                    }else{
-                        it.setBody("{return ($retTypeName) jmp0.app.interceptor.mtd.CallBridge" +
-                                ".nativeCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
-                    }
+                    val res = generateHookBody("jmp0.app.interceptor.mtd.CallBridge.nativeCalled",
+                        className,funcName,signature,retTypeName)
+                    it.setBody(res)
                 }catch (e:Exception){
                     if ("NotFound" in e.message!!){
                         val a = e.message!!.indexOf(":")
-                        val className = e.message!!.substring(a+2,e.message!!.length)
-                        androidEnvironment.loadClass(className)
-                        if (retTypeName == "Void"){
-                            it.setBody("{jmp0.app.interceptor.mtd.CallBridge" +
-                                    ".nativeCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
-                        }else{
-                            it.setBody("{return ($retTypeName) jmp0.app.interceptor.mtd.CallBridge" +
-                                    ".nativeCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
-                        }
+                        val needClassName = e.message!!.substring(a+2,e.message!!.length)
+                        androidEnvironment.loadClass(needClassName)
+                        it.setBody(generateHookBody("jmp0.app.interceptor.mtd.CallBridge.nativeCalled",
+                            className,funcName,signature,retTypeName))
                     }else throw e
 
                 }

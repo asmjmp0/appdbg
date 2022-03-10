@@ -21,7 +21,7 @@ public class MsgThread extends Thread{
         _handler = new Handler(Looper.myLooper()){
             @Override
             public void handleMessage(Message msg){
-                Log.d(TAG, "获得了message");
+                Log.d(TAG, "获得了message " + msg.what + " " +msg.obj);
                 super.handleMessage(msg);
             }
         };

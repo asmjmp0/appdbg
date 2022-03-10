@@ -21,17 +21,24 @@ class HookMethodInterceptor(private val androidEnvironment: AndroidEnvironment,p
             val sig = getSignature(declaredMethod)
             val methodHookList = DbgContext.getMethodHookList(androidEnvironment.id)!!
             methodHookList.find { it.signature == sig }?.also {
-                val retTypeName = replaceType(declaredMethod.returnType.name)
+                val retTypeName = safeGetReturnType(declaredMethod)
                 val funcName = declaredMethod.name
                 val className = declaredMethod.declaringClass.name
                 val signature = declaredMethod.signature
                 if (it.replace){
-                    if (retTypeName == "Void"){
-                        declaredMethod.setBody("{jmp0.app.interceptor.mtd.CallBridge" +
-                                ".methodCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
-                    }else{
-                        declaredMethod.setBody("{return ($retTypeName) jmp0.app.interceptor.mtd.CallBridge" +
-                                ".methodCalled(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}")
+                    try {
+                        val res = generateHookBody("jmp0.app.interceptor.mtd.CallBridge.methodCalled",
+                            className,funcName,signature,retTypeName)
+                        declaredMethod.setBody(res)
+                    }catch (e:Exception){
+                        if ("NotFound" in e.message!!){
+                            val a = e.message!!.indexOf(":")
+                            val needClassName = e.message!!.substring(a+2,e.message!!.length)
+                            androidEnvironment.loadClass(needClassName)
+                            declaredMethod.setBody(generateHookBody("jmp0.app.interceptor.mtd.CallBridge.methodCalled",
+                                className,funcName,signature,retTypeName))
+                        }else throw e
+
                     }
                 }else{
                     //just trace

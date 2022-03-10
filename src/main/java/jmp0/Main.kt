@@ -24,9 +24,9 @@ class Main {
      */
     companion object {
         val logger = Logger.getLogger(javaClass)
-        fun test() {
+        fun test(force:Boolean) {
             val androidEnvironment =
-                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), false),
+                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
                     absAndroidRuntimeClass = object : ClassLoadedCallbackBase() {
                         override fun afterResolveClassImpl(
                             androidEnvironment: AndroidEnvironment,
@@ -89,6 +89,7 @@ class Main {
                 .invokeEx(TestJavaclazz.getConstructor().newInstance())
 
             logger.debug("testLopper => $ret")
+            androidEnvironment.destroy()
 
 
 //            androidEnvironment.destroy()
@@ -121,6 +122,7 @@ class Main {
             val ins = clazz.getDeclaredConstructor().newInstance()
             val res = clazz.getDeclaredMethod("testBase64").invokeEx(ins)
             logger.debug(res)
+            androidEnvironment.destroy()
         }
 
         fun testJni() {
@@ -135,7 +137,10 @@ class Main {
                         ): IInterceptor.ImplStatus {
                             if (funcName == "JNI_LONG") {
                                 return IInterceptor.ImplStatus(true, 1000L)
-                            } else return IInterceptor.ImplStatus(false, null)
+                            }else if(funcName == "JNI_INT_ARR"){
+                                return IInterceptor.ImplStatus(true, arrayOf(1,2,3,4))
+                            }
+                            else return IInterceptor.ImplStatus(false, null)
                         }
 
                         override fun methodCalled(
@@ -144,23 +149,28 @@ class Main {
                             signature: String,
                             param: Array<out Any?>
                         ): Any? {
-                            TODO("Not yet implemented")
+                            if (funcName == "testAll"){
+                                return null
+                            }
+                            return null
                         }
 
                     })
+            androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",true);
             val clazz = androidEnvironment.loadClass("jmp0.test.testapp.TestNative")
             val ins = clazz.getDeclaredConstructor().newInstance()
-            val res = clazz.getDeclaredMethod("getNativeLong").invokeEx(ins)
+            val res = clazz.getDeclaredMethod("testAll").invokeEx(ins)
             logger.debug(res)
+            androidEnvironment.destroy()
         }
 
         @JvmStatic
         fun main(args: Array<String>) {
 //            val a = SystemReflectUtils.getSignatureInfo("android.util.Log.println_native(IILjava/lang/String;Ljava/lang/String;)V")
 //            println(a)
-//            test()
             testJni()
-//            testBase64()
+            testBase64()
+            test(false)
         }
     }
 }

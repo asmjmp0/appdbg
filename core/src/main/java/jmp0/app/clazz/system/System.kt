@@ -12,7 +12,7 @@ class System  {
     // if you want to use system class or method use SystemReflectUtils to get
     companion object{
 
-        private val logger = Logger.getLogger(javaClass)
+        private val logger = Logger.getLogger(this::class.java)
 
         // const const const
         const val xxClassName: String = "java.lang.System"
@@ -42,15 +42,12 @@ class System  {
 
         @JvmStatic
         fun getProperty(property:String):String{
-            val res = xxClassName.findSystemClass().getDeclaredMethod("getProperty",String::class.java).invoke(null,property) as String
-            return res
+            return java.lang.System.getProperty(property)
         }
 
         @JvmStatic
         fun lineSeparator(): String {
-            val (className,funcName,parmaTypes,returnTypes) = SystemReflectUtils.getSignatureInfo("java.lang.System.lineSeparator()Ljava/lang/String;")
-            val res = className.findSystemClass().getDeclaredMethod(funcName,*parmaTypes).invoke(null) as String
-            return res
+            return java.lang.System.lineSeparator()
         }
 
         private fun xGetSystemStd(std:String):Any =
