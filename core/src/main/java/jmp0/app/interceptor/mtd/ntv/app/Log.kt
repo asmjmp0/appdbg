@@ -11,4 +11,9 @@ object Log {
         println("android log [$tag] $content")
         return 1
     }
+
+    @JvmStatic
+    fun logger_entry_max_payload_native():Int{
+        return 1024
+    }
 }

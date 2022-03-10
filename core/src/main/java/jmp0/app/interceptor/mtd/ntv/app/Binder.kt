@@ -12,7 +12,7 @@ object Binder {
     @JvmStatic
     fun clearCallingIdentity():Long{
         logger.debug("called")
-        return 1111
+        return 0
     }
 
     @JvmStatic

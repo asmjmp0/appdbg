@@ -29,8 +29,9 @@ class TestKotlin() {
 
     public fun testLopper(): Int {
         val _msgThread = MsgThread()
+        Log.d("mpt test",_msgThread.toString())
         _msgThread.start()
-        Thread.sleep(100)
+        Thread.sleep(2000)
         _msgThread.sendMsg(0,"11111")
         Thread.sleep(1000)
         return 0

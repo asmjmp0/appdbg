@@ -22,10 +22,11 @@ object CallBridge {
         val callback = DbgContext.getNativeCallBack(uuid)?:throw Exception("callback no found!!")
         //find implement method and ivoke
         val implMethod = NativeMethodManager.get(sig)
-        return if (implMethod!=null) implMethod.invoke(null,*param)
+        val res = if (implMethod!=null)  implMethod.invoke(null,*param)
 
         else callback.nativeCalled(className,funcName,signature,param).apply {
                 if (!implemented) throw NativeMethodNotImplementException(sig) }.result
+        return res
     }
 
     @JvmStatic

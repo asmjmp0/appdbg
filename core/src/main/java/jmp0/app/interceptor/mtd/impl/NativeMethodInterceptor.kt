@@ -37,6 +37,7 @@ class NativeMethodInterceptor(private val androidEnvironment: AndroidEnvironment
                 val sig = getSignature(it)
                 logger.info("set native hook to $sig")
                 // TODO: 2022/3/9 单独抽函数
+                // FIXME: 2022/3/10 kotlin type to java type,because of Object type to native type
                 try {
                     if (retTypeName == "Void"){
                         it.setBody("{jmp0.app.interceptor.mtd.CallBridge" +

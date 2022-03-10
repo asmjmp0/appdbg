@@ -11,6 +11,6 @@ object SystemClock {
     @JvmStatic
     fun uptimeMillis():Long{
         logger.debug("called")
-        return 100000L
+        return System.currentTimeMillis() and 0x1fffff
     }
 }

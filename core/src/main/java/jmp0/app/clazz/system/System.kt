@@ -1,5 +1,6 @@
 package jmp0.app.clazz.system
 
+import jmp0.util.SystemReflectUtils
 import jmp0.util.SystemReflectUtils.findSystemClass
 import org.apache.log4j.Logger
 import java.io.InputStream
@@ -37,6 +38,19 @@ class System  {
         @JvmStatic
         fun arraycopy(any: Any,a:Int,b:Any,c:Int,d:Int){
             java.lang.System.arraycopy(any,a,b,c,d)
+        }
+
+        @JvmStatic
+        fun getProperty(property:String):String{
+            val res = xxClassName.findSystemClass().getDeclaredMethod("getProperty",String::class.java).invoke(null,property) as String
+            return res
+        }
+
+        @JvmStatic
+        fun lineSeparator(): String {
+            val (className,funcName,parmaTypes,returnTypes) = SystemReflectUtils.getSignatureInfo("java.lang.System.lineSeparator()Ljava/lang/String;")
+            val res = className.findSystemClass().getDeclaredMethod(funcName,*parmaTypes).invoke(null) as String
+            return res
         }
 
         private fun xGetSystemStd(std:String):Any =
