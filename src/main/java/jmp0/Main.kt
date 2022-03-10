@@ -125,9 +125,9 @@ class Main {
             androidEnvironment.destroy()
         }
 
-        fun testJni() {
+        fun testJni(force: Boolean) {
             val androidEnvironment =
-                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), false),
+                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
                     object : IInterceptor {
                         override fun nativeCalled(
                             className: String,
@@ -149,14 +149,11 @@ class Main {
                             signature: String,
                             param: Array<out Any?>
                         ): Any? {
-                            if (funcName == "testAll"){
-                                return null
-                            }
                             return null
                         }
 
                     })
-            androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",true);
+            androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false);
             val clazz = androidEnvironment.loadClass("jmp0.test.testapp.TestNative")
             val ins = clazz.getDeclaredConstructor().newInstance()
             val res = clazz.getDeclaredMethod("testAll").invokeEx(ins)
@@ -168,9 +165,9 @@ class Main {
         fun main(args: Array<String>) {
 //            val a = SystemReflectUtils.getSignatureInfo("android.util.Log.println_native(IILjava/lang/String;Ljava/lang/String;)V")
 //            println(a)
-            testJni()
-            testBase64()
-            test(false)
+            testJni(false)
+//            testBase64()
+//            test(false)
         }
     }
 }
