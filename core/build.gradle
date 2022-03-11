@@ -16,5 +16,4 @@ dependencies {
     implementation group: 'log4j', name: 'log4j' ,version: log4j_version
     implementation group: 'org.javassist', name: 'javassist',version: javassist_version
     compileOnly fileTree(dir:'../libs',includes:['*jar'])
-    compileOnly project(":mock-android")
 }

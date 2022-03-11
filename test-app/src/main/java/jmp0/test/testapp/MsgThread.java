@@ -32,6 +32,6 @@ public class MsgThread extends Thread{
         Message message = _handler.obtainMessage();
         message.what = what;
         message.obj = object;
-        _handler.sendMessage(message);
+        _handler.sendMessageDelayed(message,1000);
     }
 }

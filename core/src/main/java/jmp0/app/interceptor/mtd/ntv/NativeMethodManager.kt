@@ -23,6 +23,10 @@ object NativeMethodManager {
             // TODO: 2022/3/10 transform to jmp0.app.clazz.system.android load before
             this["android.os.SystemProperties.native_get_int(Ljava/lang/String;I)I"]=
                 SystemProperties.javaClass.getDeclaredMethod("native_get_int",String::class.java,Int::class.java)
+            this["android.os.SystemProperties.native_get(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"]=
+                SystemProperties.javaClass.getDeclaredMethod("native_get",String::class.java,String::class.java)
+            this["android.os.SystemProperties.native_get(Ljava/lang/String;)Ljava/lang/String;"]=
+                SystemProperties.javaClass.getDeclaredMethod("native_get",String::class.java)
         }
 
     private fun hookLog(mHashMap: HashMap<String,Method>){

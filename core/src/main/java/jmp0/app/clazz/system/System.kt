@@ -5,6 +5,7 @@ import jmp0.util.SystemReflectUtils.findSystemClass
 import org.apache.log4j.Logger
 import java.io.InputStream
 import java.io.PrintStream
+import java.lang.System
 
 // TODO: 2022/3/11 patch reflect framework，don't permit to invoke private method in android framework
 
@@ -14,7 +15,7 @@ class System  {
     // if you want to use system class or method use SystemReflectUtils to get
     companion object{
 
-        private val logger = Logger.getLogger(this::class.java)
+        private val logger = Logger.getLogger(System::class.java)
 
         // const const const
         const val xxClassName: String = "java.lang.System"
@@ -34,16 +35,16 @@ class System  {
         }
 
         @JvmStatic
-        fun currentTimeMillis():Long =
+        fun currentTimeMillis(): Long =
             java.lang.System.currentTimeMillis()
 
         @JvmStatic
         fun arraycopy(any: Any,a:Int,b:Any,c:Int,d:Int){
-            java.lang.System.arraycopy(any,a,b,c,d)
+            java.lang.System.arraycopy(any, a, b, c, d)
         }
 
         @JvmStatic
-        fun getProperty(property:String):String{
+        fun getProperty(property: String): String {
             return java.lang.System.getProperty(property)
         }
 
@@ -52,7 +53,7 @@ class System  {
             return java.lang.System.lineSeparator()
         }
 
-        private fun xGetSystemStd(std:String):Any =
+        private fun xGetSystemStd(std: String):Any =
             xxClassName.findSystemClass().getDeclaredField(std).get(null)
     }
 }

@@ -25,6 +25,29 @@ class Main {
      */
     companion object {
         val logger = Logger.getLogger(javaClass)
+        fun getBaseAndroidEnv(froce:Boolean) =
+            AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), froce),
+                object : IInterceptor {
+                    override fun nativeCalled(
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): IInterceptor.ImplStatus {
+                        return IInterceptor.ImplStatus(false,null)
+                    }
+
+                    override fun methodCalled(
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): Any? {
+                        TODO("Not yet implemented")
+                    }
+
+                })
+
         fun test(force:Boolean) {
             val androidEnvironment =
                 AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
@@ -162,13 +185,26 @@ class Main {
             androidEnvironment.destroy()
         }
 
+        fun testNetWork(force: Boolean){
+            val ae = getBaseAndroidEnv(force)
+            val ret = ae.loadClass("jmp0.test.testapp.net.TestNetWork").apply {
+                val ins = getDeclaredConstructor().newInstance()
+                getDeclaredMethod("test").invoke(ins)
+
+            }
+            logger.debug(ret)
+        }
+
+
+
         @JvmStatic
         fun main(args: Array<String>) {
 //            val a = SystemReflectUtils.getSignatureInfo("android.util.Log.println_native(IILjava/lang/String;Ljava/lang/String;)V")
 //            println(a)
-            testJni(false)
+//            testJni(false)
 //            testBase64()
-//            test(false)
+            test(false)
+//            testNetWork(false)
         }
     }
 }

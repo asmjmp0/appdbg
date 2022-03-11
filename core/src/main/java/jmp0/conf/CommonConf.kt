@@ -12,6 +12,7 @@ object CommonConf {
     const val frameworkDirName = "framework"
 
     //system
-    val userSystemClass = "core/src/main/java/jmp0/app/clazz/system".replace("/",File.separator)
+    val mockAndroidJar = "mock-android/build/libs/mock-android.jar".replace("/",File.separator)
+    val mockSystemClass = "core/src/main/java/jmp0/app/clazz/system".replace("/",File.separator)
     val userSystemClassPackageName= "jmp0/app/clazz/system".replace('/','.')
 }

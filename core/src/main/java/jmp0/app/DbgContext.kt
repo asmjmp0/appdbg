@@ -45,6 +45,9 @@ object DbgContext {
     fun getMethodHookList(uuid: String)
         = methodHookHashMap[uuid]
 
+    fun getOne(): AndroidEnvironment =
+        contextHashMap.entries.iterator().next().value
+
     override fun toString(): String = synchronized(contextHashMap) {
         StringBuilder().apply {
             append('\n')

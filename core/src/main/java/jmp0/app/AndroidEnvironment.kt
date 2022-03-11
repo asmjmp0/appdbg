@@ -1,5 +1,6 @@
 package jmp0.app
 
+import com.googlecode.d2j.util.zip.ZipFile
 import javassist.ClassPool
 import javassist.CtClass
 import jmp0.apk.ApkFile
@@ -9,7 +10,10 @@ import jmp0.conf.CommonConf
 import jmp0.util.UnzipUtility
 import org.apache.log4j.Logger
 import java.io.File
+import java.net.URLClassLoader
 import java.util.*
+import java.util.jar.JarFile
+import java.util.zip.ZipEntry
 
 // TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
 class AndroidEnvironment(private val apkFile: ApkFile,
@@ -32,7 +36,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
                              }
                          }) {
     private val logger = Logger.getLogger(javaClass)
-    private val androidLoader = XAndroidClassLoader(this,absAndroidRuntimeClass)
+    private val androidLoader = XAndroidClassLoader(this)
     val id = UUID.randomUUID().toString()
     var processName = id
 
@@ -58,6 +62,38 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         DbgContext.register(uuid = id,this)
     }
 
+    private fun loadAndroidClass(jarFile: JarFile,ba:ByteArray){
+        while (true){
+            try {
+                androidLoader.xDefineClass(null,ba,0,ba.size)
+                break
+            }catch (e:FrameWorkClassNoFoundException){
+                logger.debug("")
+
+            }
+        }
+    }
+
+    // TODO: 2022/3/11 load android jar
+    private fun loadAndroidMockJar(){
+        val path = CommonConf.mockAndroidJar
+        val jarFile = JarFile(File(path))
+        val entry = jarFile.entries()
+        while(entry.hasMoreElements()){
+            val e = entry.nextElement()
+            val name = e.name.replace('/','.')
+            if (!e.isDirectory and name.startsWith("jmp0.mock.") and name.endsWith(".class")){
+                val originClassName = name.replace(".class","")
+                val fullClassName = name.replace("jmp0.mock.","").replace(".class","")
+                val stream = jarFile.getInputStream(e)
+                val ctClass = ClassPool.getDefault().makeClass(stream)
+                ctClass.replaceClassName(originClassName,fullClassName)
+                val byteCode = ctClass.toBytecode()
+                loadAndroidClass(jarFile,byteCode)
+            }
+        }
+    }
+
     /**
      * must bypass jdk security check
      * must bypass jdk security check
@@ -67,8 +103,8 @@ class AndroidEnvironment(private val apkFile: ApkFile,
      *  modify java/ to xxxxx before characteristic string
      */
     private fun loadUserSystemClass(){
-        val path = CommonConf.userSystemClass
         val packageName = CommonConf.userSystemClassPackageName
+        val path = CommonConf.mockSystemClass
         File(path).listFiles()!!.forEach {
             if (it.isFile){
                 val fullClassName = packageName +'.'+ it.name.split('.')[0]
@@ -128,7 +164,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
     fun loadClass(className: String): Class<*> {
         val mClassName = className.replace("[]","")
         return absAndroidRuntimeClass.beforeResolveClass(this,mClassName,androidLoader)
-           ?:loadClass(androidFindClass(mClassName)?:throw Exception("$mClassName not find from frame work")).apply { logger.debug("$this loaded!") }
+           ?:loadClass(androidFindClass(mClassName)?:throw FrameWorkClassNoFoundException("$mClassName not find from frame work")).apply { logger.trace("$this loaded!") }
     }
 
     /**

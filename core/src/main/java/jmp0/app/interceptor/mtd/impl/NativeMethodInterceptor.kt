@@ -22,7 +22,7 @@ class NativeMethodInterceptor(private val androidEnvironment: AndroidEnvironment
                 val className = it.declaringClass.name
                 val signature = it.signature
                 val sig = getSignature(it)
-                logger.info("set native hook to $sig")
+                logger.trace("set native hook to $sig")
                 try {
                     val res = generateHookBody("jmp0.app.interceptor.mtd.CallBridge.nativeCalled",
                         className,funcName,signature,retTypeName)
