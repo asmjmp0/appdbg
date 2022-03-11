@@ -6,6 +6,8 @@ import org.apache.log4j.Logger
 import java.io.InputStream
 import java.io.PrintStream
 
+// TODO: 2022/3/11 patch reflect framework，don't permit to invoke private method in android framework
+
 //first system class I replaced, congratulation!!!
 class System  {
     // this class load by xclassloadr

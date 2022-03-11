@@ -9,6 +9,7 @@ import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Logger
 import java.io.File
 
+// TODO: 2022/3/11 整理log factory
 class Main {
     /**
      * vm option => -Xverify:none

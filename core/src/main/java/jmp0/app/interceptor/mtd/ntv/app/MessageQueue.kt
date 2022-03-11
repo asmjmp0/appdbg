@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/3/9
  */
+// TODO: 2022/3/11 multi looper support
 object MessageQueue {
     private val logger = Logger.getLogger(javaClass)
     private lateinit var latch:CountDownLatch
