@@ -8,11 +8,11 @@ object CommonConf {
     const val toolDirName = "tools"
 
     //framework
-    val frameworkFileName = "libs${separator}android-all-9-robolectric.jar"
+    val frameworkFileName = "libs${separator}android-all-6.0.0_r1-robolectric-0.jar"
     const val frameworkDirName = "framework"
 
     //system
-    val mockAndroidJar = "mock-android/build/libs/mock-android.jar".replace("/",File.separator)
-    val mockSystemClass = "core/src/main/java/jmp0/app/clazz/system".replace("/",File.separator)
-    val userSystemClassPackageName= "jmp0/app/clazz/system".replace('/','.')
+    val mockAndroidJar = "mock-android/build/libs/mock-android.jar".replace("/",separator)
+    val mockSystemClass = "core/src/main/java/jmp0/app/mock/system".replace("/",separator)
+    val userSystemClassPackageName= "jmp0/app/mock/system".replace('/','.')
 }

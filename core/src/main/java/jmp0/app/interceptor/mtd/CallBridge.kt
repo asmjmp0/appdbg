@@ -1,7 +1,7 @@
 package jmp0.app.interceptor.mtd
 
 import jmp0.app.DbgContext
-import jmp0.app.interceptor.mtd.ntv.NativeMethodManager
+import jmp0.app.mock.NativeMethodManager
 
 /**
  * @author jmp0 <jmp0@qq.com>

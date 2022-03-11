@@ -4,6 +4,7 @@ import javassist.CtClass
 import javassist.NotFoundException
 import jmp0.app.AndroidEnvironment
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
+import jmp0.app.mock.NativeMethodManager
 import org.apache.log4j.Logger
 
 
@@ -35,7 +36,6 @@ class NativeMethodInterceptor(private val androidEnvironment: AndroidEnvironment
                         it.setBody(generateHookBody("jmp0.app.interceptor.mtd.CallBridge.nativeCalled",
                             className,funcName,signature,retTypeName))
                     }else throw e
-
                 }
 
 

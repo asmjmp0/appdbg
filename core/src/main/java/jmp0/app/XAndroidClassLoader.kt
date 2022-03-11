@@ -1,13 +1,6 @@
 package jmp0.app
 
-import jmp0.app.AndroidEnvironment
-import jmp0.app.clazz.ClassLoadedCallbackBase
-import jmp0.conf.CommonConf
 import org.apache.log4j.Logger
-import java.io.File
-import java.lang.Exception
-import java.net.URL
-import java.net.URLClassLoader
 
 /**
  * each application has their own classloader
