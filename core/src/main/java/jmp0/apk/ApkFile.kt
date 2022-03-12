@@ -5,17 +5,19 @@ import jmp0.util.ApkToolUtils
 import jmp0.util.DexUtils
 import org.apache.log4j.Logger
 import java.io.File
-import java.lang.Exception
 
-class ApkFile(private val apkFile: File,private val force:Boolean = false) {
+class ApkFile(private val apkFile: File,force:Boolean = false) {
     private val logger = Logger.getLogger(javaClass)
     private val dir = File("${CommonConf.tempDirName}${File.separator}${apkFile.name}")
     val classesDir = File(dir,"classes")
+    private lateinit var manifest:ManifestAnalyse
+    private lateinit var copyApkFile:File
 
     init {
         if (!dir.exists()){
             releaseApkFile()
             releaseDex()
+            copyApkFile = copyApk()
         }else{
             if (force){
                 dir.deleteRecursively()
@@ -25,7 +27,18 @@ class ApkFile(private val apkFile: File,private val force:Boolean = false) {
                 logger.debug("apk dir exists, just use it")
             }
             releaseDex()
+            copyApk()
         }
+        manifest = ManifestAnalyse(File(dir,"AndroidManifest.xml"))
+        getResources()
+
+    }
+
+    private fun copyApk() =
+        File(dir,apkFile.name).apply { writeBytes(apkFile.readBytes()) }
+
+
+    private fun getResources(){
     }
 
     private fun releaseApkFile(){

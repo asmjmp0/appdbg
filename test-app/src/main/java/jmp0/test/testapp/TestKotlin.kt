@@ -35,6 +35,8 @@ class TestKotlin() {
         _msgThread.sendMsg(123456789,"asm jmp0")
         _msgThread.sendMsg(238974893,"asm jmp0 mocked")
         Thread.sleep(3000)
+        _msgThread.looper.quitSafely()
+        Log.d("asmjmp0","lopper exit")
         return 0
     }
 

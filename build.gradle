@@ -29,12 +29,5 @@ allprojects {
     }
 }
 dependencies {
-    test.useJUnitPlatform()
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
-    implementation group: 'log4j', name: 'log4j', version: log4j_version
-    implementation group: 'org.javassist', name: 'javassist', version: javassist_version
-    compileOnly fileTree(dir:'libs',includes:['*jar'])
-    implementation project(":core")
 }

@@ -1,5 +1,6 @@
-package jmp0.app
+package jmp0.app.classloader
 
+import jmp0.app.AndroidEnvironment
 import org.apache.log4j.Logger
 
 /**

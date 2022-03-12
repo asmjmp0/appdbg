@@ -1,5 +1,6 @@
 package jmp0.app.mock.ntv
 
+import jmp0.app.mock.MockedBy
 import org.apache.log4j.Logger
 
 /**
@@ -9,7 +10,8 @@ import org.apache.log4j.Logger
 object SystemClock {
     private val logger = Logger.getLogger(javaClass)
     @JvmStatic
-    fun uptimeMillis():Long{
+    @MockedBy("asmjmp0")
+    fun uptimeMillis(uuid: String):Long{
         logger.debug("called")
         return System.currentTimeMillis() and 0x1fffff
     }

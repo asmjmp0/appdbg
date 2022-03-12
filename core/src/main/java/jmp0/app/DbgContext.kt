@@ -29,9 +29,9 @@ object DbgContext {
     }
 
     @JvmStatic
-    fun getAndroidEnvironment(uuid: String) = synchronized(contextHashMap){
+    fun getAndroidEnvironment(uuid: String) =
         contextHashMap[uuid]
-    }
+
 
     @JvmStatic
     fun getNativeCallBack(uuid: String) = synchronized(contextHashMap) {
@@ -45,15 +45,11 @@ object DbgContext {
     fun getMethodHookList(uuid: String)
         = methodHookHashMap[uuid]
 
-    fun getOne(): AndroidEnvironment =
-        contextHashMap.entries.iterator().next().value
-
-    override fun toString(): String = synchronized(contextHashMap) {
+    override fun toString(): String =
         StringBuilder().apply {
             append('\n')
             contextHashMap.values.forEach{
                 append("$it is running\n")
             }
         }.toString()
-    }
 }

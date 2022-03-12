@@ -1,5 +1,6 @@
 package jmp0.app.mock.system
 
+import jmp0.app.mock.ReplaceTo
 import jmp0.util.SystemReflectUtils.findSystemClass
 import org.apache.log4j.Logger
 import java.io.InputStream
@@ -9,15 +10,13 @@ import java.lang.System
 // TODO: 2022/3/11 patch reflect framework，don't permit to invoke private method in android framework
 
 //first system class I replaced, congratulation!!!
+@ReplaceTo("java.lang.System")
 class System  {
     // this class load by xclassloadr
     // if you want to use system class or method use SystemReflectUtils to get
     companion object{
 
         private val logger = Logger.getLogger(System::class.java)
-
-        // const const const
-        const val xxClassName: String = "java.lang.System"
 
         @JvmField
         val out:PrintStream = xGetSystemStd("out") as PrintStream
@@ -62,7 +61,22 @@ class System  {
             return java.lang.System.lineSeparator()
         }
 
+        @JvmStatic
+        fun getenv(env:String):String?{
+            return when (env) {
+                "ANDROID_ROOT" -> null
+                "ANDROID_DATA" -> "/data"
+                "ANDROID_STORAGE" -> "/storage"
+                "OEM_ROOT" -> null
+                "VENDOR_ROOT" -> null
+                else -> {
+                    logger.warn("getenv $env just return from host")
+                    java.lang.System.getenv(env)
+                }
+            }
+        }
+
         private fun xGetSystemStd(std: String):Any =
-            xxClassName.findSystemClass().getDeclaredField(std).get(null)
+            "java.lang.System".findSystemClass().getDeclaredField(std).get(null)
     }
 }

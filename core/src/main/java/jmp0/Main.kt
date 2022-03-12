@@ -2,13 +2,14 @@ package jmp0
 import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
-import jmp0.app.XAndroidClassLoader
+import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
-import jmp0.app.mock.ClassLoadedCallbackBase
-import jmp0.app.mock.utils.PropertiesReadUtils
+import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.util.SystemReflectUtils.invokeEx
+import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import java.io.File
+import kotlin.concurrent.thread
 
 // TODO: 2022/3/11 整理log factory
 class Main {
@@ -16,6 +17,7 @@ class Main {
      * vm option => -Xverify:none
      * jdk_path/...../libjvm.dylib
      * find "Prohibited package name:" in libjvm.dylib
+     * jdk11 try to load
      * or
      * Prohibited package for non-bootstrap classes: %s from %s
      * and change "java/" to "patch" before the string
@@ -196,6 +198,15 @@ class Main {
             logger.debug(ret)
         }
 
+        fun testContext(){
+            thread {
+                val base = getBaseAndroidEnv(false)
+                val m = base.loadClass("android.app.ActivityThread").getDeclaredMethod("main",Array<String>::class.java)
+                m.invoke(null, arrayOf("11111"))
+                logger.info(m)
+            }
+
+        }
 
 
         @JvmStatic
@@ -205,7 +216,10 @@ class Main {
 //            testJni(false)
 //            testBase64()
 //            test(false)
-            testNetWork(false)
+//            testNetWork(false)
+//            Logger.getLogger(XAndroidClassLoader::class.java).level = Level.ALL
+//            testContext()
+            ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), false)
         }
     }
 }
