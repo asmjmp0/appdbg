@@ -13,14 +13,15 @@ class XAndroidClassLoader(private val androidEnvironment: AndroidEnvironment):Cl
     override fun findClass(name: String): Class<*> {
         try {
             logger.trace("try to load $name")
-            return super.findClass(name)
-        }catch (e:Throwable){
             val res = findLoadedClass(name)
             if (res != null) return res
+            return super.findClass(name)
+        }catch (e:Throwable){
             //try to load class
             return androidEnvironment.loadClass(name)
         }
     }
+
 
     fun xDefineClass(name: String?,data:ByteArray,off:Int,size: Int):Class<*> =
         defineClass(name,data,0,size)

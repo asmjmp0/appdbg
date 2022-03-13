@@ -1,8 +1,10 @@
 package jmp0.app
 
+import android.os.Looper
 import javassist.ClassPool
 import javassist.CtClass
 import javassist.CtField
+import javassist.CtNewMethod
 import javassist.NotFoundException
 import jmp0.apk.ApkFile
 import jmp0.app.classloader.ClassLoadedCallbackBase
@@ -10,6 +12,7 @@ import jmp0.app.classloader.FrameWorkClassNoFoundException
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.HookReturnType
 import jmp0.conf.CommonConf
 import jmp0.util.FileUtils
 import jmp0.util.UnzipUtility
@@ -18,7 +21,7 @@ import java.io.File
 import java.util.*
 
 // TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
-class AndroidEnvironment(private val apkFile: ApkFile,
+class AndroidEnvironment(val apkFile: ApkFile,
                          val methodInterceptor: IInterceptor,
                          private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
                              ClassLoadedCallbackBase(){
@@ -44,6 +47,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
 
     init {
         //create temp dir
+        Thread.currentThread().contextClassLoader = androidLoader
         File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
         checkAndReleaseFramework()
@@ -79,7 +83,7 @@ class AndroidEnvironment(private val apkFile: ApkFile,
             val ctClass = ClassPool.getDefault().getCtClass(fullClassName)
             val targetClassName = ctClass.annotations.find { annotation-> annotation is ClassReplaceTo }.run {
                 if (this != null) (this as ClassReplaceTo).to
-                else throw java.lang.Exception("ReplaceTo annotation is not added to $fullClassName")
+                else throw java.lang.Exception("${ClassReplaceTo::class.java} annotation is not added to $fullClassName")
             }
 
             if (targetClassName != "") ctClass.replaceClassName(fullClassName,targetClassName)
@@ -91,7 +95,12 @@ class AndroidEnvironment(private val apkFile: ApkFile,
             }catch (e: NotFoundException){
                 ctClass.addField(CtField.make("public static String xxUuid = \"$id\";",ctClass))
             }
-
+            ctClass.declaredMethods.forEach {
+                val anno = it.annotations.find { it is HookReturnType }
+                if (anno!=null){
+                    // FIXME: 2022/3/13 if has this hook just use method hook as bridge to hook
+                }
+            }
             val ba = ctClass.toBytecode()
             androidLoader.xDefineClass(null,ba,0,ba.size)
             ctClass.defrost()

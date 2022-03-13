@@ -11,10 +11,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("asmjmp0",java.lang.System.getenv("ANDROID_DATA"))
-        Log.d("asmjmp0",java.lang.System.getenv("ANDROID_STORAGE"))
-//        Log.d("asmjmp0",java.lang.System.getenv("OEM_ROOT"))
-        Log.d("asmjmp0","111"+java.lang.System.getenv("VENDOR_ROOT"))
+        val a = this.packageManager.getApplicationInfo("jmp0.test.testapp",0)
+        val b = this.packageManager.getPackageInfo("jmp0.test.testapp",0)
+        b
+//        Log.d("asmjmp0",java.lang.System.getenv("ANDROID_DATA"))
+//        Log.d("asmjmp0",java.lang.System.getenv("ANDROID_STORAGE"))
+////        Log.d("asmjmp0",java.lang.System.getenv("OEM_ROOT"))
+//        Log.d("asmjmp0","111"+java.lang.System.getenv("VENDOR_ROOT"))
 //        TestNetWork().test()
     }
 

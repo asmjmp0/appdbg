@@ -11,8 +11,10 @@ class MockServiceManager:android.os.IServiceManager {
         TODO("Not yet implemented")
     }
 
-    override fun getService(name: String?): IBinder {
+    override fun getService(name: String?): IBinder? {
         if (name == "activity") return MockActivityManager()
+        if (name == "package") return MockPackageManager()
+        if (name == "display") return null
         TODO("Not yet implemented")
     }
 

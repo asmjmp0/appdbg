@@ -14,8 +14,10 @@ import android.os.*
 import android.service.voice.IVoiceInteractionSession
 import com.android.internal.app.IVoiceInteractor
 import com.android.internal.os.IResultReceiver
+import jmp0.app.DbgContext
 import jmp0.app.mock.ClassReplaceTo
 import org.apache.log4j.Logger
+import java.util.*
 
 @ClassReplaceTo("")
 class MockActivityManager: IActivityManager, Binder() {
@@ -225,10 +227,17 @@ class MockActivityManager: IActivityManager, Binder() {
         TODO("Not yet implemented")
     }
 
-    override fun attachApplication(app: IApplicationThread?) {
+    override fun attachApplication(app: IApplicationThread) {
         val uuid = javaClass.getDeclaredField("xxUuid").get(null) as String
-        // TODO: 2022/3/12 to implement bindApplication
-//        app.bindApplication()
+        val androidEnvironment = DbgContext.getAndroidEnvironment(uuid)
+        val mockConfiguration = Configuration()
+        mockConfiguration.locale = Locale("en")
+
+        app.bindApplication(androidEnvironment!!.apkFile.packageName,
+            MockApplicationInfo(),null,ComponentName(androidEnvironment.apkFile.packageName,androidEnvironment.apkFile.packageName),
+        MockProfilerInfo(),null,null,null,
+            0,false,false,false,mockConfiguration,null,null, Bundle()
+        )
         logger.warn("attachApplication just return")
     }
 

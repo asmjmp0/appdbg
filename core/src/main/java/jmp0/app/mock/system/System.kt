@@ -42,6 +42,11 @@ class System  {
         }
 
         @JvmStatic
+        fun arraycopy(any:IntArray,a:Int,b:IntArray,c:Int,d:Int){
+            java.lang.System.arraycopy(any, a, b, c, d)
+        }
+
+        @JvmStatic
         fun getProperty(property: String): String {
             return java.lang.System.getProperty(property)
         }

@@ -5,4 +5,4 @@ package jmp0.app.mock
 /**
  * @param type real type it is
  */
-annotation class NativeHookReturnType(val type:String)
+annotation class HookReturnType(val type:String)

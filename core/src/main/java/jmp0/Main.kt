@@ -195,8 +195,9 @@ class Main {
             thread {
                 val base = getBaseAndroidEnv(false)
                 val m = base.loadClass("android.app.ActivityThread").getDeclaredMethod("main",Array<String>::class.java)
-                m.invoke(null, arrayOf("11111"))
+                m.invoke(null, null)
                 logger.info(m)
+
             }
 
         }
@@ -209,9 +210,15 @@ class Main {
 //            testBase64()
             Logger.getLogger(SystemClock::class.java).level = Level.OFF
             Logger.getLogger(Binder::class.java).level = Level.OFF
-//            test(false)
+//            thread {
+//                test(false)
+//            }
+
 //            testNetWork(false)
-            testContext()
+            thread {
+                testContext()
+            }
+
         }
     }
 }

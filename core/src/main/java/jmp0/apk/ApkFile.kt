@@ -8,10 +8,15 @@ import java.io.File
 
 class ApkFile(private val apkFile: File,force:Boolean = false) {
     private val logger = Logger.getLogger(javaClass)
-    private val dir = File("${CommonConf.tempDirName}${File.separator}${apkFile.name}")
+    val dir = File("${CommonConf.tempDirName}${File.separator}${apkFile.name}")
     val classesDir = File(dir,"classes")
-    private lateinit var manifest:ManifestAnalyse
-    private lateinit var copyApkFile:File
+    private var manifest:ManifestAnalyse
+    lateinit var copyApkFile:File
+
+    var packageName:String
+    var privateDir:File = File(dir,"env").apply { if (!exists()) mkdir() }
+    var nativeLibraryDirRoot:File = File(dir,"lib").apply { if (!exists()) mkdir() }
+    var nativeLibraryDir:File = File(nativeLibraryDirRoot,"armeabi-v7a").apply { if (!exists()) mkdir() }
 
     init {
         if (!dir.exists()){
@@ -27,9 +32,10 @@ class ApkFile(private val apkFile: File,force:Boolean = false) {
                 logger.debug("apk dir exists, just use it")
             }
             releaseDex()
-            copyApk()
+            copyApkFile = copyApk()
         }
         manifest = ManifestAnalyse(File(dir,"AndroidManifest.xml"))
+        packageName = manifest.packaeName
         getResources()
 
     }

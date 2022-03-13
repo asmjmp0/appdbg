@@ -1,15 +1,11 @@
 package jmp0.app.mock
 
 import javassist.ClassPool
-import jmp0.app.DbgContext
-import jmp0.app.mock.ntv.*
 import jmp0.conf.CommonConf
 import jmp0.util.FileUtils
 import java.lang.reflect.Method
 import jmp0.util.SystemReflectUtils.getMethodWithSignature
-import org.objectweb.asm.Opcodes
 import java.io.File
-import java.util.UUID
 
 /**
  * @author jmp0 <jmp0@qq.com>
@@ -33,10 +29,10 @@ class NativeMethodManager(private val uuid: String) {
             }
             ctClass.declaredMethods.forEach { method->
                 if(method.annotations.find { annotation-> annotation is JvmStatic }!=null){
-                    val jniSig = method.annotations.find { Annotation-> Annotation is NativeHookReturnType }.run {
+                    val jniSig = method.annotations.find { Annotation-> Annotation is HookReturnType }.run {
                             if (this == null) "${targetClass}.${method.name}${method.signature}".replaceFirst("Ljava/lang/String;","")
                             else{
-                                val returnType = (this as NativeHookReturnType).type
+                                val returnType = (this as HookReturnType).type
                                 val realSig = method.signature.replaceFirst("Ljava/lang/String;","").split(')')
                                 "${targetClass}.${method.name}${realSig[0]})${returnType}"
                             }

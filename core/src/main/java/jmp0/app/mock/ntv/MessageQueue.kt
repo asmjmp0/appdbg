@@ -33,6 +33,7 @@ object MessageQueue {
 
     @JvmStatic
     fun nativeWake(uuid: String,id:Long){
+        println(Thread.currentThread().contextClassLoader)
         looperMap[id]!!.countDown()
     }
 

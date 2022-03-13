@@ -38,4 +38,10 @@ object SystemProperties {
         logger.debug("native_add_change_callback()V called")
         return
     }
+
+    @JvmStatic
+    fun native_get_boolean(uuid: String,id:String,default:Boolean):Boolean{
+        logger.debug("native_get(a: String,b: String) called")
+        return  PropertiesReadUtils.getProperty(id).toBoolean()?:default
+    }
 }
