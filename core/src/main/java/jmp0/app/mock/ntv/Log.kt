@@ -20,4 +20,9 @@ object Log {
         return 1024
     }
 
+    @JvmStatic
+    fun isLoggable(uuid: String,tag:String,a:Int):Boolean{
+        return true
+    }
+
 }

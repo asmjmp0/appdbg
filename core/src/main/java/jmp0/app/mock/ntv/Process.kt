@@ -1,0 +1,32 @@
+package jmp0.app.mock.ntv
+
+import jmp0.app.DbgContext
+import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.HookReturnType
+import jmp0.app.mock.NativeHookClass
+import org.apache.log4j.Logger
+
+@NativeHookClass("android.os.Process")
+class Process {
+    companion object{
+        private val logger = Logger.getLogger(Process::class.java)
+
+        @JvmStatic
+        fun setArgV0(uuid:String,cmd:String){
+            logger.warn("setArgV0 $cmd just return")
+        }
+
+        @JvmStatic
+        fun myUid(uuid:String):Int{
+            logger.warn("myUid just return 0")
+            return 0
+        }
+
+        @JvmStatic
+        @HookReturnType("Landroid/os/UserHandle;")
+        fun myUserHandle(uuid:String):Any?{
+            return null;
+        }
+
+    }
+}

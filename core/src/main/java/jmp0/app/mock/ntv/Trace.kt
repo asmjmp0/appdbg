@@ -27,5 +27,10 @@ object Trace {
         return
     }
 
+    @JvmStatic
+    fun nativeSetAppTracingAllowed(uuid: String,flag:Boolean){
+        return
+    }
+
 
 }

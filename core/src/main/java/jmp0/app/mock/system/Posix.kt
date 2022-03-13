@@ -37,7 +37,10 @@ class Posix internal constructor() : libcore.io.Os {
     
     external override fun bind(fd: FileDescriptor?, address: SocketAddress?)
     
-    external override fun chmod(path: String?, mode: Int)
+    override fun chmod(path: String?, mode: Int){
+        logger.debug("chmod called $path $mode")
+        return
+    }
     
     external override fun chown(path: String?, uid: Int, gid: Int)
     

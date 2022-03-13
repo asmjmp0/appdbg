@@ -15,6 +15,7 @@ class MockServiceManager:android.os.IServiceManager {
         if (name == "activity") return MockActivityManager()
         if (name == "package") return MockPackageManager()
         if (name == "display") return null
+        if (name == "connectivity") return null
         TODO("Not yet implemented")
     }
 

@@ -95,12 +95,6 @@ class AndroidEnvironment(val apkFile: ApkFile,
             }catch (e: NotFoundException){
                 ctClass.addField(CtField.make("public static String xxUuid = \"$id\";",ctClass))
             }
-            ctClass.declaredMethods.forEach {
-                val anno = it.annotations.find { it is HookReturnType }
-                if (anno!=null){
-                    // FIXME: 2022/3/13 if has this hook just use method hook as bridge to hook
-                }
-            }
             val ba = ctClass.toBytecode()
             androidLoader.xDefineClass(null,ba,0,ba.size)
             ctClass.defrost()

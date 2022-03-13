@@ -147,7 +147,9 @@ class MockPackageManager:IPackageManager,IBinder {
     }
 
     override fun getPackagesForUid(p0: Int): Array<String> {
-        TODO("Not yet implemented")
+        val uuid = javaClass.getDeclaredField("xxUuid").get(null) as String
+        val androidEnvironment = DbgContext.getAndroidEnvironment(uuid)
+        return arrayOf(androidEnvironment!!.apkFile.packageName)
     }
 
     override fun getNameForUid(p0: Int): String {

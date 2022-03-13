@@ -27,4 +27,9 @@ object Binder {
     fun init(uuid: String){
         logger.warn("just returned")
     }
+
+    @JvmStatic
+    fun setThreadStrictModePolicy(uuid: String,a:Int){
+        logger.debug("setThreadStrictModePolicy")
+    }
 }

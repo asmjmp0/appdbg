@@ -6,6 +6,7 @@ import org.apache.log4j.Logger
 import java.io.InputStream
 import java.io.PrintStream
 import java.lang.System
+import java.util.UUID
 
 // TODO: 2022/3/11 patch reflect framework，don't permit to invoke private method in android framework
 
@@ -79,6 +80,11 @@ class System  {
                     java.lang.System.getenv(env)
                 }
             }
+        }
+
+        @JvmStatic
+        fun setProperty(a:String,b:String):String{
+            return java.lang.System.setProperty(a,b)
         }
 
         private fun xGetSystemStd(std: String):Any =
