@@ -2,8 +2,7 @@ package jmp0.app.mock.system
 import android.system.*
 import android.util.MutableInt
 import android.util.MutableLong
-import jmp0.app.mock.MockedBy
-import jmp0.app.mock.ReplaceTo
+import jmp0.app.mock.ClassReplaceTo
 import org.apache.log4j.Logger
 import java.nio.NioUtils
 import java.io.FileDescriptor
@@ -14,7 +13,7 @@ import java.net.SocketAddress
 import java.net.SocketException
 import java.nio.ByteBuffer
 
-@ReplaceTo("libcore.io.Posix")
+@ClassReplaceTo("libcore.io.Posix")
 class Posix internal constructor() : libcore.io.Os {
     companion object{
 
@@ -109,7 +108,7 @@ class Posix internal constructor() : libcore.io.Os {
     external override fun getsockoptUcred(fd: FileDescriptor?, level: Int, option: Int): StructUcred?
     external override fun gettid(): Int
 
-    @MockedBy("asmjmp0")
+    
     override fun getuid(): Int{
         logger.warn("getuid() return 0")
         return 0

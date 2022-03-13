@@ -14,13 +14,10 @@ import android.os.*
 import android.service.voice.IVoiceInteractionSession
 import com.android.internal.app.IVoiceInteractor
 import com.android.internal.os.IResultReceiver
-import jmp0.app.DbgContext
-import jmp0.app.mock.MockedBy
-import jmp0.app.mock.ReplaceTo
+import jmp0.app.mock.ClassReplaceTo
 import org.apache.log4j.Logger
 
-@ReplaceTo("")
-@MockedBy("asmjmp0")
+@ClassReplaceTo("")
 class MockActivityManager: IActivityManager, Binder() {
 
     private val logger = Logger.getLogger(MockActivityManager::class.java)

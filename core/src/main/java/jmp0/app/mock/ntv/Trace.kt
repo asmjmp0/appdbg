@@ -1,30 +1,29 @@
 package jmp0.app.mock.ntv
 
-import jmp0.app.mock.MockedBy
+import jmp0.app.mock.NativeHookClass
+import org.apache.log4j.Logger
 import java.util.Random
 
-
+@NativeHookClass("android.os.Trace")
 object Trace {
-    private val tagMap = HashMap<Long,String>()
+    private val logger = Logger.getLogger(Trace::class.java)
     private val random = Random()
 
     @JvmStatic
-    @MockedBy("asmjmp0")
     fun nativeGetEnabledTags(uuid: String):Long{
-        val tag = random.nextLong()
-        tagMap[tag] = uuid
-        return tag
+        logger.debug("nativeGetEnabledTags just return")
+        return random.nextLong()
     }
 
     @JvmStatic
-    @MockedBy("asmjmp0")
     fun nativeTraceBegin(uuid: String,id:Long,content:String){
+        logger.debug("nativeTraceBegin just return")
         return
     }
 
     @JvmStatic
-    @MockedBy("asmjmp0")
     fun nativeTraceEnd(uuid: String,id:Long){
+        logger.debug("nativeTraceEnd just return")
         return
     }
 

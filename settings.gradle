@@ -5,4 +5,3 @@ include ':thirdparty:dex-ir'
 include ':thirdparty:dex-translator'
 include 'core'
 include ':test-app'
-

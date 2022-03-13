@@ -11,3 +11,5 @@ dependencies {
   api 'org.ow2.asm:asm-debug-all:5.0.3'
 }
 
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

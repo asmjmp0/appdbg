@@ -1,6 +1,6 @@
 package jmp0.app.mock.system
 
-import jmp0.app.mock.ReplaceTo
+import jmp0.app.mock.ClassReplaceTo
 import jmp0.util.SystemReflectUtils.findSystemClass
 import org.apache.log4j.Logger
 import java.io.InputStream
@@ -10,7 +10,7 @@ import java.lang.System
 // TODO: 2022/3/11 patch reflect framework，don't permit to invoke private method in android framework
 
 //first system class I replaced, congratulation!!!
-@ReplaceTo("java.lang.System")
+@ClassReplaceTo("java.lang.System")
 class System  {
     // this class load by xclassloadr
     // if you want to use system class or method use SystemReflectUtils to get

@@ -11,8 +11,13 @@ object CommonConf {
     val frameworkFileName = "libs${separator}android-all-6.0.0_r1-robolectric-0.jar"
     const val frameworkDirName = "framework"
 
-    //system
-    val mockAndroidJar = "mock-android/build/libs/mock-android.jar".replace("/",separator)
-    val mockSystemClass = "core/src/main/java/jmp0/app/mock/system".replace("/",separator)
-    val userSystemClassPackageName= "jmp0/app/mock/system".replace('/','.')
+    object Mock{
+        //system
+        val mockSystemClass = "core/src/main/java/jmp0/app/mock/system".replace("/",separator)
+        const val userSystemClassPackageName= "jmp0.app.mock.system"
+
+        //native
+        val mockNativeClass = "core/src/main/java/jmp0/app/mock/ntv".replace("/",separator)
+        const val mockNativeClassPackageName= "jmp0.app.mock.ntv"
+    }
 }

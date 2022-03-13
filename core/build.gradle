@@ -8,7 +8,6 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
-
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation project(":thirdparty:dex-reader")
@@ -18,3 +17,6 @@ dependencies {
     implementation group: 'org.javassist', name: 'javassist',version: javassist_version
     compileOnly fileTree(dir:'../libs',includes:['*jar'])
 }
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

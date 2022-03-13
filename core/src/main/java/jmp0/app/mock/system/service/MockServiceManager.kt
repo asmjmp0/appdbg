@@ -2,11 +2,10 @@ package jmp0.app.mock.system.service
 
 import android.os.IBinder
 import android.os.IPermissionController
-import jmp0.app.mock.MockedBy
-import jmp0.app.mock.ReplaceTo
+import jmp0.app.mock.ClassReplaceTo
 
-@MockedBy("asmjmp0")
-@ReplaceTo("")
+
+@ClassReplaceTo("")
 class MockServiceManager:android.os.IServiceManager {
     override fun asBinder(): IBinder {
         TODO("Not yet implemented")

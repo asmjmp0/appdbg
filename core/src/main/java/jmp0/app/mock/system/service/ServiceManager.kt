@@ -1,12 +1,11 @@
 package jmp0.app.mock.system.service
 
 import android.os.*
-import jmp0.app.mock.MockedBy
-import jmp0.app.mock.ReplaceTo
+import jmp0.app.mock.ClassReplaceTo
 import java.io.FileDescriptor
 
-@MockedBy("asmjmp0")
-@ReplaceTo("")
+
+@ClassReplaceTo("")
 class ServiceManager:IBinder {
     override fun getInterfaceDescriptor(): String {
         TODO("Not yet implemented")

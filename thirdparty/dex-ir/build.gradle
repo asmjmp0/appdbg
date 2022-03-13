@@ -9,3 +9,5 @@ dependencies {
   api project(':thirdparty:dex-reader-api')
 }
 
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

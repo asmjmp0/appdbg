@@ -3,13 +3,15 @@ package jmp0.app
 import javassist.ClassPool
 import javassist.CtClass
 import javassist.CtField
+import javassist.NotFoundException
 import jmp0.apk.ApkFile
 import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.FrameWorkClassNoFoundException
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
-import jmp0.app.mock.ReplaceTo
+import jmp0.app.mock.ClassReplaceTo
 import jmp0.conf.CommonConf
+import jmp0.util.FileUtils
 import jmp0.util.UnzipUtility
 import org.apache.log4j.Logger
 import java.io.File
@@ -44,8 +46,8 @@ class AndroidEnvironment(private val apkFile: ApkFile,
         //create temp dir
         File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
-        loadUserSystemClass()
         checkAndReleaseFramework()
+        loadUserSystemClass()
     }
 
     /**
@@ -71,35 +73,32 @@ class AndroidEnvironment(private val apkFile: ApkFile,
      *  modify java/ to xxxxx before characteristic string
      */
     private fun loadUserSystemClass(){
-        val packageName = CommonConf.userSystemClassPackageName
-        val path = CommonConf.mockSystemClass
-         fun listFileRecursive(file: File,packageName:String = ""){
-            file.listFiles()!!.forEach {
-                if (it.isFile){
-                    val fullClassName = packageName +'.'+ it.name.split('.')[0]
+        FileUtils.listFileRecursive(File(CommonConf.Mock.mockSystemClass),CommonConf.Mock.userSystemClassPackageName){ pName,fileName->
+            val fullClassName = pName +'.'+ fileName.split('.')[0]
 //                    val systemName = SystemClassManger.get(fullClassName)?:throw java.lang.Exception("$fullClassName not define in ${SystemClassManger.javaClass.name}")
-                    val ctClass = ClassPool.getDefault().getCtClass(fullClassName)
-                    val targetClassName = ctClass.annotations.find { annotation-> annotation is ReplaceTo }.run {
-                        if (this != null) (this as ReplaceTo).to
-                        else throw java.lang.Exception("ReplaceTo annotation is not added to $fullClassName")
-                    }
-
-                    if (targetClassName != "") ctClass.replaceClassName(fullClassName,targetClassName)
-                    //set uuid as xxUuid
-                    ctClass.addField(CtField.make("public static String xxUuid = \"$id\";",ctClass))
-                    val ba = ctClass.toBytecode()
-                    androidLoader.xDefineClass(null,ba,0,ba.size)
-                    ctClass.defrost()
-                }
-                if (it.isDirectory){
-                    listFileRecursive(it,packageName+"."+it.name)
-                }
+            val ctClass = ClassPool.getDefault().getCtClass(fullClassName)
+            val targetClassName = ctClass.annotations.find { annotation-> annotation is ClassReplaceTo }.run {
+                if (this != null) (this as ClassReplaceTo).to
+                else throw java.lang.Exception("ReplaceTo annotation is not added to $fullClassName")
             }
+
+            if (targetClassName != "") ctClass.replaceClassName(fullClassName,targetClassName)
+            //set uuid as xxUuid
+            try {
+                val field = ctClass.getDeclaredField("xxUuid")
+                ctClass.removeField(field)
+                ctClass.addField(CtField.make("public static String xxUuid = \"$id\";",ctClass))
+            }catch (e: NotFoundException){
+                ctClass.addField(CtField.make("public static String xxUuid = \"$id\";",ctClass))
+            }
+
+            val ba = ctClass.toBytecode()
+            androidLoader.xDefineClass(null,ba,0,ba.size)
+            ctClass.defrost()
         }
 
-        listFileRecursive(File(path),packageName)
-
     }
+
     private fun checkAndReleaseFramework(){
         val frameworkDir = File("${CommonConf.tempDirName}${File.separator}${CommonConf.frameworkDirName}")
         if(!frameworkDir.exists()){

@@ -5,6 +5,8 @@ import jmp0.app.AndroidEnvironment
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.classloader.ClassLoadedCallbackBase
+import jmp0.app.mock.ntv.Binder
+import jmp0.app.mock.ntv.SystemClock
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
@@ -102,21 +104,12 @@ class Main {
             //
 //            androidEnvironment.registerMethodHook("jmp0.test.testapp.MainActivity.getStr()V",false)
             val TestJavaclazz = androidEnvironment.loadClass("jmp0.test.testapp.TestKotlin")
-            val contextIns =
-                androidEnvironment.loadClassProject("jmp0.app.mock.android.AppCompatActivity").getConstructor()
-                    .newInstance()
-            var ret = TestJavaclazz.getDeclaredMethod(
-                "testString",
-                androidEnvironment.findClass("android.content.Context")
-            )
-                .invokeEx(TestJavaclazz.getConstructor().newInstance(), contextIns)
-            logger.debug("testString => $ret")
 
-            ret = TestJavaclazz.getDeclaredMethod("testLopper")
+            val ret = TestJavaclazz.getDeclaredMethod("testLopper")
                 .invokeEx(TestJavaclazz.getConstructor().newInstance())
 
             logger.debug("testLopper => $ret")
-            androidEnvironment.destroy()
+//            androidEnvironment.destroy()
 
 
 //            androidEnvironment.destroy()
@@ -211,15 +204,14 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-//            val a = SystemReflectUtils.getSignatureInfo("android.util.Log.println_native(IILjava/lang/String;Ljava/lang/String;)V")
 //            println(a)
 //            testJni(false)
 //            testBase64()
+            Logger.getLogger(SystemClock::class.java).level = Level.OFF
+            Logger.getLogger(Binder::class.java).level = Level.OFF
 //            test(false)
 //            testNetWork(false)
-//            Logger.getLogger(XAndroidClassLoader::class.java).level = Level.ALL
-//            testContext()
-            ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), false)
+            testContext()
         }
     }
 }
