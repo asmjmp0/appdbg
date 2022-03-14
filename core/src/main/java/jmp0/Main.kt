@@ -48,7 +48,7 @@ class Main {
                         signature: String,
                         param: Array<out Any?>
                     ): Any? {
-                        TODO("Not yet implemented")
+                        return Thread.currentThread().contextClassLoader
                     }
 
                 })
@@ -191,17 +191,6 @@ class Main {
             logger.debug(ret)
         }
 
-        fun testContext(){
-            thread {
-                val base = getBaseAndroidEnv(false)
-                val m = base.loadClass("android.app.ActivityThread").getDeclaredMethod("main",Array<String>::class.java)
-                m.invoke(null, null)
-                logger.info(m)
-
-            }
-
-        }
-
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -210,14 +199,11 @@ class Main {
 //            testBase64()
             Logger.getLogger(SystemClock::class.java).level = Level.OFF
             Logger.getLogger(Binder::class.java).level = Level.OFF
-//            thread {
+//            thread {g
 //                test(false)
 //            }
 
-//            testNetWork(false)
-            thread {
-                testContext()
-            }
+            logger.debug(getBaseAndroidEnv(false).context)
 
         }
     }

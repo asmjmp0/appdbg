@@ -28,4 +28,9 @@ object VMRuntime {
         logger.debug("registerAppInfo called")
     }
 
+    @JvmStatic
+    fun clampGrowthLimit(uuid: String){
+        logger.debug("clampGrowthLimit called")
+    }
+
 }

@@ -11,9 +11,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val a = this.packageManager.getApplicationInfo("jmp0.test.testapp",0)
-        val b = this.packageManager.getPackageInfo("jmp0.test.testapp",0)
-        b
+//        val b = this.packageManager.getInstrumentationInfo(,0)
 //        Log.d("asmjmp0",java.lang.System.getenv("ANDROID_DATA"))
 //        Log.d("asmjmp0",java.lang.System.getenv("ANDROID_STORAGE"))
 ////        Log.d("asmjmp0",java.lang.System.getenv("OEM_ROOT"))

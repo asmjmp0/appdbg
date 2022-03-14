@@ -30,7 +30,8 @@ class MockPackageManager:IPackageManager,IBinder {
     override fun getPackageInfo(packageName: String?, p1: Int, p2: Int): PackageInfo {
         val uuid = javaClass.getDeclaredField("xxUuid").get(null) as String
         val androidEnvironment = DbgContext.getAndroidEnvironment(uuid)
-        if (packageName == androidEnvironment!!.apkFile.packageName) return MockPackageInfo()
+        if (packageName == androidEnvironment!!.apkFile.packageName)
+            return androidEnvironment.findClass("jmp0.app.mock.system.service.MockPackageInfo").getDeclaredConstructor().newInstance() as PackageInfo
         TODO("Not yet implemented")
     }
 
@@ -245,6 +246,12 @@ class MockPackageManager:IPackageManager,IBinder {
     }
 
     override fun getInstrumentationInfo(p0: ComponentName?, p1: Int): InstrumentationInfo {
+        val uuid = javaClass.getDeclaredField("xxUuid").get(null) as String
+        val androidEnvironment = DbgContext.getAndroidEnvironment(uuid)
+        if(p0!!.packageName == androidEnvironment!!.apkFile.packageName){
+            return androidEnvironment.findClass("jmp0.app.mock.system.service.MockInstrumentationInfo")
+                .getDeclaredConstructor().newInstance() as InstrumentationInfo
+        }
         TODO("Not yet implemented")
     }
 

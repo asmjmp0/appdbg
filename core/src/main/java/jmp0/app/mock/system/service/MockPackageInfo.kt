@@ -16,6 +16,5 @@ class MockPackageInfo:PackageInfo() {
         coreApp = false
         packageName = mApplicationInfo.packageName
         applicationInfo = mApplicationInfo
-
     }
 }

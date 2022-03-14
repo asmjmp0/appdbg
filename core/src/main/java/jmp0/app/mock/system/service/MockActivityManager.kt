@@ -234,7 +234,7 @@ class MockActivityManager: IActivityManager, Binder() {
         mockConfiguration.locale = Locale("en")
 
         app.bindApplication(androidEnvironment!!.apkFile.packageName,
-            MockApplicationInfo(),null,ComponentName(androidEnvironment.apkFile.packageName,androidEnvironment.apkFile.packageName),
+            MockApplicationInfo(),null,null,
         MockProfilerInfo(),null,null,null,
             0,false,false,false,mockConfiguration,null,null, Bundle()
         )

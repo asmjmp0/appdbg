@@ -1,10 +1,8 @@
 package jmp0.app
 
-import android.os.Looper
 import javassist.ClassPool
 import javassist.CtClass
 import javassist.CtField
-import javassist.CtNewMethod
 import javassist.NotFoundException
 import jmp0.apk.ApkFile
 import jmp0.app.classloader.ClassLoadedCallbackBase
@@ -12,7 +10,7 @@ import jmp0.app.classloader.FrameWorkClassNoFoundException
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.mock.ClassReplaceTo
-import jmp0.app.mock.HookReturnType
+import jmp0.app.mock.system.user.UserContext
 import jmp0.conf.CommonConf
 import jmp0.util.FileUtils
 import jmp0.util.UnzipUtility
@@ -44,14 +42,15 @@ class AndroidEnvironment(val apkFile: ApkFile,
     private val androidLoader = XAndroidClassLoader(this)
     val id = UUID.randomUUID().toString()
     var processName = id
+    var context:Any
 
     init {
         //create temp dir
-        Thread.currentThread().contextClassLoader = androidLoader
         File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
         checkAndReleaseFramework()
         loadUserSystemClass()
+        context = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
     }
 
     /**
@@ -99,6 +98,10 @@ class AndroidEnvironment(val apkFile: ApkFile,
             androidLoader.xDefineClass(null,ba,0,ba.size)
             ctClass.defrost()
         }
+
+    }
+
+    private fun loadUserContext(){
 
     }
 
