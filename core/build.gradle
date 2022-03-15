@@ -12,6 +12,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation project(":thirdparty:dex-reader")
     implementation project(":thirdparty:dex-translator")
+    implementation project(':thirdparty:arsc-decoder')
     implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
     implementation group: 'log4j', name: 'log4j' ,version: log4j_version
     implementation group: 'org.javassist', name: 'javassist',version: javassist_version

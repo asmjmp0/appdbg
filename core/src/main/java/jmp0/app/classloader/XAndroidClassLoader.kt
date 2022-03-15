@@ -15,10 +15,10 @@ class XAndroidClassLoader(private val androidEnvironment: AndroidEnvironment):Cl
             logger.trace("try to load $name")
             val res = findLoadedClass(name)
             if (res != null) return res
-            return super.findClass(name)
+            return androidEnvironment.loadClass(name)
         }catch (e:Throwable){
             //try to load class
-            return androidEnvironment.loadClass(name)
+            return super.findClass(name)
         }
     }
 

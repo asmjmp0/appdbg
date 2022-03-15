@@ -1,4 +1,6 @@
 package jmp0
+import brut.androlib.res.decoder.ARSCDecoder
+import com.googlecode.d2j.util.zip.ZipFile
 import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
@@ -195,15 +197,22 @@ class Main {
         @JvmStatic
         fun main(args: Array<String>) {
 //            println(a)
+//            test(false)
 //            testJni(false)
 //            testBase64()
-            Logger.getLogger(SystemClock::class.java).level = Level.OFF
-            Logger.getLogger(Binder::class.java).level = Level.OFF
-//            thread {g
-//                test(false)
-//            }
-
-            logger.debug(getBaseAndroidEnv(false).context)
+//            Logger.getLogger(SystemClock::class.java).level = Level.OFF
+//            Logger.getLogger(Binder::class.java).level = Level.OFF
+//            testNetWork(true)
+            val a = java.util.zip.ZipFile(File("temp/test-app-debug.apk/test-app-debug.apk"))
+            a.entries().iterator().forEach {
+                if (it.name == "resources.arsc"){
+                    val ins = a.getInputStream(it)
+                    val decoder = ARSCDecoder.decode(ins,true,true)
+                    decoder.packages
+                }
+            }
+//            ARSCDecoder.decode(,true,true)
+//            logger.debug(getBaseAndroidEnv(false).context)
 
         }
     }
