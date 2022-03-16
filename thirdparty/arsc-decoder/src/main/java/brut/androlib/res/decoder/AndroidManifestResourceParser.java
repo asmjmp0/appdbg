@@ -16,7 +16,7 @@
  */
 package brut.androlib.res.decoder;
 
-import android.util.TypedValue;
+import android.util.MTypedValue;
 
 import java.util.regex.Pattern;
 
@@ -52,7 +52,7 @@ public class AndroidManifestResourceParser extends AXmlResourceParser {
     private boolean isNumericStringMetadataAttributeValue(int index, String value) {
         return "meta-data".equalsIgnoreCase(super.getName())
             && "value".equalsIgnoreCase(super.getAttributeName(index))
-            && super.getAttributeValueType(index) == TypedValue.TYPE_STRING
+            && super.getAttributeValueType(index) == MTypedValue.TYPE_STRING
             && PATTERN_NUMERIC_STRING.matcher(value).matches();
     }
 }

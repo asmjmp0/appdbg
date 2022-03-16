@@ -17,7 +17,7 @@
 package brut.androlib.res.decoder;
 
 import android.content.res.XmlResourceParser;
-import android.util.TypedValue;
+import android.util.MTypedValue;
 import brut.androlib.AndrolibException;
 import brut.androlib.res.data.ResID;
 import brut.androlib.res.xml.ResXmlEncoders;
@@ -254,7 +254,7 @@ public class AXmlResourceParser implements XmlResourceParser {
         }
         int offset = getAttributeOffset(m_idAttribute);
         int valueType = m_attributes[offset + ATTRIBUTE_IX_VALUE_TYPE];
-        if (valueType != TypedValue.TYPE_REFERENCE) {
+        if (valueType != MTypedValue.TYPE_REFERENCE) {
             return defaultValue;
         }
         return m_attributes[offset + ATTRIBUTE_IX_VALUE_DATA];
@@ -395,7 +395,7 @@ public class AXmlResourceParser implements XmlResourceParser {
                         valueData), ex);
             }
         }
-        return TypedValue.coerceToString(valueType, valueData);
+        return MTypedValue.coerceToString(valueType, valueData);
     }
 
     @Override
@@ -407,7 +407,7 @@ public class AXmlResourceParser implements XmlResourceParser {
     public float getAttributeFloatValue(int index, float defaultValue) {
         int offset = getAttributeOffset(index);
         int valueType = m_attributes[offset + ATTRIBUTE_IX_VALUE_TYPE];
-        if (valueType == TypedValue.TYPE_FLOAT) {
+        if (valueType == MTypedValue.TYPE_FLOAT) {
             int valueData = m_attributes[offset + ATTRIBUTE_IX_VALUE_DATA];
             return Float.intBitsToFloat(valueData);
         }
@@ -418,7 +418,7 @@ public class AXmlResourceParser implements XmlResourceParser {
     public int getAttributeIntValue(int index, int defaultValue) {
         int offset = getAttributeOffset(index);
         int valueType = m_attributes[offset + ATTRIBUTE_IX_VALUE_TYPE];
-        if (valueType >= TypedValue.TYPE_FIRST_INT && valueType <= TypedValue.TYPE_LAST_INT) {
+        if (valueType >= MTypedValue.TYPE_FIRST_INT && valueType <= MTypedValue.TYPE_LAST_INT) {
             return m_attributes[offset + ATTRIBUTE_IX_VALUE_DATA];
         }
         return defaultValue;
@@ -433,7 +433,7 @@ public class AXmlResourceParser implements XmlResourceParser {
     public int getAttributeResourceValue(int index, int defaultValue) {
         int offset = getAttributeOffset(index);
         int valueType = m_attributes[offset + ATTRIBUTE_IX_VALUE_TYPE];
-        if (valueType == TypedValue.TYPE_REFERENCE) {
+        if (valueType == MTypedValue.TYPE_REFERENCE) {
             return m_attributes[offset + ATTRIBUTE_IX_VALUE_DATA];
         }
         return defaultValue;

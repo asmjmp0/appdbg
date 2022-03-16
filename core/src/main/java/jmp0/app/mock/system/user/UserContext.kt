@@ -14,7 +14,10 @@ import android.net.Uri
 import android.os.*
 import android.view.Display
 import android.view.DisplayAdjustments
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.AndroidEnvironment
+import jmp0.app.DbgContext
+import jmp0.app.mock.annotations.ClassReplaceTo
+import org.apache.log4j.Logger
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -26,12 +29,24 @@ import java.io.InputStream
  */
 @ClassReplaceTo("")
 class UserContext:Context() {
+    private val logger = Logger.getLogger(UserContext::class.java)
+
+    private fun getEnv(): AndroidEnvironment {
+        val uuid = this::class.java.getDeclaredField("xxUuid").get(null) as String
+        return DbgContext.getAndroidEnvironment(uuid)!!
+    }
+
     override fun getAssets(): AssetManager {
-        TODO("Not yet implemented")
+        val env = getEnv()
+        return env.findClass("android.content.res.AssetManager").getDeclaredConstructor().newInstance() as android.content.res.AssetManager
     }
 
     override fun getResources(): Resources {
-        TODO("Not yet implemented")
+        val env = getEnv()
+        return env.findClass("android.content.res.Resources")
+            .getDeclaredConstructor(env.findClass("android.content.res.AssetManager"),env.findClass("android.util.DisplayMetrics"),env.findClass("android.content.res.Configuration"))
+            .newInstance(assets,env.findClass("android.util.DisplayMetrics").getDeclaredConstructor().newInstance(),env.findClass("android.content.res.Configuration").getDeclaredConstructor().newInstance())
+        as Resources
     }
 
     override fun getPackageManager(): PackageManager {
@@ -47,11 +62,11 @@ class UserContext:Context() {
     }
 
     override fun getApplicationContext(): Context {
-        TODO("Not yet implemented")
+        return this
     }
 
     override fun setTheme(p0: Int) {
-        TODO("Not yet implemented")
+        logger.warn("setTheme not support")
     }
 
     override fun getTheme(): Resources.Theme {
@@ -59,15 +74,15 @@ class UserContext:Context() {
     }
 
     override fun getClassLoader(): ClassLoader {
-        TODO("Not yet implemented")
+        return getEnv().getClassLoader()
     }
 
     override fun getPackageName(): String {
-        TODO("Not yet implemented")
+        return getEnv().apkFile.packageName
     }
 
     override fun getBasePackageName(): String {
-        TODO("Not yet implemented")
+        return getEnv().apkFile.packageName
     }
 
     override fun getOpPackageName(): String {
@@ -240,27 +255,27 @@ class UserContext:Context() {
     }
 
     override fun sendBroadcast(p0: Intent?) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcast not support parm:$p0")
     }
 
     override fun sendBroadcast(p0: Intent?, p1: String?) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcast not support parm:$p0 $p1")
     }
 
     override fun sendBroadcast(p0: Intent?, p1: String?, p2: Bundle?) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcast not support parm:$p0 $p1 $p2")
     }
 
     override fun sendBroadcast(p0: Intent?, p1: String?, p2: Int) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcast not support parm:$p0 $p1 $p2")
     }
 
     override fun sendBroadcastMultiplePermissions(p0: Intent?, p1: Array<out String>?) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcastMultiplePermissions not support parm:$p0 ${p1.contentToString()}")
     }
 
     override fun sendOrderedBroadcast(p0: Intent?, p1: String?) {
-        TODO("Not yet implemented")
+        logger.warn("sendOrderedBroadcast not support parm:$p0 $p1")
     }
 
     override fun sendOrderedBroadcast(
@@ -272,7 +287,7 @@ class UserContext:Context() {
         p5: String?,
         p6: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendOrderedBroadcast not support parm:$p0 $p1")
     }
 
     override fun sendOrderedBroadcast(
@@ -285,7 +300,7 @@ class UserContext:Context() {
         p6: String?,
         p7: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendOrderedBroadcast not support parm:$p0 $p1")
     }
 
     override fun sendOrderedBroadcast(
@@ -298,19 +313,19 @@ class UserContext:Context() {
         p6: String?,
         p7: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendOrderedBroadcast not support parm:$p0 $p1")
     }
 
     override fun sendBroadcastAsUser(p0: Intent?, p1: UserHandle?) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcastAsUser not support parm:$p0 $p1")
     }
 
     override fun sendBroadcastAsUser(p0: Intent?, p1: UserHandle?, p2: String?) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcastAsUser not support parm:$p0 $p1")
     }
 
     override fun sendBroadcastAsUser(p0: Intent?, p1: UserHandle?, p2: String?, p3: Int) {
-        TODO("Not yet implemented")
+        logger.warn("sendBroadcastAsUser not support parm:$p0 $p1")
     }
 
     override fun sendOrderedBroadcastAsUser(
@@ -323,7 +338,7 @@ class UserContext:Context() {
         p6: String?,
         p7: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendOrderedBroadcastAsUser not support parm:$p0 $p1")
     }
 
     override fun sendOrderedBroadcastAsUser(
@@ -337,7 +352,7 @@ class UserContext:Context() {
         p7: String?,
         p8: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendOrderedBroadcastAsUser not support parm:$p0 $p1")
     }
 
     override fun sendOrderedBroadcastAsUser(
@@ -352,11 +367,11 @@ class UserContext:Context() {
         p8: String?,
         p9: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendOrderedBroadcastAsUser not support parm:$p0 $p1")
     }
 
     override fun sendStickyBroadcast(p0: Intent?) {
-        TODO("Not yet implemented")
+        logger.warn("sendStickyBroadcast not support parm:$p0 ")
     }
 
     override fun sendStickyOrderedBroadcast(
@@ -367,15 +382,15 @@ class UserContext:Context() {
         p4: String?,
         p5: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendStickyOrderedBroadcast not support parm:$p0 ")
     }
 
     override fun removeStickyBroadcast(p0: Intent?) {
-        TODO("Not yet implemented")
+        logger.warn("removeStickyBroadcast not support parm:$p0 ")
     }
 
     override fun sendStickyBroadcastAsUser(p0: Intent?, p1: UserHandle?) {
-        TODO("Not yet implemented")
+        logger.warn("sendStickyBroadcastAsUser not support parm:$p0 ")
     }
 
     override fun sendStickyOrderedBroadcastAsUser(
@@ -387,19 +402,21 @@ class UserContext:Context() {
         p5: String?,
         p6: Bundle?
     ) {
-        TODO("Not yet implemented")
+        logger.warn("sendStickyOrderedBroadcastAsUser not support parm:$p0 ")
     }
 
     override fun removeStickyBroadcastAsUser(p0: Intent?, p1: UserHandle?) {
-        TODO("Not yet implemented")
+        logger.warn("removeStickyBroadcastAsUser not support parm:$p0 ")
     }
 
     override fun registerReceiver(p0: BroadcastReceiver?, p1: IntentFilter?): Intent {
-        TODO("Not yet implemented")
+        logger.warn("registerReceiver not support parm:$p0 ")
+        return Intent()
     }
 
     override fun registerReceiver(p0: BroadcastReceiver?, p1: IntentFilter?, p2: String?, p3: Handler?): Intent {
-        TODO("Not yet implemented")
+        logger.warn("registerReceiver not support parm:$p0 ")
+        return Intent()
     }
 
     override fun registerReceiverAsUser(
@@ -409,47 +426,55 @@ class UserContext:Context() {
         p3: String?,
         p4: Handler?
     ): Intent {
-        TODO("Not yet implemented")
+        logger.warn("registerReceiverAsUser not support parm:$p0 ")
+        return Intent()
     }
 
     override fun unregisterReceiver(p0: BroadcastReceiver?) {
-        TODO("Not yet implemented")
+        logger.warn("unregisterReceiver not support parm:$p0 ")
     }
 
-    override fun startService(p0: Intent?): ComponentName {
-        TODO("Not yet implemented")
+    override fun startService(p0: Intent?): ComponentName? {
+        logger.warn("stopServiceAsUser $p0")
+        return null
     }
 
     override fun stopService(p0: Intent?): Boolean {
-        TODO("Not yet implemented")
+        logger.warn("stopServiceAsUser $p0")
+        return true
     }
 
-    override fun startServiceAsUser(p0: Intent?, p1: UserHandle?): ComponentName {
-        TODO("Not yet implemented")
+    override fun startServiceAsUser(p0: Intent?, p1: UserHandle?): ComponentName? {
+        logger.warn("startServiceAsUser return null")
+        return null
     }
 
     override fun stopServiceAsUser(p0: Intent?, p1: UserHandle?): Boolean {
-        TODO("Not yet implemented")
+        logger.warn("stopServiceAsUser")
+        return true
     }
 
     override fun bindService(p0: Intent?, p1: ServiceConnection?, p2: Int): Boolean {
-        TODO("Not yet implemented")
+        logger.warn("bindService")
+        return true
     }
 
     override fun unbindService(p0: ServiceConnection?) {
-        TODO("Not yet implemented")
+        logger.warn("unbindService")
     }
 
     override fun startInstrumentation(p0: ComponentName?, p1: String?, p2: Bundle?): Boolean {
-        TODO("Not yet implemented")
+        logger.warn("startInstrumentation return false")
+        return false
     }
 
-    override fun getSystemService(p0: String?): Any {
-        TODO("Not yet implemented")
+    override fun getSystemService(p0: String?): Any? {
+        logger.debug("getSystemService $p0 return null")
+        return null
     }
 
     override fun getSystemServiceName(p0: Class<*>?): String {
-        TODO("Not yet implemented")
+        return p0!!.simpleName
     }
 
     override fun checkPermission(p0: String?, p1: Int, p2: Int): Int {
@@ -541,7 +566,7 @@ class UserContext:Context() {
     }
 
     override fun getUserId(): Int {
-        TODO("Not yet implemented")
+        return 0
     }
 
     override fun createConfigurationContext(p0: Configuration?): Context {

@@ -1,10 +1,8 @@
 package jmp0.app.interceptor.mtd.impl
 
 import javassist.CtClass
-import javassist.NotFoundException
 import jmp0.app.AndroidEnvironment
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
-import jmp0.app.mock.NativeMethodManager
 import org.apache.log4j.Logger
 
 

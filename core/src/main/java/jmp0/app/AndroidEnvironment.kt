@@ -9,8 +9,8 @@ import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.FrameWorkClassNoFoundException
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
-import jmp0.app.mock.ClassReplaceTo
-import jmp0.app.mock.system.user.UserContext
+import jmp0.app.mock.annotations.ClassReplaceTo
+import jmp0.app.mock.MethodManager
 import jmp0.conf.CommonConf
 import jmp0.util.FileUtils
 import jmp0.util.UnzipUtility
@@ -20,7 +20,7 @@ import java.util.*
 
 // TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
 class AndroidEnvironment(val apkFile: ApkFile,
-                         val methodInterceptor: IInterceptor,
+                         private val methodInterceptor: IInterceptor,
                          private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
                              ClassLoadedCallbackBase(){
                              override fun afterResolveClassImpl(
@@ -50,6 +50,9 @@ class AndroidEnvironment(val apkFile: ApkFile,
         registerToContext()
         checkAndReleaseFramework()
         loadUserSystemClass()
+        MethodManager(id).getMethodMap().forEach{
+            registerMethodHook(it.key,true)
+        }
         context = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
     }
 
@@ -60,6 +63,8 @@ class AndroidEnvironment(val apkFile: ApkFile,
     fun destroy(){
         DbgContext.unRegister(id)
     }
+
+    fun getMethodInterceptor() = methodInterceptor
 
     fun setProcessName(name: String) = apply { processName = name }
 
@@ -101,9 +106,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
     }
 
-    private fun loadUserContext(){
-
-    }
+    fun getClassLoader() = androidLoader
 
     private fun checkAndReleaseFramework(){
         val frameworkDir = File("${CommonConf.tempDirName}${File.separator}${CommonConf.frameworkDirName}")

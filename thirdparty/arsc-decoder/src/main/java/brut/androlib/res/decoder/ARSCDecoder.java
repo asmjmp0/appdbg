@@ -16,7 +16,7 @@
  */
 package brut.androlib.res.decoder;
 
-import android.util.TypedValue;
+import android.util.MTypedValue;
 import brut.androlib.AndrolibException;
 import brut.androlib.res.data.*;
 import brut.androlib.res.data.value.*;
@@ -362,7 +362,7 @@ public class ARSCDecoder {
         byte type = mIn.readByte();
         int data = mIn.readInt();
 
-        return type == TypedValue.TYPE_STRING
+        return type == MTypedValue.TYPE_STRING
                 ? mPkg.getValueFactory().factory(mTableStrings.getHTML(data), data)
                 : mPkg.getValueFactory().factory(type, data, null);
     }

@@ -2,7 +2,7 @@ package jmp0.app.mock.system.service
 
 import android.os.IBinder
 import android.os.IPermissionController
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 
 
 @ClassReplaceTo("")

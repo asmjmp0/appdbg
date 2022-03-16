@@ -1,7 +1,7 @@
 package jmp0.app.interceptor.mtd
 
 import jmp0.app.DbgContext
-import jmp0.app.mock.NativeMethodManager
+import jmp0.app.mock.MethodManager
 
 /**
  * @author jmp0 <jmp0@qq.com>
@@ -9,7 +9,7 @@ import jmp0.app.mock.NativeMethodManager
  */
 //called from hooked native method
 object CallBridge {
-
+    val methodManagerMap = HashMap<String,MethodManager>()
     /**
      * if it is system try to use impl/system/class
      * if it is android try to use impl/android/class
@@ -21,20 +21,29 @@ object CallBridge {
         val sig = "$className.$funcName$signature"
         val callback = DbgContext.getNativeCallBack(uuid)?:throw Exception("callback no found!!")
         //find implement method and ivoke
-        val implMethod = NativeMethodManager(uuid).get(sig)
+        if (methodManagerMap[uuid] == null){
+            methodManagerMap[uuid] = MethodManager(uuid)
+        }
+        val implMethod = methodManagerMap[uuid]!!.getNative(sig)
         val res = if (implMethod!=null)  implMethod.invoke(null,uuid,*param)
 
-        else callback.nativeCalled(className,funcName,signature,param).apply {
+        else callback.nativeCalled(uuid,className,funcName,signature,param).apply {
                 if (!implemented) throw NativeMethodNotImplementException(sig) }.result
         return res
     }
 
     @JvmStatic
     fun methodCalled(uuid: String, className: String, funcName: String, signature: String, vararg param: Any?): Any? {
-
-
-        val callback = DbgContext.getNativeCallBack(uuid) ?: throw Exception("callback no found!!")
-        return callback.methodCalled(className, funcName,signature, param)
+        val sig = "$className.$funcName$signature"
+        val callback = DbgContext.getNativeCallBack(uuid)?:throw Exception("callback no found!!")
+        //find implement method and ivoke
+        if (methodManagerMap[uuid] == null){
+            methodManagerMap[uuid] = MethodManager(uuid)
+        }
+        val implMethod = methodManagerMap[uuid]!!.getMethodMap()[sig]
+        val res = if (implMethod!=null)  implMethod.invoke(null,uuid,*param)
+        else callback.methodCalled(uuid,className, funcName,signature, param)
+        return res
     }
 
 }

@@ -1,5 +1,7 @@
 package jmp0
 import brut.androlib.res.decoder.ARSCDecoder
+import brut.androlib.res.decoder.AXmlResourceParser
+import brut.androlib.res.decoder.AndroidManifestResourceParser
 import com.googlecode.d2j.util.zip.ZipFile
 import javassist.CtClass
 import jmp0.apk.ApkFile
@@ -9,6 +11,7 @@ import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.mock.ntv.Binder
 import jmp0.app.mock.ntv.SystemClock
+import jmp0.app.mock.system.user.UserContext
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
@@ -36,6 +39,7 @@ class Main {
             AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), froce),
                 object : IInterceptor {
                     override fun nativeCalled(
+                        uuid: String,
                         className: String,
                         funcName: String,
                         signature: String,
@@ -45,6 +49,7 @@ class Main {
                     }
 
                     override fun methodCalled(
+                        uuid: String,
                         className: String,
                         funcName: String,
                         signature: String,
@@ -76,6 +81,7 @@ class Main {
                     },
                     methodInterceptor = object : IInterceptor {
                         override fun nativeCalled(
+                            uuid: String,
                             className: String,
                             funcName: String,
                             signature: String,
@@ -90,6 +96,7 @@ class Main {
                         }
 
                         override fun methodCalled(
+                            uuid: String,
                             className: String,
                             funcName: String,
                             signature: String,
@@ -122,6 +129,7 @@ class Main {
                 AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), false),
                     object : IInterceptor {
                         override fun nativeCalled(
+                            uuid: String,
                             className: String,
                             funcName: String,
                             signature: String,
@@ -131,6 +139,7 @@ class Main {
                         }
 
                         override fun methodCalled(
+                            uuid: String,
                             className: String,
                             funcName: String,
                             signature: String,
@@ -152,6 +161,7 @@ class Main {
                 AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
                     object : IInterceptor {
                         override fun nativeCalled(
+                            uuid: String,
                             className: String,
                             funcName: String,
                             signature: String,
@@ -166,6 +176,7 @@ class Main {
                         }
 
                         override fun methodCalled(
+                            uuid: String,
                             className: String,
                             funcName: String,
                             signature: String,
@@ -193,6 +204,16 @@ class Main {
             logger.debug(ret)
         }
 
+        fun testContext(force: Boolean){
+            val ae = getBaseAndroidEnv(force)
+            val contextClazz = ae.findClass("android.content.Context")
+            val ret = ae.loadClass("jmp0.test.testapp.TestContext").run {
+                val ins = getDeclaredConstructor(contextClazz).newInstance(ae.context)
+                getDeclaredMethod("testAll").invoke(ins)
+
+            }
+        }
+
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -203,14 +224,14 @@ class Main {
 //            Logger.getLogger(SystemClock::class.java).level = Level.OFF
 //            Logger.getLogger(Binder::class.java).level = Level.OFF
 //            testNetWork(true)
-            val a = java.util.zip.ZipFile(File("temp/test-app-debug.apk/test-app-debug.apk"))
-            a.entries().iterator().forEach {
-                if (it.name == "resources.arsc"){
-                    val ins = a.getInputStream(it)
-                    val decoder = ARSCDecoder.decode(ins,true,true)
-                    decoder.packages
-                }
-            }
+//            val a = java.util.zip.ZipFile(File("temp/test-app-debug.apk/test-app-debug.apk"))
+//            a.entries().iterator().forEach {
+//                if (it.name == "resources.arsc"){
+//                    val ins = a.getInputStream(it)
+//                    val decoder = ARSCDecoder.decode(ins,true,true)
+//                }
+//            }
+            testContext(false)
 //            ARSCDecoder.decode(,true,true)
 //            logger.debug(getBaseAndroidEnv(false).context)
 

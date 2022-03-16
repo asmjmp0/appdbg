@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.MessageQueue
 import android.provider.Settings
 import android.util.Log
+import android.widget.TextView
 import jmp0.test.testapp.net.TestNetWork
 
 class MainActivity : AppCompatActivity() {
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 ////        Log.d("asmjmp0",java.lang.System.getenv("OEM_ROOT"))
 //        Log.d("asmjmp0","111"+java.lang.System.getenv("VENDOR_ROOT"))
 //        TestNetWork().test()
+        TestContext(this).testAll()
     }
 
     fun getStr(){

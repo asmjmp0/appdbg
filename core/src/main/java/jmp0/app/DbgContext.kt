@@ -36,7 +36,7 @@ object DbgContext {
 
     @JvmStatic
     fun getNativeCallBack(uuid: String) = synchronized(contextHashMap) {
-        getAndroidEnvironment(uuid)?.methodInterceptor
+        getAndroidEnvironment(uuid)?.getMethodInterceptor()
     }
 
     fun registerMethodHook(uuid: String,signature:String,replace:Boolean) = synchronized(methodHookHashMap){

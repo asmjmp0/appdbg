@@ -16,7 +16,7 @@
  */
 package brut.androlib.res.data.value;
 
-import android.util.TypedValue;
+import android.util.MTypedValue;
 import brut.androlib.AndrolibException;
 
 public class ResDimenValue extends ResIntValue {
@@ -26,6 +26,6 @@ public class ResDimenValue extends ResIntValue {
 
     @Override
     protected String encodeAsResXml() throws AndrolibException {
-        return TypedValue.coerceToString(TypedValue.TYPE_DIMENSION, mValue);
+        return MTypedValue.coerceToString(MTypedValue.TYPE_DIMENSION, mValue);
     }
 }

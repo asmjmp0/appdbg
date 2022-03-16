@@ -16,7 +16,7 @@
  */
 package brut.androlib.res.data.value;
 
-import android.util.TypedValue;
+import android.util.MTypedValue;
 import brut.androlib.AndrolibException;
 
 public class ResIntValue extends ResScalarValue {
@@ -39,6 +39,6 @@ public class ResIntValue extends ResScalarValue {
 
     @Override
     protected String encodeAsResXml() throws AndrolibException {
-        return TypedValue.coerceToString(type, mValue);
+        return MTypedValue.coerceToString(type, mValue);
     }
 }

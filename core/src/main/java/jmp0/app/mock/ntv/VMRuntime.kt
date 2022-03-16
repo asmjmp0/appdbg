@@ -1,8 +1,7 @@
 package jmp0.app.mock.ntv
 
 import jmp0.app.DbgContext
-import jmp0.app.mock.NativeHookClass
-import jmp0.util.SystemReflectUtils
+import jmp0.app.mock.annotations.NativeHookClass
 import org.apache.log4j.Logger
 
 @NativeHookClass("dalvik.system.VMRuntime")

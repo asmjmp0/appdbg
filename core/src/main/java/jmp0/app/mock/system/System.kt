@@ -1,12 +1,11 @@
 package jmp0.app.mock.system
 
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.util.SystemReflectUtils.findSystemClass
 import org.apache.log4j.Logger
 import java.io.InputStream
 import java.io.PrintStream
 import java.lang.System
-import java.util.UUID
 
 // TODO: 2022/3/11 patch reflect framework，don't permit to invoke private method in android framework
 

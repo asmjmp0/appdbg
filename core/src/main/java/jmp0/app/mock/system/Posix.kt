@@ -2,7 +2,7 @@ package jmp0.app.mock.system
 import android.system.*
 import android.util.MutableInt
 import android.util.MutableLong
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 import org.apache.log4j.Logger
 import java.nio.NioUtils
 import java.io.FileDescriptor

@@ -81,6 +81,7 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
         }
         return if (arr){
             """
+                    if($returnValueName == null) return null;
                    ${baseToType.type}[] bbXX = new int[$returnValueName.length];
                    for (${baseToType.type} i=0;i<$returnValueName.length;i++){
                           bbXX[i] = ($returnValueName[i])${baseToType.method};

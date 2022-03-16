@@ -19,7 +19,7 @@ package android.util;
  * Container for a dynamically typed data value. Primarily used with
  * Resources for holding resource values.
  */
-public class TypedValue {
+public class MTypedValue {
     /** The value contains no data. */
     public static final int TYPE_NULL = 0x00;
 
@@ -215,7 +215,7 @@ public class TypedValue {
      */
     public int type;
 
-    private static final float MANTISSA_MULT = 1.0f / (1 << TypedValue.COMPLEX_MANTISSA_SHIFT);
+    private static final float MANTISSA_MULT = 1.0f / (1 << MTypedValue.COMPLEX_MANTISSA_SHIFT);
     private static final float[] RADIX_MULTS = new float[] {
             MANTISSA_MULT, 1.0f / (1 << 7) * MANTISSA_MULT,
             1.0f / (1 << 15) * MANTISSA_MULT, 1.0f / (1 << 23) * MANTISSA_MULT };
@@ -232,9 +232,9 @@ public class TypedValue {
      * @return A floating point value corresponding to the complex data.
      */
     public static float complexToFloat(int complex) {
-        return (complex & (TypedValue.COMPLEX_MANTISSA_MASK << TypedValue.COMPLEX_MANTISSA_SHIFT))
-                * RADIX_MULTS[(complex >> TypedValue.COMPLEX_RADIX_SHIFT)
-                & TypedValue.COMPLEX_RADIX_MASK];
+        return (complex & (MTypedValue.COMPLEX_MANTISSA_MASK << MTypedValue.COMPLEX_MANTISSA_SHIFT))
+                * RADIX_MULTS[(complex >> MTypedValue.COMPLEX_RADIX_SHIFT)
+                & MTypedValue.COMPLEX_RADIX_MASK];
     }
 
     private static final String[] DIMENSION_UNIT_STRS = new String[] { "px",

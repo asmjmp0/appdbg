@@ -1,6 +1,6 @@
 package jmp0.app.mock.ntv
 
-import jmp0.app.mock.NativeHookClass
+import jmp0.app.mock.annotations.NativeHookClass
 import jmp0.app.mock.utils.PropertiesReadUtils
 import org.apache.log4j.Logger
 

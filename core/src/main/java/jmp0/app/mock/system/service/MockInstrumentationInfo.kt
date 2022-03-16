@@ -2,7 +2,7 @@ package jmp0.app.mock.system.service
 
 import android.content.pm.InstrumentationInfo
 import jmp0.app.DbgContext
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 
 /**
  * @author jmp0 <jmp0@qq.com>

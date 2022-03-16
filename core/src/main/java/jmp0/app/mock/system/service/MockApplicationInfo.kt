@@ -2,7 +2,7 @@ package jmp0.app.mock.system.service
 
 import android.content.pm.ApplicationInfo
 import jmp0.app.DbgContext
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 
 @ClassReplaceTo("")
 class MockApplicationInfo : ApplicationInfo() {

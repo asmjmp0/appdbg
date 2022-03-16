@@ -1,6 +1,6 @@
 package jmp0.app.mock.ntv
 
-import jmp0.app.mock.NativeHookClass
+import jmp0.app.mock.annotations.NativeHookClass
 import org.apache.log4j.Logger
 
 @NativeHookClass("android.view.ThreadedRenderer")

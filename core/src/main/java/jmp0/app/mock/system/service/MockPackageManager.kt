@@ -5,12 +5,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.IntentSender
 import android.content.pm.*
-import android.os.Binder
 import android.os.IBinder
 import android.os.IInterface
 import android.os.Parcel
 import jmp0.app.DbgContext
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 import java.io.FileDescriptor
 
 @ClassReplaceTo("")

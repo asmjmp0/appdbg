@@ -1,7 +1,7 @@
 package jmp0.app.mock.system.service
 
 import android.os.*
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 import java.io.FileDescriptor
 
 

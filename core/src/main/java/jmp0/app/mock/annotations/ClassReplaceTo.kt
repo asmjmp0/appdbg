@@ -1,4 +1,4 @@
-package jmp0.app.mock
+package jmp0.app.mock.annotations
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

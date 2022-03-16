@@ -1,9 +1,7 @@
 package jmp0.app.mock.ntv
 
-import jmp0.app.DbgContext
-import jmp0.app.mock.ClassReplaceTo
-import jmp0.app.mock.HookReturnType
-import jmp0.app.mock.NativeHookClass
+import jmp0.app.mock.annotations.HookReturnType
+import jmp0.app.mock.annotations.NativeHookClass
 import org.apache.log4j.Logger
 
 @NativeHookClass("android.os.Process")

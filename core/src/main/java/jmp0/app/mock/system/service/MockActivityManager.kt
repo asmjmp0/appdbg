@@ -15,7 +15,7 @@ import android.service.voice.IVoiceInteractionSession
 import com.android.internal.app.IVoiceInteractor
 import com.android.internal.os.IResultReceiver
 import jmp0.app.DbgContext
-import jmp0.app.mock.ClassReplaceTo
+import jmp0.app.mock.annotations.ClassReplaceTo
 import org.apache.log4j.Logger
 import java.util.*
 

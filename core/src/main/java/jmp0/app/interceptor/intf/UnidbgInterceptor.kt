@@ -6,6 +6,7 @@ package jmp0.app.interceptor.intf
  */
 abstract class UnidbgInterceptor():IInterceptor {
     override fun nativeCalled(
+        uuid: String,
         className: String,
         funcName: String,
         signature: String,
