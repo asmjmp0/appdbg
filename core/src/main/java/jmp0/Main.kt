@@ -60,7 +60,7 @@ class Main {
 
                 })
 
-        fun test(force:Boolean) {
+        fun testLooper(force:Boolean) {
             val androidEnvironment =
                 AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
                     absAndroidRuntimeClass = object : ClassLoadedCallbackBase() {
@@ -118,10 +118,6 @@ class Main {
                 .invokeEx(TestJavaclazz.getConstructor().newInstance())
 
             logger.debug("testLopper => $ret")
-//            androidEnvironment.destroy()
-
-
-//            androidEnvironment.destroy()
         }
 
         fun testBase64() {
@@ -214,27 +210,23 @@ class Main {
             }
         }
 
+        fun testAES(force: Boolean){
+            val ae = getBaseAndroidEnv(force)
+            val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
+            val ins = clazz.getDeclaredConstructor().newInstance()
+            val ret = clazz.getDeclaredMethod("testAll").invoke(ins)
+            logger.debug(ret)
+        }
+
 
         @JvmStatic
         fun main(args: Array<String>) {
-//            println(a)
-//            test(false)
-//            testJni(false)
-//            testBase64()
-//            Logger.getLogger(SystemClock::class.java).level = Level.OFF
-//            Logger.getLogger(Binder::class.java).level = Level.OFF
-//            testNetWork(true)
-//            val a = java.util.zip.ZipFile(File("temp/test-app-debug.apk/test-app-debug.apk"))
-//            a.entries().iterator().forEach {
-//                if (it.name == "resources.arsc"){
-//                    val ins = a.getInputStream(it)
-//                    val decoder = ARSCDecoder.decode(ins,true,true)
-//                }
-//            }
             testContext(false)
-//            ARSCDecoder.decode(,true,true)
-//            logger.debug(getBaseAndroidEnv(false).context)
-
+            testLooper(false)
+            testBase64()
+            testJni(false)
+            testNetWork(false)
+            testAES(false)
         }
     }
 }

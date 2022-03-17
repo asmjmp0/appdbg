@@ -13,6 +13,14 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+
+        externalNativeBuild {
+            cmake {
+            }
+            ndk{
+                abiFilters  'armeabi-v7a'
+            }
+        }
     }
 
     buildTypes {
@@ -27,6 +35,12 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
+            version "3.10.2"
+        }
     }
 }
 

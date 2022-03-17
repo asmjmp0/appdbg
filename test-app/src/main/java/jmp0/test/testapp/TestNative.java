@@ -9,6 +9,9 @@ import java.util.Arrays;
  * Create on 2022/3/10
  */
 public class TestNative {
+    static {
+        System.loadLibrary("native-lib");
+    }
 
     public void testAll(){
         getNativeLong();
