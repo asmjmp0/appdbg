@@ -1,5 +1,5 @@
 # Appdbg
-make it possible to run android dex file in origin Java virtual machine.
+make it possible to run android dex file in original Java Virtual Machine.
 
 ## Features
 - change every class before it will be loaded
@@ -15,7 +15,7 @@ make it possible to run android dex file in origin Java virtual machine.
 
 2. add vm option => -Xverify:none
 
-3. patch jdk_path/...../libjvm.dylib,which make it possible to load class,which name begin with "java"
+3. patch jdk_path/...../libjvm.dylib,which make it possible to load class,the name begin with "java"
 ![](assets/package.png)
 
 4. use the jre you modified
