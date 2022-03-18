@@ -9,6 +9,8 @@ make it possible to run android dex file in origin Java virtual machine.
 
 ## Start
 
+- **only test fully with jdk 1.8**
+
 1. open the project with IDEA
 
 2. add vm option => -Xverify:none
