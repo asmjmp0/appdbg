@@ -15,6 +15,7 @@ class ApkFile(private val apkFile: File,force:Boolean = false) {
 
     var packageName:String
     var privateDir:File = File(dir,"env").apply { if (!exists()) mkdir() }
+    var commonDatabasesDir:File = File(dir,"databases").apply { if(!exists()) mkdir() }
     var nativeLibraryDirRoot:File = File(dir,"lib").apply { if (!exists()) mkdir() }
     var nativeLibraryDir:File = File(nativeLibraryDirRoot,"armeabi-v7a").apply { if (!exists()) mkdir() }
     var assetsDir = File(dir,"assets")

@@ -54,7 +54,9 @@ class UserContext:Context() {
     }
 
     override fun getContentResolver(): ContentResolver {
-        TODO("Not yet implemented")
+        val env = getEnv();
+        return env.findClass("jmp0.app.mock.system.service.MockContentResolver").getDeclaredConstructor(env.findClass("android.content.Context"))
+            .newInstance(this) as ContentResolver
     }
 
     override fun getMainLooper(): Looper {
@@ -86,7 +88,7 @@ class UserContext:Context() {
     }
 
     override fun getOpPackageName(): String {
-        TODO("Not yet implemented")
+        return getEnv().apkFile.packageName
     }
 
     override fun getApplicationInfo(): ApplicationInfo {

@@ -222,11 +222,11 @@ class Main {
         @JvmStatic
         fun main(args: Array<String>) {
             testContext(false)
-            testLooper(false)
-            testBase64()
-            testJni(false)
-            testNetWork(false)
-            testAES(false)
+//            testLooper(false)
+//            testBase64()
+//            testJni(false)
+//            testNetWork(false)
+//            testAES(false)
         }
     }
 }

@@ -44,4 +44,11 @@ object SystemProperties {
         logger.debug("native_get(a: String,b: String) called")
         return  PropertiesReadUtils.getProperty(id).toBoolean()?:default
     }
+
+    @JvmStatic
+    fun native_get_long(uuid: String,id:String,default: Long):Long{
+        val res = PropertiesReadUtils.getProperty(id)?.toLong() ?: default
+        logger.debug("native_get_long(Ljava/lang/String;J)J called")
+        return res
+    }
 }

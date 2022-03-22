@@ -15,8 +15,4 @@ class MainActivity : AppCompatActivity() {
         TestContext(this).testAll()
         TestAES()
     }
-
-    fun getStr(){
-        Log.d("test",Settings.Secure.getString(this.contentResolver,"android_id"))
-    }
 }

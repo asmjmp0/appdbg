@@ -2,6 +2,7 @@ package jmp0.test.testapp
 
 import android.content.Context
 import android.content.res.AssetManager
+import android.provider.Settings
 import android.util.Log
 
 /**
@@ -18,8 +19,13 @@ class TestContext(private val context: Context) {
         Log.d("asmjmp0",context.resources.getString(R.string.app_name))
     }
 
+    fun testContentResolver(){
+        Log.d("asmjmp0", Settings.Secure.getString(context.contentResolver,"android_id"))
+    }
+
     fun testAll(){
 //        testAssetManager()
-        testResources()
+//        testResources()
+        testContentResolver()
     }
 }
