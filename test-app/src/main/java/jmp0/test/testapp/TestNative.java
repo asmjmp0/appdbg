@@ -14,8 +14,9 @@ public class TestNative {
     }
 
     public void testAll(){
-        getNativeLong();
-        getNativeIntArr();
+//        getNativeLong();
+//        getNativeIntArr();
+        Log.d("asmjmp0",AESFromJava("test"));
     }
 
     public void getNativeLong(){
@@ -25,6 +26,15 @@ public class TestNative {
     public void getNativeIntArr(){
         Log.d("jmp0 test",Arrays.toString(JNI_INT_ARR()));
     }
+
+    public String AESFromJava(String str){ return testAESFromJava(str);}
+
+    /**
+     * @param str string to encrypt
+     * @return encrypted string with base64 encode
+     */
+    public static native String testAESFromJava(String str);
+
     public static native long JNI_LONG();
     public static native int[] JNI_INT_ARR();
 }

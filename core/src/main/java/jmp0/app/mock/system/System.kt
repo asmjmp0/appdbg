@@ -29,7 +29,7 @@ class System  {
 
         @JvmStatic //the annotation is important
         fun loadLibrary(libName: String){
-            logger.debug("want to load $libName...")
+            logger.info("want to load $libName...")
         }
 
         @JvmStatic

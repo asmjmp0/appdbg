@@ -1,22 +1,14 @@
 package jmp0
-import brut.androlib.res.decoder.ARSCDecoder
-import brut.androlib.res.decoder.AXmlResourceParser
-import brut.androlib.res.decoder.AndroidManifestResourceParser
-import com.googlecode.d2j.util.zip.ZipFile
 import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.classloader.ClassLoadedCallbackBase
-import jmp0.app.mock.ntv.Binder
-import jmp0.app.mock.ntv.SystemClock
-import jmp0.app.mock.system.user.UserContext
+import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.util.SystemReflectUtils.invokeEx
-import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import java.io.File
-import kotlin.concurrent.thread
 
 // TODO: 2022/3/11 整理log factory
 class Main {
@@ -155,29 +147,17 @@ class Main {
         fun testJni(force: Boolean) {
             val androidEnvironment =
                 AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
-                    object : IInterceptor {
-                        override fun nativeCalled(
-                            uuid: String,
-                            className: String,
-                            funcName: String,
-                            signature: String,
-                            param: Array<out Any?>
+                    object : UnidbgInterceptor("libnative-lib.so") {
+                        override fun otherNativeCalled(uuid: String, className: String, funcName: String,
+                            signature: String, param: Array<out Any?>
                         ): IInterceptor.ImplStatus {
-                            if (funcName == "JNI_LONG") {
-                                return IInterceptor.ImplStatus(true, 1000L)
-                            }else if(funcName == "JNI_INT_ARR"){
-                                return IInterceptor.ImplStatus(true, arrayOf(1,2,3,4))
-                            }
-                            else return IInterceptor.ImplStatus(false, null)
+                            TODO("Not yet implemented")
                         }
 
-                        override fun methodCalled(
-                            uuid: String,
-                            className: String,
-                            funcName: String,
-                            signature: String,
-                            param: Array<out Any?>
+                        override fun methodCalled(uuid: String, className: String, funcName: String,
+                                                  signature: String, param: Array<out Any?>
                         ): Any? {
+                            logger.info("$className.$funcName$signature called")
                             return null
                         }
 
@@ -185,8 +165,7 @@ class Main {
             androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false);
             val clazz = androidEnvironment.loadClass("jmp0.test.testapp.TestNative")
             val ins = clazz.getDeclaredConstructor().newInstance()
-            val res = clazz.getDeclaredMethod("testAll").invokeEx(ins)
-            logger.debug(res)
+            clazz.getDeclaredMethod("testAll").invokeEx(ins)
             androidEnvironment.destroy()
         }
 
@@ -221,10 +200,10 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            testContext(false)
+//            testContext(false)
 //            testLooper(false)
 //            testBase64()
-//            testJni(false)
+            testJni(false)
 //            testNetWork(false)
 //            testAES(false)
         }
