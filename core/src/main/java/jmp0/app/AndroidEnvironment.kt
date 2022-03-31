@@ -13,7 +13,7 @@ import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
 import jmp0.conf.CommonConf
 import jmp0.util.FileUtils
-import jmp0.util.UnzipUtility
+import jmp0.util.ZipUtility
 import org.apache.log4j.Logger
 import java.io.File
 import java.util.*
@@ -112,7 +112,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
         val frameworkDir = File("${CommonConf.tempDirName}${File.separator}${CommonConf.frameworkDirName}")
         if(!frameworkDir.exists()){
             frameworkDir.mkdir()
-            UnzipUtility.unzip(CommonConf.frameworkFileName,frameworkDir.canonicalPath)
+            ZipUtility.unzip(CommonConf.frameworkFileName,frameworkDir.canonicalPath)
         }
     }
 
@@ -120,27 +120,18 @@ class AndroidEnvironment(val apkFile: ApkFile,
         findFromApkFile(className)?:findFromAndroidFramework(className)
 
 
-    private fun findFromDir(dir:File,className:String,flag:Boolean=false):File?{
-        if (flag){
-            val filePath = className.replace('.','/')+".class"
-            val f = File(dir,filePath)
-            if (f.exists()) return f
-            return null
-        }else{
-            val fileName = className.replace('.','/').replace('/','_')+".class"
-            dir.listFiles()!!.forEach {
-                if(it.name == fileName)
-                    return it
-            }
-            return null
-        }
+    private fun findFromDir(dir:File,className:String):File?{
+        val filePath = className.replace('.','/')+".class"
+        val f = File(dir,filePath)
+        if (f.exists()) return f
+        return null
     }
 
     private fun findFromApkFile(className: String):File? =
         findFromDir(apkFile.classesDir,className)
 
     private fun findFromAndroidFramework(className: String): File? =
-        findFromDir(File(CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className,true)
+        findFromDir(File(CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className)
 
 
     private fun loadClass(file: File): Class<*> {

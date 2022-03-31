@@ -11,6 +11,8 @@ object CommonConf {
     val frameworkFileName = "libs${separator}android-all-6.0.0_r1-robolectric-0.jar"
     const val frameworkDirName = "framework"
 
+    const val appJarDir = "tempLibs"
+
     object Mock{
         //system
         val mockSystemClass = "core/src/main/java/jmp0/app/mock/system".replace("/",separator)

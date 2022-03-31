@@ -22,6 +22,7 @@ dependencies {
     implementation 'com.github.zhkl0228:unidbg-dynarmic:0.9.4'
     implementation 'io.github.qsy7.java.dependencies:slf4j-simple:0.1.0'
     compileOnly fileTree(dir:'../libs',includes:['*jar'])
+    compileClasspath fileTree(dir:'../libs/tempLibs',includes:['*jar'])
 }
 
 sourceCompatibility = "1.8"
