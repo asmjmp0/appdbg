@@ -6,6 +6,7 @@ make it possible to run android dex file in original Java Virtual Machine.
 - change every item of the class after it was loaded
 - hook java method
 - implement native method by yourself or [unidbg](https://github.com/zhkl0228/unidbg)...
+- provide java method level debug ability (dex2jar transformed class file without debug info,so we can't step in)
 
 ## Start
 
@@ -35,6 +36,15 @@ make it possible to run android dex file in original Java Virtual Machine.
 ![](assets/jni2.png)
 - result
 ![](assets/jni3.png)
+  
+## Method level debug
+1. run code ,and the jar file will be generated in libs/tempLibs dir
+![](assets/method_level_debug0.png)
+2. sync gradle file
+![](assets/method_level_debug1.png)
+3. set breakpoint on method line
+4. run code with debug mode eg. test testJni(false) in Main class
+![](assets/method_level_debug2.png)
 
 ## About
 it's hard for me to implement all Android runtime well，if you can help me to make this project better,Thanks for your contribution. 
