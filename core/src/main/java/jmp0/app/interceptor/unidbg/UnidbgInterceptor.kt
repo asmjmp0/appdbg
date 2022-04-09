@@ -6,6 +6,7 @@ import com.github.unidbg.file.linux.AndroidFileIO
 import com.github.unidbg.linux.android.AndroidARMEmulator
 import com.github.unidbg.linux.android.AndroidResolver
 import com.github.unidbg.linux.android.dvm.*
+import com.github.unidbg.linux.android.dvm.wrapper.DvmInteger
 import com.github.unidbg.memory.SvcMemory
 import com.github.unidbg.unix.UnixSyscallHandler
 import jmp0.app.AndroidEnvironment
@@ -16,6 +17,7 @@ import jmp0.util.SystemReflectUtils
 import org.apache.log4j.Logger
 import java.io.File
 import java.lang.IllegalArgumentException
+import java.util.LinkedList
 
 /**
  * @author jmp0 <jmp0@qq.com>
@@ -28,6 +30,7 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
     private var emulator:AndroidARMEmulator? = null
     private lateinit var vm: VM
     private lateinit var md:DalvikModule
+    private val objList:ArrayList<DvmObjectWrapper> = ArrayList()
 
 
 
@@ -62,6 +65,47 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
                     return toUnidbgObject(res)!!
                 }
 
+                override fun newObjectV(
+                    vm: BaseVM?,
+                    dvmClass: DvmClass,
+                    dvmMethod: DvmMethod,
+                    vaList: VaList
+                ): DvmObject<*> {
+                    logger.info("new object ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+                    val clazzName = dvmClass.className.replace('/', '.')
+                    val methodName = dvmMethod.methodName
+                    val signatureInfo = SystemReflectUtils.getSignatureInfo(
+                        clazzName + '.' + methodName + dvmMethod.args,
+                        androidEnvironment!!.id
+                    )
+                    val clazz = androidEnvironment!!.findClass(clazzName)
+                    val method = clazz.getDeclaredConstructor(*signatureInfo.paramTypes)
+                    val params = toOriginalObject(vaList, signatureInfo)
+                    val obj = toUnidbgObject(method.newInstance(*params))!!
+                    objList.add(obj)
+                    return obj
+                }
+
+                override fun callVoidMethodV(
+                    vm: BaseVM,
+                    dvmObject: DvmObject<*>,
+                    dvmMethod: DvmMethod,
+                    vaList: VaList
+                ) {
+                    logger.info("call method ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+                    val s = objList.find { it == dvmObject }?:throw Exception("$dvmObject no found")
+                    val clazzName = dvmObject.objectType.className.replace('/','.')
+                    val methodName = dvmMethod.methodName
+                    val signatureInfo = SystemReflectUtils.getSignatureInfo(
+                        clazzName + '.' + methodName + dvmMethod.args,
+                        androidEnvironment!!.id
+                    )
+                    val clazz = androidEnvironment!!.findClass(clazzName)
+                    val method = clazz.getDeclaredMethod(methodName,*signatureInfo.paramTypes)
+                    val params = toOriginalObject(vaList,signatureInfo)
+                    method.invoke(s.obj,*params)
+                }
+
             })
             md = vm.loadLibrary((soName.split('.')[0]).substring(3),
                 File(androidEnvironment!!.apkFile.nativeLibraryDir,soName).readBytes(),true)
@@ -74,15 +118,36 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
         val retArr = ArrayList<Any?>()
         val size = signatureInfo.paramTypes.size
         for (i in 0 until size){
-            val dvmObj = vaList.getObjectArg<DvmObject<Any>>(i)
-            retArr.add(dvmObj.value)
+            when(signatureInfo.paramTypes[i].name){
+                "int"-> {
+                    val intObj = vaList.getIntArg(i)
+                    retArr.add(intObj)
+                }
+                "double"-> {
+                    val doubleObj = vaList.getDoubleArg(i)
+                    retArr.add(doubleObj)
+                }
+                "float"-> {
+                    val floatObj = vaList.getFloatArg(i)
+                    retArr.add(floatObj)
+                }
+                "long"-> {
+                    val longObj = vaList.getLongArg(i)
+                    retArr.add(longObj)
+                }
+                else -> {
+                    val dvmObj = vaList.getObjectArg<DvmObject<*>>(i)
+                    retArr.add(dvmObj.value)
+                }
+            }
+
         }
         return retArr.toArray()
     }
 
-    private fun toUnidbgObject(obj:Any?):DvmObject<*>?{
+    private fun toUnidbgObject(obj:Any?):DvmObjectWrapper?{
         if (obj == null) return null
-        val clazzName = obj.javaClass.name
+        val clazzName = obj.javaClass.name.replace(".","/")
         return DvmObjectWrapper(vm.resolveClass(clazzName),obj)
     }
 
