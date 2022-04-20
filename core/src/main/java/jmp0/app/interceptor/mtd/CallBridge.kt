@@ -9,7 +9,6 @@ import jmp0.app.mock.MethodManager
  */
 //called from hooked native method
 object CallBridge {
-    val methodManagerMap = HashMap<String,MethodManager>()
     /**
      * if it is system try to use impl/system/class
      * if it is android try to use impl/android/class
@@ -21,10 +20,7 @@ object CallBridge {
         val sig = "$className.$funcName$signature"
         val callback = DbgContext.getNativeCallBack(uuid)?:throw Exception("callback no found!!")
         //find implement method and ivoke
-        if (methodManagerMap[uuid] == null){
-            methodManagerMap[uuid] = MethodManager(uuid)
-        }
-        val implMethod = methodManagerMap[uuid]!!.getNative(sig)
+        val implMethod = MethodManager.getInstance(uuid).getNative(sig)
         val res = if (implMethod!=null)  implMethod.invoke(null,uuid,*param)
 
         else callback.nativeCalled(uuid,className,funcName,signature,param).apply {
@@ -37,10 +33,7 @@ object CallBridge {
         val sig = "$className.$funcName$signature"
         val callback = DbgContext.getNativeCallBack(uuid)?:throw Exception("callback no found!!")
         //find implement method and ivoke
-        if (methodManagerMap[uuid] == null){
-            methodManagerMap[uuid] = MethodManager(uuid)
-        }
-        val implMethod = methodManagerMap[uuid]!!.getMethodMap()[sig]
+        val implMethod = MethodManager.getInstance(uuid).getMethodMap()[sig]
         val res = if (implMethod!=null)  implMethod.invoke(null,uuid,*param)
         else callback.methodCalled(uuid,className, funcName,signature, param)
         return res

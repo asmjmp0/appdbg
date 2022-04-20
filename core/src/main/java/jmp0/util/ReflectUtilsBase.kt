@@ -52,7 +52,7 @@ abstract class ReflectUtilsBase {
                 'F'-> Float::class.java
                 'D'-> Double::class.java
                 'V'-> Void::class.java
-                else->throw java.lang.Exception("type no defined")
+                else->throw java.lang.Exception("${temp[0]} type no defined")
             }
             index++
         }
@@ -94,7 +94,7 @@ abstract class ReflectUtilsBase {
         else getDeclaredMethod(signatureInfo.funcName,*(signatureInfo.paramTypes))
     }
 
-    fun Method.invokeEx(ins:Any,vararg parameter:Any):Any? =
+    fun Method.invokeEx(ins:Any?,vararg parameter:Any):Any? =
         setAccessibleEx().invoke(ins,*parameter)
 
     fun Field.getEx(ins: Any) =

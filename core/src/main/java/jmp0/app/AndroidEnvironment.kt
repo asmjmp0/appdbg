@@ -1,9 +1,6 @@
 package jmp0.app
 
-import javassist.ClassPool
-import javassist.CtClass
-import javassist.CtField
-import javassist.NotFoundException
+import javassist.*
 import jmp0.apk.ApkFile
 import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.FrameWorkClassNoFoundException
@@ -11,8 +8,10 @@ import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
+import jmp0.app.mock.annotations.MethodHookClass
 import jmp0.conf.CommonConf
 import jmp0.util.FileUtils
+import jmp0.util.SystemReflectUtils
 import jmp0.util.ZipUtility
 import org.apache.log4j.Logger
 import java.io.File
@@ -50,7 +49,8 @@ class AndroidEnvironment(val apkFile: ApkFile,
         registerToContext()
         checkAndReleaseFramework()
         loadUserSystemClass()
-        MethodManager(id).getMethodMap().forEach{
+        //impotent init MethodManager and set java method hook
+        MethodManager.getInstance(id).getMethodMap().forEach{
             registerMethodHook(it.key,true)
         }
         context = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
@@ -81,15 +81,9 @@ class AndroidEnvironment(val apkFile: ApkFile,
      *  modify java/ to xxxxx before characteristic string
      */
     private fun loadUserSystemClass(){
-        FileUtils.listFileRecursive(File(CommonConf.Mock.mockSystemClass),CommonConf.Mock.userSystemClassPackageName){ pName,fileName->
-            val fullClassName = pName +'.'+ fileName.split('.')[0]
-//                    val systemName = SystemClassManger.get(fullClassName)?:throw java.lang.Exception("$fullClassName not define in ${SystemClassManger.javaClass.name}")
+        SystemReflectUtils.getAllClassWithAnnotation(CommonConf.Mock.userSystemClassPackageName, ClassReplaceTo::class.java){ fullClassName->
             val ctClass = ClassPool.getDefault().getCtClass(fullClassName)
-            val targetClassName = ctClass.annotations.find { annotation-> annotation is ClassReplaceTo }.run {
-                if (this != null) (this as ClassReplaceTo).to
-                else throw java.lang.Exception("${ClassReplaceTo::class.java} annotation is not added to $fullClassName")
-            }
-
+            val targetClassName = (ctClass.annotations.find { annotation-> annotation is ClassReplaceTo } as ClassReplaceTo).to
             if (targetClassName != "") ctClass.replaceClassName(fullClassName,targetClassName)
             //set uuid as xxUuid
             try {
@@ -99,7 +93,18 @@ class AndroidEnvironment(val apkFile: ApkFile,
             }catch (e: NotFoundException){
                 ctClass.addField(CtField.make("public static String xxUuid = \"$id\";",ctClass))
             }
-            val ba = ctClass.toBytecode()
+            //bugfix compile file maybe fail
+            var ba: ByteArray
+            while (true){
+                try {
+                    ba = ctClass.toBytecode()
+                    break
+                }catch (e: CannotCompileException){
+                    val className = e.cause!!.message!!
+                    loadClass(className)
+                }
+            }
+
             androidLoader.xDefineClass(null,ba,0,ba.size)
             ctClass.defrost()
         }

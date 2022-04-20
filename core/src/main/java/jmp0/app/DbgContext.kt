@@ -1,6 +1,7 @@
 package jmp0.app
 
 import jmp0.apk.ApkFile
+import jmp0.app.mock.MethodManager
 import java.lang.StringBuilder
 import java.util.*
 
@@ -27,6 +28,7 @@ object DbgContext {
     fun unRegister(uuid: String) = synchronized(DbgContext::class.java){
         contextHashMap.remove(uuid)
         methodHookHashMap.remove(uuid)
+        MethodManager.removeInstance(uuid)
     }
 
     @JvmStatic
