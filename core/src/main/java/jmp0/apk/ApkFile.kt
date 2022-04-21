@@ -22,6 +22,18 @@ class ApkFile(private val apkFile: File,force:Boolean = false) {
     var arscFileName = "resources.arsc"
 
     init {
+        //release apktool
+        val toolsDir = File(CommonConf.tempDirName,CommonConf.toolsName)
+        if (!toolsDir.exists()){
+            toolsDir.mkdirs()
+        }
+        val apktoolFile = File(toolsDir,CommonConf.apktoolName+".jar")
+        if (!apktoolFile.exists()){
+            apktoolFile.createNewFile()
+            val bytes = ClassLoader.getSystemClassLoader().getResource(CommonConf.apktoolResourcePath)!!.openStream().readBytes()
+            apktoolFile.writeBytes(bytes)
+        }
+        //release apk file
         if (!dir.exists()){
             releaseApkFile()
             releaseDex()

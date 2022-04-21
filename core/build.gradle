@@ -1,10 +1,32 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-group 'org.example'
+group 'jmp0'
 version '1.0-SNAPSHOT'
 
+task copyBegin(type:Copy){
+    from('../libs/android-all-6.0.0_r1-robolectric-0.jar')
+    into('src/main/resources')
+    rename {fileName->
+        fileName.replace(".jar","")
+    }
+}
+
+shadowJar{
+    dependsOn(copyBegin)
+    archiveBaseName.set("apkdbg")
+    archiveClassifier.set('')
+    manifest{
+        attributes(
+                'Main-Class':'jmp0.Main'
+        )
+    }
+    doLast {
+        delete file('src/main/resources/android-all-6.0.0_r1-robolectric-0')
+    }
+}
 repositories {
     mavenCentral()
 }
@@ -22,8 +44,8 @@ dependencies {
     implementation 'com.github.zhkl0228:unidbg-android:0.9.4'
     implementation 'com.github.zhkl0228:unidbg-dynarmic:0.9.4'
     implementation 'io.github.qsy7.java.dependencies:slf4j-simple:0.1.0'
-    compileOnly fileTree(dir:'../libs',includes:['*jar'])
-    compileClasspath fileTree(dir:'../libs/tempLibs',includes:['*jar'])
+    compileOnly fileTree(dir:'../libs/',includes:['*jar'])
+    compileOnly fileTree(dir:'../libs/tempLibs',includes:['*jar'])
 }
 
 sourceCompatibility = "1.8"

@@ -19,11 +19,15 @@ object ZipUtility {
      * @throws IOException
      */
     fun unzip(zipFilePath: String?, destDirectory: String) {
+        unzip(FileInputStream(zipFilePath),destDirectory)
+    }
+
+    fun unzip(inputStream: InputStream,destDirectory: String){
+        val zipIn = ZipInputStream(inputStream)
         val destDir = File(destDirectory)
         if (!destDir.exists()) {
             destDir.mkdir()
         }
-        val zipIn = ZipInputStream(FileInputStream(zipFilePath))
         var entry: ZipEntry? = zipIn.getNextEntry()
         // iterates over entries in the zip file
         while (entry != null) {

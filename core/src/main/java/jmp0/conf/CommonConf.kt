@@ -1,17 +1,17 @@
 package jmp0.conf
 
-import java.io.File
-import java.io.File.separator
-
 object CommonConf {
     const val tempDirName = "temp"
-    const val toolDirName = "tools"
 
     //framework
-    val frameworkFileName = "libs${separator}android-all-6.0.0_r1-robolectric-0.jar"
+    val frameworkFileName = "android-all-6.0.0_r1-robolectric-0"
     const val frameworkDirName = "framework"
 
     const val appJarDir = "tempLibs"
+
+    const val apktoolName = "apktool_2.6.1"
+    const val toolsName = "mtools"
+    const val apktoolResourcePath = "${toolsName}/${apktoolName}"
 
     object Mock{
         //system

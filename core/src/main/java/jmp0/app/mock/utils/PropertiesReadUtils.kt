@@ -1,7 +1,7 @@
 package jmp0.app.mock.utils
 
 object PropertiesReadUtils {
-    private val propertiesFile = ClassLoader.getSystemClassLoader().getResource("properties")!!.openStream()
+    private val propertiesFile = ClassLoader.getSystemClassLoader().getResource("mproperties")!!.openStream()
 
      val propertiesList = generatePropertiesList()
 
