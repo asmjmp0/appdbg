@@ -99,4 +99,19 @@ abstract class ReflectUtilsBase {
 
     fun Field.getEx(ins: Any) =
         setAccessibleEx().get(ins)
+
+    fun Any.getObjectEx(name:String) =
+        javaClass.getDeclaredField(name).getEx(this)
+
+    fun Any.arrayForeach(callback:(idx:Int,obj:Any?)->Unit){
+        val size = java.lang.reflect.Array.getLength(this)
+        if (size == 0) return
+        for (i in 0 until size) callback(i,java.lang.reflect.Array.get(this,i))
+    }
+    fun Any.arrayGet(idx:Int): Any? {
+        val size = java.lang.reflect.Array.getLength(this)
+        if (size == 0) return null
+        return java.lang.reflect.Array.get(this,idx)
+    }
+
 }

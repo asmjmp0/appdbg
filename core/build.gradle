@@ -1,21 +1,20 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'jmp0'
 version '1.0-SNAPSHOT'
 
 task copyBegin(type:Copy){
-    from('../libs/android-all-6.0.0_r1-robolectric-0.jar')
-    into('src/main/resources')
+    from(rootDir.canonicalPath+File.separator+'libs'+File.separator+'android-all-6.0.0_r1-robolectric-0.jar')
+    into(rootDir.canonicalPath+File.separator+'core'+File.separator+'src'+File.separator+'main'+File.separator+'resources')
     rename {fileName->
         fileName.replace(".jar","")
     }
 }
 
 shadowJar{
-    dependsOn(copyBegin)
     archiveBaseName.set("apkdbg")
     archiveClassifier.set('')
     manifest{
@@ -23,8 +22,12 @@ shadowJar{
                 'Main-Class':'jmp0.Main'
         )
     }
+}
+task myShadowJar{
+    dependsOn(copyBegin)
+    dependsOn(shadowJar)
     doLast {
-        delete file('src/main/resources/android-all-6.0.0_r1-robolectric-0')
+        delete file(rootDir.canonicalPath+File.separator+'core'+File.separator+'src'+File.separator+'main'+File.separator+'resources'+File.separator+'android-all-6.0.0_r1-robolectric-0')
     }
 }
 repositories {

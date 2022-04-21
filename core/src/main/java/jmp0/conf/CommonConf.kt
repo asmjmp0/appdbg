@@ -1,5 +1,7 @@
 package jmp0.conf
 
+import java.io.File
+
 object CommonConf {
     const val tempDirName = "temp"
 
@@ -11,7 +13,7 @@ object CommonConf {
 
     const val apktoolName = "apktool_2.6.1"
     const val toolsName = "mtools"
-    const val apktoolResourcePath = "${toolsName}/${apktoolName}"
+    val apktoolResourcePath = "${toolsName}${File.separator}${apktoolName}"
 
     object Mock{
         //system

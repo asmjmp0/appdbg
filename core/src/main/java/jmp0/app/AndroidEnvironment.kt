@@ -117,7 +117,9 @@ class AndroidEnvironment(val apkFile: ApkFile,
         val frameworkDir = File("${CommonConf.tempDirName}${File.separator}${CommonConf.frameworkDirName}")
         if(!frameworkDir.exists()){
             frameworkDir.mkdir()
-            ZipUtility.unzip(ClassLoader.getSystemClassLoader().getResource(CommonConf.frameworkFileName)!!.openStream(),frameworkDir.canonicalPath)
+            val f = File("libs${File.separator}${CommonConf.frameworkFileName}.jar")
+            if (f.exists()) ZipUtility.unzip(f.canonicalPath,frameworkDir.canonicalPath)
+            else ZipUtility.unzip(ClassLoader.getSystemClassLoader().getResource(CommonConf.frameworkFileName)!!.openStream(),frameworkDir.canonicalPath)
         }
     }
 

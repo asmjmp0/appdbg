@@ -28,7 +28,7 @@ make it possible to run android dex file in original Java Virtual Machine.
 ![](assets/1.png)
 
 ## Build a Fat JAR
-1. run command ` ./gradlew core:shadowJar` and the fat jar will be built in `core/build/libs`
+1. run command ` ./gradlew core:myShadowJar` and the fat jar will be built in `core/build/libs`
 2. run command `${patched JRE path}/java -jar -Xverify:none apkdbg-1.0-SNAPSHOT.jar`
 ![](assets/fatjar.png)
 ## Implement native method with unidbg
