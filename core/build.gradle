@@ -42,10 +42,10 @@ dependencies {
     implementation group: 'log4j', name: 'log4j' ,version: log4j_version
     implementation group: 'org.javassist', name: 'javassist',version: javassist_version
     implementation 'io.github.classgraph:classgraph:4.8.146'
-    implementation 'com.github.zhkl0228:unidbg-parent:0.9.4'
-    implementation 'com.github.zhkl0228:unidbg-api:0.9.4'
-    implementation 'com.github.zhkl0228:unidbg-android:0.9.4'
-    implementation 'com.github.zhkl0228:unidbg-dynarmic:0.9.4'
+    implementation 'com.github.zhkl0228:unidbg-parent:0.9.6'
+    implementation 'com.github.zhkl0228:unidbg-api:0.9.6'
+    implementation 'com.github.zhkl0228:unidbg-android:0.9.6'
+    implementation 'com.github.zhkl0228:unidbg-dynarmic:0.9.5'
     implementation 'io.github.qsy7.java.dependencies:slf4j-simple:0.1.0'
     compileOnly fileTree(dir:'../libs/',includes:['*jar'])
     compileOnly fileTree(dir:'../libs/tempLibs',includes:['*jar'])

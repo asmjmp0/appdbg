@@ -1,6 +1,14 @@
 #include <jni.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <android/log.h>
+#define KLOG_TAG "asmjmp0"
+
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, KLOG_TAG, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, KLOG_TAG, __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, KLOG_TAG, __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, KLOG_TAG, __VA_ARGS__)
+#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, KLOG_TAG, __VA_ARGS__)
 
 
 extern "C" JNIEXPORT jlong JNICALL
@@ -30,6 +38,20 @@ Java_jmp0_test_testapp_TestNative_testAESFromJava(
         jobject TestNativeObject_obj = env->NewObject(TestNativeObject_clazz,new_method);
         jmethodID print_method = env->GetMethodID(TestNativeObject_clazz,"printTestValue","(ILjava/lang/String;)V");
         env->CallVoidMethod(TestNativeObject_obj,print_method,1234,key);
+        //test set and get field "testString"
+        jfieldID testString = env->GetFieldID(TestNativeObject_clazz,"testString","Ljava/lang/String;");
+        env->SetObjectField(TestNativeObject_obj,testString,key);
+        env->GetObjectField(TestNativeObject_obj,testString);
+
+        //test set and get field "testInt"
+        jfieldID testInt = env->GetFieldID(TestNativeObject_clazz,"testInt","I");
+        env->SetIntField(TestNativeObject_obj,testInt,11);
+        env->GetIntField(TestNativeObject_obj,testInt);
+
+        //test set and get staic field
+        jfieldID testStaticString = env->GetStaticFieldID(TestNativeObject_clazz,"testStaticString","Ljava/lang/String;");
+        env->SetStaticObjectField(TestNativeObject_clazz,testStaticString,key);
+        env->GetStaticObjectField(TestNativeObject_clazz,testStaticString);
 
 
         env->DeleteLocalRef(key);

@@ -12,6 +12,7 @@ import com.github.unidbg.unix.UnixSyscallHandler
 import jmp0.app.AndroidEnvironment
 import jmp0.app.DbgContext
 import jmp0.app.interceptor.intf.IInterceptor
+import jmp0.app.interceptor.unidbg.UnidbgWrapperUtils
 import jmp0.util.ReflectUtilsBase
 import jmp0.util.SystemReflectUtils
 import org.apache.log4j.Logger
@@ -30,7 +31,6 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
     private var emulator:AndroidARMEmulator? = null
     private lateinit var vm: VM
     private lateinit var md:DalvikModule
-    private val objList:ArrayList<DvmObjectWrapper> = ArrayList()
 
 
 
@@ -47,121 +47,16 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
             emulator!!.memory.setLibraryResolver(AndroidResolver(23))
             vm = emulator!!.createDalvikVM(androidEnvironment!!.apkFile.copyApkFile)
 
-            vm.setJni(object :AbstractJni(){
-                override fun callStaticObjectMethodV(
-                    vm: BaseVM,
-                    dvmClass: DvmClass,
-                    dvmMethod: DvmMethod,
-                    vaList: VaList
-                ): DvmObject<*> {
-                    logger.info("from jni call ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
-                    val clazzName = dvmClass.className.replace('/','.')
-                    val methodName = dvmMethod.methodName
-                    val signatureInfo = SystemReflectUtils.getSignatureInfo(clazzName+'.'+methodName+dvmMethod.args,androidEnvironment!!.id)
-                    val clazz = androidEnvironment!!.findClass(clazzName)
-                    val method = clazz.getDeclaredMethod(methodName,*signatureInfo.paramTypes)
-                    val params = toOriginalObject(vaList,signatureInfo)
-                    val res = method.invoke(null,*params)
-                    return toUnidbgObject(res)!!
-                }
-
-                override fun newObjectV(
-                    vm: BaseVM?,
-                    dvmClass: DvmClass,
-                    dvmMethod: DvmMethod,
-                    vaList: VaList
-                ): DvmObject<*> {
-                    logger.info("new object ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
-                    val clazzName = dvmClass.className.replace('/', '.')
-                    val methodName = dvmMethod.methodName
-                    val signatureInfo = SystemReflectUtils.getSignatureInfo(
-                        clazzName + '.' + methodName + dvmMethod.args,
-                        androidEnvironment!!.id
-                    )
-                    val clazz = androidEnvironment!!.findClass(clazzName)
-                    val method = clazz.getDeclaredConstructor(*signatureInfo.paramTypes)
-                    val params = toOriginalObject(vaList, signatureInfo)
-                    val obj = toUnidbgObject(method.newInstance(*params))!!
-                    objList.add(obj)
-                    return obj
-                }
-
-                override fun callVoidMethodV(
-                    vm: BaseVM,
-                    dvmObject: DvmObject<*>,
-                    dvmMethod: DvmMethod,
-                    vaList: VaList
-                ) {
-                    logger.info("call method ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
-                    val s = objList.find { it == dvmObject }?:throw Exception("$dvmObject no found")
-                    val clazzName = dvmObject.objectType.className.replace('/','.')
-                    val methodName = dvmMethod.methodName
-                    val signatureInfo = SystemReflectUtils.getSignatureInfo(
-                        clazzName + '.' + methodName + dvmMethod.args,
-                        androidEnvironment!!.id
-                    )
-                    val clazz = androidEnvironment!!.findClass(clazzName)
-                    val method = clazz.getDeclaredMethod(methodName,*signatureInfo.paramTypes)
-                    val params = toOriginalObject(vaList,signatureInfo)
-                    method.invoke(s.obj,*params)
-                }
-
-            })
+            vm.setJni(AppdbgJni(vm,androidEnvironment!!))
             md = vm.loadLibrary((soName.split('.')[0]).substring(3),
                 File(androidEnvironment!!.apkFile.nativeLibraryDir,soName).readBytes(),true)
             md.callJNI_OnLoad(emulator)
         }
     }
 
-    private fun toOriginalObject(vaList: VaList,signatureInfo: ReflectUtilsBase.SignatureInfo):Array<Any?>{
-        if (signatureInfo.paramTypes.isEmpty()) return emptyArray()
-        val retArr = ArrayList<Any?>()
-        val size = signatureInfo.paramTypes.size
-        for (i in 0 until size){
-            when(signatureInfo.paramTypes[i].name){
-                "int"-> {
-                    val intObj = vaList.getIntArg(i)
-                    retArr.add(intObj)
-                }
-                "double"-> {
-                    val doubleObj = vaList.getDoubleArg(i)
-                    retArr.add(doubleObj)
-                }
-                "float"-> {
-                    val floatObj = vaList.getFloatArg(i)
-                    retArr.add(floatObj)
-                }
-                "long"-> {
-                    val longObj = vaList.getLongArg(i)
-                    retArr.add(longObj)
-                }
-                else -> {
-                    val dvmObj = vaList.getObjectArg<DvmObject<*>>(i)
-                    retArr.add(dvmObj.value)
-                }
-            }
-
-        }
-        return retArr.toArray()
-    }
-
-    private fun toUnidbgObject(obj:Any?):DvmObjectWrapper?{
-        if (obj == null) return null
-        val clazzName = obj.javaClass.name.replace(".","/")
-        return DvmObjectWrapper(vm.resolveClass(clazzName),obj)
-    }
-
-    private fun wrapperToUnidbgParams(param: Array<out Any?>): Array<out Any> {
-        val retArr = ArrayList<DvmObject<*>?>()
-        if (param.isEmpty()) return retArr.toArray()
-        param.forEach {
-            retArr.add(toUnidbgObject(it))
-        }
-        return retArr.toArray()
-    }
 
     private fun callUnidbgJniMethod(clazz: DvmClass,methodName:String,signature:String,signatureInfo: ReflectUtilsBase.SignatureInfo,param: Array<out Any?>): IInterceptor.ImplStatus {
-        val params = wrapperToUnidbgParams(param)
+        val params = UnidbgWrapperUtils.wrapperToUnidbgParams(vm,param)
         val res:Any? = when(signatureInfo.returnType!!){
             Int::class.java->{
                 clazz.callStaticJniMethodInt(emulator,methodName+signature,*params)
@@ -177,7 +72,7 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
                 IInterceptor.ImplStatus(implemented = true, result = res)
             }
             else ->{
-                IInterceptor.ImplStatus(implemented = true, result = (res as DvmObject<*>).value)
+                IInterceptor.ImplStatus(implemented = true, result = if (res !=null) (res as DvmObject<*>).value else null)
             }
         }
 
