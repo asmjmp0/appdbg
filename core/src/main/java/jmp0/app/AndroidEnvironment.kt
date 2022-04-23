@@ -45,7 +45,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
     init {
         //create temp dir
-        File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
+        File(CommonConf.workDir,CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
         checkAndReleaseFramework()
         loadUserSystemClass()
@@ -114,7 +114,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
     fun getClassLoader() = androidLoader
 
     private fun checkAndReleaseFramework(){
-        val frameworkDir = File("${CommonConf.tempDirName}${File.separator}${CommonConf.frameworkDirName}")
+        val frameworkDir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${CommonConf.frameworkDirName}")
         if(!frameworkDir.exists()){
             frameworkDir.mkdir()
             val f = File("libs${File.separator}${CommonConf.frameworkFileName}.jar")
@@ -138,7 +138,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
         findFromDir(apkFile.classesDir,className)
 
     private fun findFromAndroidFramework(className: String): File? =
-        findFromDir(File(CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className)
+        findFromDir(File(CommonConf.workDir+File.separator+CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className)
 
 
     private fun loadClass(file: File): Class<*> {

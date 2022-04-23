@@ -33,7 +33,7 @@ object DexUtils {
                 File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").writeBytes(data)
             }
         }
-        ZipUtility.zip(out.path,File(File("libs${File.separator}${CommonConf.appJarDir}").apply {
+        ZipUtility.zip(out.path,File(File("${CommonConf.workDir}${File.separator}libs${File.separator}${CommonConf.appJarDir}").apply {
             if (!exists()) mkdirs()
             else {
                 deleteRecursively()

@@ -7,8 +7,8 @@ object ApkToolUtils {
 
     fun releaseApkFile(apkFile: File): Int {
         val dirName = apkFile.name
-        val tempDir = File(CommonConf.tempDirName).apply { if (!exists()) mkdir() }
-        val process = CommandUtils.exec(arrayOf("java","-jar","${CommonConf.tempDirName}${File.separator}${CommonConf.apktoolResourcePath}.jar",
+        val tempDir = File(CommonConf.workDir+File.separator+CommonConf.tempDirName).apply { if (!exists()) mkdir() }
+        val process = CommandUtils.exec(arrayOf("java","-jar","${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${CommonConf.apktoolResourcePath}.jar",
             "d","-s","-f",apkFile.canonicalPath,"-o",tempDir.canonicalPath+File.separator+dirName))
         CommandUtils.readProcessPipe(process)
         return process.waitFor()

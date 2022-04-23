@@ -8,7 +8,7 @@ import java.io.File
 
 class ApkFile(private val apkFile: File,force:Boolean = false) {
     private val logger = Logger.getLogger(javaClass)
-    val dir = File("${CommonConf.tempDirName}${File.separator}${apkFile.name}")
+    val dir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${apkFile.name}")
     val classesDir = File(dir,"classes")
     private var manifest:ManifestAnalyse
     lateinit var copyApkFile:File
@@ -23,14 +23,14 @@ class ApkFile(private val apkFile: File,force:Boolean = false) {
 
     init {
         //release apktool
-        val toolsDir = File(CommonConf.tempDirName,CommonConf.toolsName)
+        val toolsDir = File(CommonConf.workDir+File.separator+CommonConf.tempDirName,CommonConf.toolsName)
         if (!toolsDir.exists()){
             toolsDir.mkdirs()
         }
         val apktoolFile = File(toolsDir,CommonConf.apktoolName+".jar")
         if (!apktoolFile.exists()){
             apktoolFile.createNewFile()
-            val bytes = ClassLoader.getSystemClassLoader().getResource(CommonConf.apktoolResourcePath)!!.openStream().readBytes()
+            val bytes = ClassLoader.getSystemClassLoader().getResource(CommonConf.toolsName+'/'+CommonConf.apktoolName)!!.openStream().readBytes()
             apktoolFile.writeBytes(bytes)
         }
         //release apk file

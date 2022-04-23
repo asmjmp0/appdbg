@@ -19,7 +19,7 @@ make it possible to run android dex file in original Java Virtual Machine.
 3. patch jdk_path/...../libjvm.dylib,which make it possible to load class,the name begin with "java"
 ![](assets/package.png)
 
-4. use the jre you modified
+4. use the jre you modified(**or use jdk in [appdbg-JDK](https://github.com/asmjmp0/appdbg-JDK)**)
 
 5. build test apk by [test-app sub project](test-app)
 
