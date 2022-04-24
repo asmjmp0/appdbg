@@ -1,7 +1,15 @@
 plugins {
   id 'org.jetbrains.kotlin.jvm'
+  id "com.vanniktech.maven.publish"
 }
 description = 'Dex Translator'
+group 'jmp0.appdbg.thirdparty'
+version '1.0-SNAPSHOT'
+plugins.withId("com.vanniktech.maven.publish") {
+  mavenPublish {
+    sonatypeHost = "S01"
+  }
+}
 repositories {
   mavenCentral()
 }
@@ -13,3 +21,4 @@ dependencies {
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
+jar.enabled(true)

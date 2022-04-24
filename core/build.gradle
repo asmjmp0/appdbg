@@ -1,35 +1,25 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id "com.vanniktech.maven.publish"
 }
 
-group 'jmp0'
+group 'jmp0.appdbg'
 version '1.0-SNAPSHOT'
 
-task copyBegin(type:Copy){
+//copy libs to resource
+copy {
     from(rootDir.canonicalPath+File.separator+'libs'+File.separator+'android-all-6.0.0_r1-robolectric-0.jar')
     into(rootDir.canonicalPath+File.separator+'core'+File.separator+'src'+File.separator+'main'+File.separator+'resources')
     rename {fileName->
         fileName.replace(".jar","")
     }
 }
+plugins.withId("com.vanniktech.maven.publish") {
+    mavenPublish {
+    }
+}
 
-shadowJar{
-    archiveBaseName.set("apkdbg")
-    archiveClassifier.set('')
-    manifest{
-        attributes(
-                'Main-Class':'jmp0.Main'
-        )
-    }
-}
-task myShadowJar{
-    dependsOn(copyBegin)
-    dependsOn(shadowJar)
-    doLast {
-        delete file(rootDir.canonicalPath+File.separator+'core'+File.separator+'src'+File.separator+'main'+File.separator+'resources'+File.separator+'android-all-6.0.0_r1-robolectric-0')
-    }
-}
+jar.enabled(true)
 repositories {
     mavenCentral()
 }

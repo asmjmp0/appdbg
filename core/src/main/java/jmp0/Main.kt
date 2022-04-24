@@ -7,9 +7,7 @@ import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.util.SystemReflectUtils.invokeEx
-import org.apache.log4j.Level
 import org.apache.log4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 
 // TODO: 2022/3/11 整理log factory

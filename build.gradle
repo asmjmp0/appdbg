@@ -12,13 +12,13 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.19.0'
     }
 }
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.10'
 }
-
-group 'org.example'
+group 'jmp0'
 version '1.0-SNAPSHOT'
 allprojects {
     repositories {
@@ -27,7 +27,4 @@ allprojects {
         mavenCentral()
         google()
     }
-}
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
