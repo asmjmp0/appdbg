@@ -30,7 +30,6 @@ make it possible to run android dex file in original Java Virtual Machine.
 ## Publish to mavenLocal
 1. run command ` ./gradlew publishToMavenLocal`
 2. `implementation "jmp0.appdbg:core:1.0-SNAPSHOT"`
-![](assets/fatjar.png)
 ## Implement native method with unidbg
 **auto implement reflection method by appdbg**
 - invoke method 
