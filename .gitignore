@@ -7,3 +7,4 @@ temp/
 local.properties
 */.cxx
 libs/tempLibs/
+core/src/main/resources/android-all-6.0.0_r1-robolectric-0

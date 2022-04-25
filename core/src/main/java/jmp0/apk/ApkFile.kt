@@ -5,13 +5,20 @@ import jmp0.util.ApkToolUtils
 import jmp0.util.DexUtils
 import org.apache.log4j.Logger
 import java.io.File
+import java.io.InputStream
 
-class ApkFile(private val apkFile: File,force:Boolean = false) {
+class ApkFile(private val stream:InputStream,private val name:String,force: Boolean) {
+
+    constructor(apkFile: File,force:Boolean = false):this(apkFile.inputStream(),apkFile.name,force)
+
     private val logger = Logger.getLogger(javaClass)
-    val dir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${apkFile.name}")
+    private val copyDir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${CommonConf.copyDirName}").apply {
+        if (!exists()) mkdirs()
+    }
+    val dir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${name}")
     val classesDir = File(dir,"classes")
     private var manifest:ManifestAnalyse
-    lateinit var copyApkFile:File
+    val copyApkFile:File
 
     var packageName:String
     var privateDir:File = File(dir,"env").apply { if (!exists()) mkdir() }
@@ -35,19 +42,21 @@ class ApkFile(private val apkFile: File,force:Boolean = false) {
         }
         //release apk file
         if (!dir.exists()){
+            copyApkFile = copyApk()
             releaseApkFile()
             releaseDex()
-            copyApkFile = copyApk()
         }else{
+
             if (force){
+                copyApkFile = copyApk()
                 dir.deleteRecursively()
                 releaseApkFile()
                 logger.debug("force enabled, delete the dir")
             }else {
+                copyApkFile = File(copyDir,name)
                 logger.debug("apk dir exists, just use it")
             }
             releaseDex()
-            copyApkFile = copyApk()
         }
         manifest = ManifestAnalyse(File(dir,"AndroidManifest.xml"))
         packageName = manifest.packaeName
@@ -56,14 +65,17 @@ class ApkFile(private val apkFile: File,force:Boolean = false) {
     }
 
     private fun copyApk() =
-        File(dir,apkFile.name).apply { writeBytes(apkFile.readBytes()) }
+        File(copyDir,name).apply {
+            if (!exists()) createNewFile()
+            writeBytes(stream.readBytes())
+        }
 
 
     private fun getResources(){
     }
 
     private fun releaseApkFile(){
-        val ret = ApkToolUtils.releaseApkFile(apkFile)
+        val ret = ApkToolUtils.releaseApkFile(copyApkFile)
         if (ret!=0) {
             logger.error("apkfile decoding error")
             throw Exception("apkfile decoding error")
