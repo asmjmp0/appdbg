@@ -33,12 +33,6 @@ object DexUtils {
                 File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").writeBytes(data)
             }
         }
-        ZipUtility.zip(out.path,File(File("${CommonConf.workDir}${File.separator}libs${File.separator}${CommonConf.appJarDir}").apply {
-            if (!exists()) mkdirs()
-            else {
-                deleteRecursively()
-                mkdirs()
-            }},Random.nextULong().toString()+".jar").canonicalPath)
     }
 
     /**
@@ -48,20 +42,16 @@ object DexUtils {
     fun releaseDexClassFile(dexFile: File,out: File) =
         releaseByteArrDexClassFile(dexFile.readBytes(),dexFile.name,out)
 
-
-    /**
-     * @param apkFile 目标dexFile
-     * @param out 目的文件夹
-     */
-    fun releaseApkClassFile(apkFile: File,out:File){
-        ZipFile(apkFile).apply {
-            entries().iterator().forEach {
-                if (it.name.endsWith(".dex")){
-                    logger.debug("releaseApkClassFile release ${it.name}...")
-                    releaseByteArrDexClassFile(getInputStream(it).readBytes(),it.name,out)
-                }
-            }
+    fun generateDevelopJar(out:File,generateJar:Boolean){
+        //make jar debug libs for develop mode
+        if (generateJar){
+            ZipUtility.zip(out.path,File(File("${CommonConf.workDir}${File.separator}libs${File.separator}${CommonConf.appJarDir}").apply {
+                if (!exists()) mkdirs()
+                else {
+                    deleteRecursively()
+                    mkdirs()
+                }},Random.nextULong().toString()+".jar").canonicalPath)
         }
-
     }
+
 }

@@ -146,7 +146,7 @@ class Main {
 
         fun testJni(force: Boolean) {
             val androidEnvironment =
-                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
+                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,true),
                     object : UnidbgInterceptor("libnative-lib.so") {
                         override fun otherNativeCalled(uuid: String, className: String, funcName: String,
                             signature: String, param: Array<out Any?>

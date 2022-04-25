@@ -7,9 +7,9 @@ import org.apache.log4j.Logger
 import java.io.File
 import java.io.InputStream
 
-class ApkFile(private val stream:InputStream,private val name:String,force: Boolean) {
+class ApkFile(private val stream:InputStream,private val name:String,force: Boolean,private val generateJar:Boolean = false) {
 
-    constructor(apkFile: File,force:Boolean = false):this(apkFile.inputStream(),apkFile.name,force)
+    constructor(apkFile: File,force:Boolean = false,generateJar:Boolean = false):this(apkFile.inputStream(),apkFile.name,force,generateJar)
 
     private val logger = Logger.getLogger(javaClass)
     private val copyDir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${CommonConf.copyDirName}").apply {
@@ -46,7 +46,6 @@ class ApkFile(private val stream:InputStream,private val name:String,force: Bool
             releaseApkFile()
             releaseDex()
         }else{
-
             if (force){
                 copyApkFile = copyApk()
                 dir.deleteRecursively()
@@ -58,6 +57,7 @@ class ApkFile(private val stream:InputStream,private val name:String,force: Bool
             }
             releaseDex()
         }
+        DexUtils.generateDevelopJar(classesDir,generateJar)
         manifest = ManifestAnalyse(File(dir,"AndroidManifest.xml"))
         packageName = manifest.packaeName
         getResources()
