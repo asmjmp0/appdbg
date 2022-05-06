@@ -1,4 +1,5 @@
 package jmp0
+import android.telephony.TelephonyManager
 import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.app.AndroidEnvironment
@@ -7,8 +8,11 @@ import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.util.SystemReflectUtils.invokeEx
+import org.apache.log4j.Level
 import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
+import javax.xml.ws.Service
 
 // TODO: 2022/3/11 整理log factory
 class Main {
@@ -28,7 +32,7 @@ class Main {
     companion object {
         val logger = Logger.getLogger(javaClass)
         fun getBaseAndroidEnv(froce:Boolean) =
-            AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), froce),
+            AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), froce,froce),
                 object : IInterceptor {
                     override fun nativeCalled(
                         uuid: String,
@@ -200,16 +204,17 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
+//            Logger.getLogger(jmp0.app.mock.ntv.SystemProperties::class.java).level = Level.TRACE
 //            val reflections = Reflections(CommonConf.Mock.mockNativeClassPackageName)
 //            val ls = reflections.getTypesAnnotatedWith(NativeHookClass::class.java)
 //            ls.forEach {
 //                println(it)
 //
 //            }
-//            testContext(false)
+            testContext(false)
 //            testLooper(false)
 //            testBase64()
-            testJni(false)
+//            testJni(false)
 //            testNetWork(false)
 //            testAES(false)
         }

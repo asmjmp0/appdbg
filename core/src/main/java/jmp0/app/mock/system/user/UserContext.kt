@@ -12,11 +12,14 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
+import android.telephony.TelephonyManager
 import android.view.Display
 import android.view.DisplayAdjustments
 import jmp0.app.AndroidEnvironment
 import jmp0.app.DbgContext
 import jmp0.app.mock.annotations.ClassReplaceTo
+import jmp0.app.mock.system.service.MockSubscriptionManager
+import jmp0.app.mock.system.service.MockTelephonyManager
 import org.apache.log4j.Logger
 import java.io.File
 import java.io.FileInputStream
@@ -471,7 +474,9 @@ class UserContext:Context() {
     }
 
     override fun getSystemService(p0: String?): Any? {
-        logger.debug("getSystemService $p0 return null")
+        if (p0 == "phone") return MockTelephonyManager(this)
+        if (p0 == "telephony_subscription_service") return MockSubscriptionManager(this)
+        logger.warn("getSystemService $p0 return null")
         return null
     }
 

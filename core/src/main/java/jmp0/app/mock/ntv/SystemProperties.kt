@@ -23,7 +23,7 @@ object SystemProperties {
     fun native_get(uuid: String,a: String):String?{
         val res = PropertiesReadUtils.getProperty(a)
         logger.debug("native_get(a: String) called")
-        return res
+        return res?:""
     }
 
     @JvmStatic

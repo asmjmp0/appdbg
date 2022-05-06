@@ -10,7 +10,7 @@ import jmp0.app.mock.annotations.NativeHookClass
 object Log {
 
     @JvmStatic
-    fun println_native(uuid: String,a: Int,b:Int,tag:String,content:String):Int{
+    fun println_native(uuid: String,a: Int,b:Int,tag:String,content:String?):Int{
         println("android log [$tag] $content")
         return 1
     }

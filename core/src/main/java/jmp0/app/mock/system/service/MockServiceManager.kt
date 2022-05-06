@@ -16,6 +16,9 @@ class MockServiceManager:android.os.IServiceManager {
         if (name == "package") return MockPackageManager()
         if (name == "display") return null
         if (name == "connectivity") return null
+        if (name == "telephony.registry") return MockTelephonyRegistry()
+        if (name == "isub") return MockISub()
+        if (name == "iphonesubinfo") return MockIPhoneSubInfo()
         TODO("Not yet implemented")
     }
 
