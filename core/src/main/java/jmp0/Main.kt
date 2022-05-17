@@ -12,6 +12,8 @@ import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.IPathInterceptor
+import java.io.PathInterceptorManager
 import javax.xml.ws.Service
 
 // TODO: 2022/3/11 整理log factory
@@ -201,6 +203,13 @@ class Main {
             logger.info(ret)
         }
 
+        fun testFile(force: Boolean){
+            val ae = getBaseAndroidEnv(force)
+            val clazz = ae.loadClass("jmp0.test.testapp.FileTest")
+            val ins = clazz.getDeclaredConstructor().newInstance()
+            clazz.getDeclaredMethod("testAll").invoke(ins)
+        }
+
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -217,6 +226,7 @@ class Main {
 //            testJni(false)
 //            testNetWork(false)
 //            testAES(false)
+//            testFile(false)
         }
     }
 }

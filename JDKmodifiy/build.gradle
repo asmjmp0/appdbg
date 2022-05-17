@@ -1,0 +1,18 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group 'jmp0'
+version '1.0-SNAPSHOT'
+
+jar.enabled(false)
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.javassist:javassist:$javassist_version"
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

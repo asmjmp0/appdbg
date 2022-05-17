@@ -1,9 +1,6 @@
 package jmp0.app.interceptor.intf
 
-import javassist.CtClass
-import javassist.CtMethod
-import javassist.Modifier
-import javassist.NotFoundException
+import javassist.*
 import jmp0.app.AndroidEnvironment
 
 /**
@@ -18,6 +15,9 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
 
     protected fun eraseNativeFlag(modifiers: Int) =
         (modifiers and (Modifier.NATIVE.inv()))
+
+    protected fun getSignature(constructor:CtConstructor) =
+        "${constructor.declaringClass.name}.${constructor.name}${constructor.signature}"
 
     protected fun getSignature(method:CtMethod) =
         "${method.declaringClass.name}.${method.name}${method.signature}"

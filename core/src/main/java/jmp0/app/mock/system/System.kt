@@ -53,7 +53,7 @@ class System  {
 
         @JvmStatic
         fun getProperty(property: String): String {
-            return java.lang.System.getProperty(property)
+            return java.lang.System.getProperty(property)?:""
         }
 
         @JvmStatic

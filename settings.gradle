@@ -6,3 +6,5 @@ include ':thirdparty:dex-translator'
 include ':core'
 include ':test-app'
 include ':thirdparty:arsc-decoder'
+include 'JDKmodifiy'
+
