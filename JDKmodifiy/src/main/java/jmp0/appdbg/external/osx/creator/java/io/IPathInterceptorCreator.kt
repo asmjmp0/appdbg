@@ -1,7 +1,5 @@
-package jmp0.appdbg.external.creator.java.io
+package jmp0.appdbg.external.osx.creator.java.io
 
-import javassist.ClassPool
-import jmp0.appdbg.external.Common
 import jmp0.appdbg.external.ClassCreatorBase
 
 /**

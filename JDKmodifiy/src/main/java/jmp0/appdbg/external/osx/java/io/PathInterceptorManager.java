@@ -1,7 +1,4 @@
-package jmp0.appdbg.external.java.io;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+package jmp0.appdbg.external.osx.java.io;
 
 /**
  * @author jmp0 <jmp0@qq.com>

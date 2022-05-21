@@ -1,13 +1,8 @@
-package jmp0.appdbg.external.creator.java.io
+package jmp0.appdbg.external.osx.creator.java.io
 
-import javassist.ClassPool
 import javassist.bytecode.AccessFlag
 import jmp0.appdbg.external.ClassCreatorBase
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.lang.Exception
-import java.net.URI
 
 /**
  * @author jmp0 <jmp0@qq.com>

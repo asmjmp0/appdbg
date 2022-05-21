@@ -21,7 +21,7 @@ abstract class ClassCreatorBase {
     protected fun getCtClass(fullClassName:String,type:CreatorType): CtClass =
         when(type){
             CreatorType.PROJECT->{
-                ClassPool.getDefault().getCtClass("${Common.rootPackageName}.${fullClassName}")
+                ClassPool.getDefault().getCtClass("${Common.rootPackageName}.${Common.systemNowPackage}.${fullClassName}")
             }
             CreatorType.RUNTIME->{
                 ClassPool.getDefault().getCtClass(fullClassName)
@@ -29,7 +29,7 @@ abstract class ClassCreatorBase {
         }
 
     protected fun getTargetClassName(packageName:String,className:String):String{
-        val packageName = packageName.replace("${Common.rootPackageName}.${Common.creatorName}.","")
+        val packageName = packageName.replace("${Common.rootPackageName}.${Common.systemNowPackage}.${Common.creatorName}.","")
         return "$packageName.$className"
     }
     abstract fun create(dstDir:String)

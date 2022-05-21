@@ -1,4 +1,4 @@
-package jmp0.appdbg.external.java.io;
+package jmp0.appdbg.external.osx.java.io;
 
 /**
  * @author jmp0 <jmp0@qq.com>

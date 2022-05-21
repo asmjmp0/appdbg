@@ -1,4 +1,4 @@
-package jmp0.appdbg.external.creator.java.io
+package jmp0.appdbg.external.osx.creator.java.io
 
 import jmp0.appdbg.external.ClassCreatorBase
 

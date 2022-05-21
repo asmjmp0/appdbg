@@ -7,4 +7,14 @@ package jmp0.appdbg.external
 object Common {
     const val rootPackageName = "jmp0.appdbg.external"
     const val creatorName = "creator"
+
+    private const val osxPackageName = "osx"
+    private const val windowsPackageName = "windows"
+    private const val linuxPackageName = "linux"
+    val systemNowPackage = System.getProperty("os.name").run {
+        when(this){
+            "Mac OS X"-> osxPackageName
+            else -> throw Exception("os not support")
+        }
+    }
 }
