@@ -11,6 +11,9 @@ object Common {
     private const val osxPackageName = "osx"
     private const val windowsPackageName = "windows"
     private const val linuxPackageName = "linux"
+
+    const val modifiedSig = "appdbg_modified"
+
     val systemNowPackage = System.getProperty("os.name").run {
         when(this){
             "Mac OS X"-> osxPackageName

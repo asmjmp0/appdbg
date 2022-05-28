@@ -15,6 +15,10 @@ import jmp0.util.SystemReflectUtils
 import jmp0.util.ZipUtility
 import org.apache.log4j.Logger
 import java.io.File
+import java.lang.reflect.InvocationHandler
+import java.lang.reflect.Method
+import java.lang.reflect.Proxy
+import java.net.URI
 import java.util.*
 
 // TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
@@ -53,7 +57,43 @@ class AndroidEnvironment(val apkFile: ApkFile,
         MethodManager.getInstance(id).getMethodMap().forEach{
             registerMethodHook(it.key,true)
         }
+        initIOResolver()
         context = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
+    }
+
+    private fun initIOResolver(){
+        try {
+            val clazz = Class.forName("java.io.PathInterceptorManager")
+            val iPathInterceptorClazz = Class.forName("java.io.IPathInterceptor")
+            val method = clazz.getDeclaredMethod("getInstance")
+            val ins = method.invoke(null);
+            val field = clazz.getDeclaredField("nameInterceptor")
+            // FIXME: 2022/5/28 *** java.lang.instrument ASSERTION FAILED ***: "!errorOutstanding" with message transform method call failed at JPLISAgent.c line: 844
+            field.set(ins, Proxy.newProxyInstance(null, arrayOf(iPathInterceptorClazz),object: InvocationHandler {
+                override fun invoke(proxy: Any?, method: Method, args: Array<out Any?>): Any? {
+                    if(method.name == "pathFilter"){
+                        if (args[0] == null) return null
+                        when(args[0]){
+                            is String->{
+                                val ret = methodInterceptor.ioResolver(args[0] as String)
+                                return if (!ret.implemented) args[0]
+                                else ret.result.toString()
+                            }
+                            is URI ->{
+                                val ret = methodInterceptor.ioResolver((args[0] as URI).path)
+                                return if (!ret.implemented) ret
+                                else URI(ret.result.toString())
+                            }
+                        }
+                    }
+                    throw Exception("unknown exception...")
+                }
+
+            }))
+        }catch (e:Exception){
+            logger.warn("io Resolver init failed, io redirect unusable!")
+            logger.warn("check rt.jar had been replaced!")
+        }
     }
 
     /**

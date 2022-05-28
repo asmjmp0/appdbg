@@ -7,7 +7,7 @@ package jmp0.appdbg.external.osx.java.io;
 public final class PathInterceptorManager {
     private PathInterceptorManager(){ }
 
-    public Object nameInterceptor = null;
+    public volatile Object nameInterceptor = null;
 
     public volatile static PathInterceptorManager instance =null;
 

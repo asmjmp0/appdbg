@@ -1,17 +1,18 @@
 package jmp0.appdbg.external.osx.creator.java.io
 
+import javassist.CtClass
+import javassist.CtField
 import javassist.bytecode.AccessFlag
 import jmp0.appdbg.external.ClassCreatorBase
+import jmp0.appdbg.external.Common
 import java.lang.Exception
 
 /**
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/5/17
  */
-class FileCreator:ClassCreatorBase() {
-    override fun create(dstDir: String) {
-        val fullClassName = getTargetClassName(javaClass.`package`.name,"File")
-        val ctClass = getCtClass(fullClassName,CreatorType.RUNTIME)
+class FileCreator:ClassCreatorBase(getTargetClassName(FileCreator::class.java.`package`.name,"File"),CreatorType.RUNTIME) {
+    override fun createImpl(ctClass: CtClass): CtClass {
         ctClass.declaredConstructors.forEach {
             if ((it.modifiers) and (AccessFlag.PUBLIC) == 1){
                 when(it.signature){
@@ -85,14 +86,6 @@ class FileCreator:ClassCreatorBase() {
                 }
             }
         }
-        //java.lang.reflect.
-//        ctMethod.setBody("""
-
-            
-//        """.trimIndent())
-        ctClass.also {
-            it.replaceClassName(ctClass.name,fullClassName)
-            it.writeFile(dstDir)
-        }
+        return ctClass
     }
 }

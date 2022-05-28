@@ -14,7 +14,7 @@ object IORedirectGenerator: GeneratorBase() {
     fun generate(){
         val generateList = listOf(IPathInterceptorCreator(), PathInterceptorManagerCreator() , FileCreator())
         generateList.forEach {
-            it.create(dir)
+            it.create(dir,true)
         }
     }
 

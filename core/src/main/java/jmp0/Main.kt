@@ -12,9 +12,6 @@ import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.io.IPathInterceptor
-import java.io.PathInterceptorManager
-import javax.xml.ws.Service
 
 // TODO: 2022/3/11 整理log factory
 class Main {
@@ -33,8 +30,8 @@ class Main {
      */
     companion object {
         val logger = Logger.getLogger(javaClass)
-        fun getBaseAndroidEnv(froce:Boolean) =
-            AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), froce,froce),
+        fun getBaseAndroidEnv(force:Boolean) =
+            AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
                 object : IInterceptor {
                     override fun nativeCalled(
                         uuid: String,
@@ -54,6 +51,10 @@ class Main {
                         param: Array<out Any?>
                     ): Any? {
                         return Thread.currentThread().contextClassLoader
+                    }
+
+                    override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                        return IInterceptor.ImplStatus(false,"");
                     }
 
                 })
@@ -107,6 +108,10 @@ class Main {
                             return null
                         }
 
+                        override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                            return IInterceptor.ImplStatus(false,"");
+                        }
+
                     })
             //
 //            androidEnvironment.registerMethodHook("jmp0.test.testapp.MainActivity.getStr()V",false)
@@ -142,6 +147,10 @@ class Main {
                             TODO("Not yet implemented")
                         }
 
+                        override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                            return IInterceptor.ImplStatus(false,"");
+                        }
+
                     })
             val clazz = androidEnvironment.loadClass("jmp0.test.testapp.TestKotlin")
             val ins = clazz.getDeclaredConstructor().newInstance()
@@ -165,6 +174,10 @@ class Main {
                         ): Any? {
                             logger.info("$className.$funcName$signature called")
                             return null
+                        }
+
+                        override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                            return IInterceptor.ImplStatus(false,"");
                         }
 
                     })
@@ -204,7 +217,36 @@ class Main {
         }
 
         fun testFile(force: Boolean){
-            val ae = getBaseAndroidEnv(force)
+            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+                object : IInterceptor {
+                    override fun nativeCalled(
+                        uuid: String,
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): IInterceptor.ImplStatus {
+                        return IInterceptor.ImplStatus(false,null)
+                    }
+
+                    override fun methodCalled(
+                        uuid: String,
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): Any? {
+                        return Thread.currentThread().contextClassLoader
+                    }
+
+                    override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                        if (path == "/proc/self/maps"){
+                            return IInterceptor.ImplStatus(true,"temp/test-app-debug.apk/assets/hello")
+                        }
+                        return IInterceptor.ImplStatus(false,"");
+                    }
+
+                })
             val clazz = ae.loadClass("jmp0.test.testapp.FileTest")
             val ins = clazz.getDeclaredConstructor().newInstance()
             clazz.getDeclaredMethod("testAll").invoke(ins)
@@ -220,13 +262,13 @@ class Main {
 //                println(it)
 //
 //            }
-            testContext(false)
+//            testContext(false)
 //            testLooper(false)
 //            testBase64()
 //            testJni(false)
 //            testNetWork(false)
 //            testAES(false)
-//            testFile(false)
+            testFile(false)
         }
     }
 }
