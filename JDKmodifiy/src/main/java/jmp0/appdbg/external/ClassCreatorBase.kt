@@ -49,10 +49,9 @@ abstract class ClassCreatorBase(private val creatorClassName:String,private val 
 
     fun create(dstDir:String,force:Boolean){
         if (fullClassName in Common.generateMap.keys){
-            println("[WARNING] $fullClassName has been modified by ${Common.generateMap[fullClassName]}")
-            Common.generateMap.put(fullClassName,Common.generateMap.get(fullClassName)!!.apply { add(creatorClassName) })
+            throw Exception("$fullClassName has been modified by ${Common.generateMap[fullClassName]}")
         }else{
-            Common.generateMap[fullClassName] = LinkedList<String>().apply { add(creatorClassName) }
+            Common.generateMap[fullClassName] = creatorClassName
         }
         val modified = checkModified(fullClassName)
         if (!force and modified){

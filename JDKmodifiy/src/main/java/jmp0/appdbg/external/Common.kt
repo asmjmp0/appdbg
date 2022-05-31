@@ -28,5 +28,5 @@ object Common {
      * @key target class
      * @value creator class
      */
-    val generateMap:HashMap<String, LinkedList<String>> = HashMap()
+    val generateMap:HashMap<String, String> = HashMap()
 }
