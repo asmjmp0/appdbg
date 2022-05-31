@@ -9,7 +9,7 @@ import jmp0.appdbg.external.Common
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/5/17
  */
-class PathInterceptorManagerCreator: ClassCreatorBase(getTargetClassName(PathInterceptorManagerCreator::class.java.`package`.name,"PathInterceptorManager"),CreatorType.PROJECT) {
+class PathInterceptorManagerCreator: ClassCreatorBase(PathInterceptorManagerCreator::class.java.name,getTargetClassName(PathInterceptorManagerCreator::class.java.`package`.name,"PathInterceptorManager"),CreatorType.PROJECT) {
     override fun createImpl(ctClass: CtClass): CtClass {
         return ctClass
     }

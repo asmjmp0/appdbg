@@ -11,7 +11,7 @@ import java.lang.Exception
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/5/17
  */
-class FileCreator:ClassCreatorBase(getTargetClassName(FileCreator::class.java.`package`.name,"File"),CreatorType.RUNTIME) {
+class FileCreator:ClassCreatorBase(FileCreator::class.java.name,getTargetClassName(FileCreator::class.java.`package`.name,"File"),CreatorType.RUNTIME) {
     override fun createImpl(ctClass: CtClass): CtClass {
         ctClass.declaredConstructors.forEach {
             if ((it.modifiers) and (AccessFlag.PUBLIC) == 1){

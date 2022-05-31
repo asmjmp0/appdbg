@@ -1,5 +1,8 @@
 package jmp0.appdbg.external
 
+import java.util.*
+import kotlin.collections.HashMap
+
 /**
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/5/17
@@ -20,4 +23,10 @@ object Common {
             else -> throw Exception("os not support")
         }
     }
+
+    /**
+     * @key target class
+     * @value creator class
+     */
+    val generateMap:HashMap<String, LinkedList<String>> = HashMap()
 }

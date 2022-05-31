@@ -4,12 +4,14 @@ import javassist.ClassPool
 import javassist.CtClass
 import javassist.CtField
 import javassist.NotFoundException
+import java.io.File
+import java.util.*
 
 /**
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/5/17
  */
-abstract class ClassCreatorBase(private val fullClassName: String,private val creatorType: CreatorType) {
+abstract class ClassCreatorBase(private val creatorClassName:String,private val fullClassName: String,private val creatorType: CreatorType) {
     enum class CreatorType{
         PROJECT,
         RUNTIME
@@ -46,6 +48,12 @@ abstract class ClassCreatorBase(private val fullClassName: String,private val cr
     protected abstract fun createImpl(ctClass: CtClass):CtClass;
 
     fun create(dstDir:String,force:Boolean){
+        if (fullClassName in Common.generateMap.keys){
+            println("[WARNING] $fullClassName has been modified by ${Common.generateMap[fullClassName]}")
+            Common.generateMap.put(fullClassName,Common.generateMap.get(fullClassName)!!.apply { add(creatorClassName) })
+        }else{
+            Common.generateMap[fullClassName] = LinkedList<String>().apply { add(creatorClassName) }
+        }
         val modified = checkModified(fullClassName)
         if (!force and modified){
             println("$fullClassName has been modified,skip...")
