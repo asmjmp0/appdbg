@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        FileTest().testAll()
+        SharedPreferencesTest(this).testAll()
 //        TestContext(this).testAll()
 //        TestAES()
 //        TestNative().testAll()

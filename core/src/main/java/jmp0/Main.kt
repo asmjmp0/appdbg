@@ -236,7 +236,8 @@ class Main {
                         signature: String,
                         param: Array<out Any?>
                     ): Any? {
-                        return Thread.currentThread().contextClassLoader
+                        logger.info("$className.$funcName$signature called")
+                        return null
                     }
 
                     override fun ioResolver(path: String): IInterceptor.ImplStatus {
@@ -249,6 +250,44 @@ class Main {
                 })
             val clazz = ae.loadClass("jmp0.test.testapp.FileTest")
             val ins = clazz.getDeclaredConstructor().newInstance()
+            clazz.getDeclaredMethod("testAll").invoke(ins)
+        }
+
+        fun testSharedPreferences(force: Boolean){
+            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+                object : IInterceptor {
+                    override fun nativeCalled(
+                        uuid: String,
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): IInterceptor.ImplStatus {
+                        return IInterceptor.ImplStatus(false,null)
+                    }
+
+                    override fun methodCalled(
+                        uuid: String,
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): Any? {
+                        logger.info("$className.$funcName$signature called")
+                        return null
+                    }
+
+                    override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                        if (path == "/proc/self/maps"){
+                            return IInterceptor.ImplStatus(true,"temp/test-app-debug.apk/assets/hello")
+                        }
+                        return IInterceptor.ImplStatus(false,"");
+                    }
+
+                })
+            val contextClazz = ae.findClass("android.content.Context")
+            val clazz = ae.loadClass("jmp0.test.testapp.SharedPreferencesTest")
+            val ins = clazz.getDeclaredConstructor(contextClazz).newInstance(ae.context)
             clazz.getDeclaredMethod("testAll").invoke(ins)
         }
 
@@ -268,7 +307,8 @@ class Main {
 //            testJni(false)
 //            testNetWork(false)
 //            testAES(false)
-            testFile(false)
+//            testFile(false)
+            testSharedPreferences(false)
         }
     }
 }

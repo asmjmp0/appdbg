@@ -27,6 +27,7 @@ class ApkFile(private val stream:InputStream,private val name:String,force: Bool
     var nativeLibraryDir:File = File(nativeLibraryDirRoot,"armeabi-v7a").apply { if (!exists()) mkdir() }
     var assetsDir = File(dir,"assets")
     var arscFileName = "resources.arsc"
+    var sharedPreferencesDir = File(dir,"sharedpreferences").apply { if (!exists()) mkdir() }
 
     init {
         //release apktool

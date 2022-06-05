@@ -20,6 +20,8 @@ import jmp0.app.DbgContext
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.system.service.MockSubscriptionManager
 import jmp0.app.mock.system.service.MockTelephonyManager
+import jmp0.app.mock.system.sharedpreferences.MockSharedPreferences
+import jmp0.app.mock.system.sharedpreferences.MockSharedPreferencesManager
 import org.apache.log4j.Logger
 import java.io.File
 import java.io.FileInputStream
@@ -110,8 +112,8 @@ class UserContext:Context() {
         TODO("Not yet implemented")
     }
 
-    override fun getSharedPreferences(p0: String?, p1: Int): SharedPreferences {
-        TODO("Not yet implemented")
+    override fun getSharedPreferences(p0: String, p1: Int): SharedPreferences {
+        return MockSharedPreferencesManager.getSharedPreferences(p0)
     }
 
     override fun openFileInput(p0: String?): FileInputStream {
