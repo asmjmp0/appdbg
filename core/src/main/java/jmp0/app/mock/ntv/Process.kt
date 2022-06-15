@@ -25,6 +25,10 @@ class Process {
         fun myUserHandle(uuid:String):Any?{
             return null;
         }
+        @JvmStatic
+        fun setThreadPriority(uuid: String,i:Int){
+            return
+        }
 
     }
 }

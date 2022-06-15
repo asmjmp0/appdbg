@@ -16,4 +16,10 @@ object SystemClock {
         logger.debug("called")
         return System.currentTimeMillis() and 0x1fffff
     }
+
+    @JvmStatic
+    fun elapsedRealtime(uuid: String):Long{
+        logger.debug("called")
+        return System.currentTimeMillis() and 0x1fffff
+    }
 }

@@ -58,6 +58,8 @@ class AndroidEnvironment(val apkFile: ApkFile,
             registerMethodHook(it.key,true)
         }
         initIOResolver()
+        val loopClazz = findClass("android.os.Looper")
+        loopClazz.getDeclaredMethod("prepareMainLooper").invoke(null)
         context = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
     }
 
@@ -164,7 +166,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
     }
 
     private fun androidFindClass(className: String):File?=
-        findFromApkFile(className)?:findFromAndroidFramework(className)
+        findFromAndroidFramework(className)?:findFromApkFile(className)
 
 
     private fun findFromDir(dir:File,className:String):File?{

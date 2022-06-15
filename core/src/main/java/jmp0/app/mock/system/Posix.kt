@@ -109,7 +109,10 @@ class Posix internal constructor() : libcore.io.Os {
     external override fun getsockoptTimeval(fd: FileDescriptor?, level: Int, option: Int): StructTimeval?
     
     external override fun getsockoptUcred(fd: FileDescriptor?, level: Int, option: Int): StructUcred?
-    external override fun gettid(): Int
+    override fun gettid(): Int{
+        logger.warn("getuid() return 0")
+        return 0
+    }
 
     
     override fun getuid(): Int{

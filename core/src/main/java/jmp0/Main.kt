@@ -294,6 +294,7 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
+//            Logger.getLogger(jmp0.app.classloader.XAndroidClassLoader::class.java).level = Level.TRACE
 //            Logger.getLogger(jmp0.app.mock.ntv.SystemProperties::class.java).level = Level.TRACE
 //            val reflections = Reflections(CommonConf.Mock.mockNativeClassPackageName)
 //            val ls = reflections.getTypesAnnotatedWith(NativeHookClass::class.java)
@@ -308,7 +309,7 @@ class Main {
 //            testNetWork(false)
 //            testAES(false)
 //            testFile(false)
-            testSharedPreferences(false)
+//            testSharedPreferences(false)
         }
     }
 }
