@@ -89,7 +89,9 @@ class Posix internal constructor() : libcore.io.Os {
     
     external override fun getpeername(fd: FileDescriptor?): SocketAddress?
     external override fun getpgid(pid: Int): Int
-    external override fun getpid(): Int
+    override fun getpid():Int{
+        return 0
+    }
     external override fun getppid(): Int
     
     external override fun getpwnam(name: String?): StructPasswd?

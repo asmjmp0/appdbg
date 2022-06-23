@@ -1,5 +1,6 @@
 package jmp0.appdbg.external
 
+import jmp0.appdbg.external.impl.GeneratorDefault
 import jmp0.appdbg.external.impl.ioredirect.IORedirectGenerator
 import java.io.File
 import java.util.jar.JarFile
@@ -13,10 +14,12 @@ class JDKmodify {
     companion object{
 
         private fun generateJDKFile(){
+            GeneratorDefault.deleteOldClassDir()
             //IO Redirect
-            File("temp${File.separator}JDK").apply { if (exists()) deleteRecursively() }
             IORedirectGenerator.generate()
-            IORedirectGenerator.writeToRTJAR()
+            // TODO: 2022/6/23 reflection class support
+
+            GeneratorDefault.writeToRTJAR()
         }
 
         @JvmStatic

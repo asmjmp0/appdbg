@@ -4,6 +4,7 @@ import javassist.ClassPool
 import javassist.CtClass
 import javassist.CtField
 import javassist.NotFoundException
+import javassist.bytecode.ClassFile
 import java.io.File
 import java.util.*
 
@@ -13,8 +14,12 @@ import java.util.*
  */
 abstract class ClassCreatorBase(private val creatorClassName:String,private val fullClassName: String,private val creatorType: CreatorType) {
     enum class CreatorType{
+        //use class from this project
         PROJECT,
-        RUNTIME
+        //use class from runtime
+        RUNTIME,
+        // TODO: 2022/6/23 use class from bak file(original rt.jar)
+        RT_BAK_FILE
     }
     /**
      * @param fullClassName
@@ -28,6 +33,10 @@ abstract class ClassCreatorBase(private val creatorClassName:String,private val 
                 ClassPool.getDefault().getCtClass("${Common.rootPackageName}.${Common.systemNowPackage}.${fullClassName}")
             }
             CreatorType.RUNTIME->{
+                ClassPool.getDefault().getCtClass(fullClassName)
+            }
+            CreatorType.RT_BAK_FILE->{
+                // TODO: 2022/6/23 use class from bak file(original rt.jar)
                 ClassPool.getDefault().getCtClass(fullClassName)
             }
         }

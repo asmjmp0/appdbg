@@ -115,4 +115,23 @@ object AssetManager {
         }
         return 0
     }
+    @JvmStatic
+    fun destroyAsset(uuid: String,id:Long){
+        handleMap.remove(id)
+        return
+    }
+
+    @JvmStatic
+    fun destroy(uuid: String,id:Long){
+        return
+    }
+
+    @JvmStatic
+    fun readAssetChar(uuid: String,id:Long):Int{
+        val des = handleMap[id]!!
+        val c = des.file.readBytes()[des.complete.toInt()].toInt()
+        handleMap[id] = FileDes(des.file,des.complete + 1)
+        return (c and 0xff)
+    }
+
 }
