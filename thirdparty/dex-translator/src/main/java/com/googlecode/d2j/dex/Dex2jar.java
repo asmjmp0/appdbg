@@ -76,6 +76,7 @@ public class Dex2jar {
     private Dex2jar(BaseDexFileReader reader) {
         super();
         this.reader = reader;
+        //debug info from dex file is developer source file line number
         readerConfig |= DexFileReader.SKIP_DEBUG;
     }
 

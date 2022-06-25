@@ -43,6 +43,7 @@ public class CleanLabel implements Transformer {
         if (irMethod.phiLabels != null) {
             uselabels.addAll(irMethod.phiLabels);
         }
+        addLineNumber(irMethod.stmts, uselabels);
         rmUnused(irMethod.stmts, uselabels);
     }
 
@@ -92,6 +93,15 @@ public class CleanLabel implements Transformer {
                 for (LabelStmt h : trap.handlers) {
                     labels.add(h);
                 }
+            }
+        }
+    }
+
+    // fix https://github.com/pxb1988/dex2jar/issues/165
+    private void addLineNumber(StmtList stmts, Set<LabelStmt> uselabels) {
+        for (Stmt p = stmts.getFirst(); p != null; p = p.getNext()) {
+            if (p instanceof LabelStmt && ((LabelStmt) p).lineNumber != -1) {
+                uselabels.add((LabelStmt) p);
             }
         }
     }

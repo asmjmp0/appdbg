@@ -1,0 +1,25 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id "com.vanniktech.maven.publish"
+}
+description = 'fernflower Java decompiler'
+group 'jmp0.appdbg.thirdparty'
+version '1.0-SNAPSHOT'
+plugins.withId("com.vanniktech.maven.publish") {
+    mavenPublish {
+        sonatypeHost = "S01"
+    }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+}
+
+compileJava {
+    sourceCompatibility '1.8'
+    targetCompatibility '1.8'
+}
+
+jar.enabled(true)
