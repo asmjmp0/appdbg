@@ -1,6 +1,7 @@
 // Copyright 2000-2017 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.java.decompiler.main.extern;
 
+import java.util.Map;
 import java.util.jar.Manifest;
 
 public interface IResultSaver {
@@ -8,7 +9,7 @@ public interface IResultSaver {
 
   void copyFile(String source, String path, String entryName);
 
-  void saveClassFile(String path, String qualifiedName, String entryName, String content, int[] mapping);
+  void saveClassFile(String path, String qualifiedName, String entryName, String content, Map<String, Map<String, Map<Integer, Integer>>> mapping);
 
   void createArchive(String path, String archiveName, Manifest manifest);
 

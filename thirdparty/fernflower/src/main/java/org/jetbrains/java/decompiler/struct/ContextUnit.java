@@ -11,6 +11,7 @@ import org.jetbrains.java.decompiler.util.DataInputFullStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -99,9 +100,9 @@ public class ContextUnit {
           if (entryName != null) {
             String content = decompiledData.getClassContent(cl);
             if (content != null) {
-              int[] mapping = null;
+              Map<String, Map<String, Map<Integer, Integer>>> mapping = null;
               if (DecompilerContext.getOption(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING)) {
-                mapping = DecompilerContext.getBytecodeSourceMapper().getOriginalLinesMapping();
+                mapping = DecompilerContext.getBytecodeSourceMapper().getMapping();
               }
               resultSaver.saveClassFile(filename, cl.qualifiedName, entryName, content, mapping);
             }

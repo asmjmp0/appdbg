@@ -2,6 +2,7 @@ package jmp0.util
 
 import com.googlecode.d2j.dex.Dex2jar
 import jmp0.conf.CommonConf
+import jmp0.decompiler.AppdbgDecompiler
 import org.apache.log4j.Logger
 import java.io.File
 import java.util.zip.ZipFile
@@ -30,7 +31,8 @@ object DexUtils {
                     }.toString()
                 },it[it.size-1])
             }.also {
-                File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").writeBytes(data)
+                val f = File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").apply { writeBytes(data) }
+//                AppdbgDecompiler(f).decompile()
             }
         }
     }

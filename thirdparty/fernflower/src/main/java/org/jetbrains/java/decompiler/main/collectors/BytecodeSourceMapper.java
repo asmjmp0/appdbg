@@ -106,4 +106,6 @@ public class BytecodeSourceMapper {
     }
     return res;
   }
+
+  public Map<String, Map<String, Map<Integer, Integer>>> getMapping(){return mapping;}
 }
