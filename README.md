@@ -21,11 +21,18 @@ make it possible to run android dex file in original Java Virtual Machine.
 
 4. use the jre you modified(**or use jdk in [appdbg-JDK](https://github.com/asmjmp0/appdbg-JDK)**)
 
-5. **io redirect feature need the rt.jar generated in [JDKmodifiy](JDKmodifiy)**
 
-6. build test apk by [test-app sub project](test-app)
+5. change idea settings
+- set gradle jdk version with the patched jdk 
+![](assets/gradle0.png)
+- set gradle java home with the patched jdk in [gradle.properties](gradle.properties)
+![](assets/gradle1.png)
 
-7. run [main](core/src/main/java/jmp0/Main.kt)
+6. **io redirect feature need the rt.jar generated in [JDKmodifiy](JDKmodifiy)**
+
+7. build test apk by [test-app sub project](test-app)
+
+8. run [main](core/src/main/java/jmp0/Main.kt)
    
 ![](assets/1.png)
 
