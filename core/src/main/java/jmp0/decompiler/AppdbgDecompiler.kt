@@ -15,8 +15,7 @@ import java.util.jar.Manifest
 class AppdbgDecompiler(private val classFile:File) : BaseDecompiler(IBytecodeProvider { externalPath, internalPath -> classFile.readBytes() }
     , AppdbgResultSaver(classFile), HashMap(IFernflowerPreferences.DEFAULTS).apply {
         put(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING,"1")
-        put(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES,"1")
-                                                                        },AppdbgDecompilerLogger){
+        put(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES,"1") },AppdbgDecompilerLogger){
 
     private val  logger = Logger.getLogger(AppdbgDecompiler::class.java)
 
@@ -39,14 +38,14 @@ class AppdbgDecompiler(private val classFile:File) : BaseDecompiler(IBytecodePro
 
         override fun saveClassFile(
             path: String?,
-            qualifiedName: String?,
+            qualifiedName: String,
             entryName: String,
             content: String?,
             mapping: MutableMap<String, MutableMap<String, MutableMap<Int, Int>>>?
         ) {
             if ((content == null) or (content == "") ) return
             if ((mapping!=null) and (mapping!!.isNotEmpty()))
-                DebugInfoBuilder(classFile,entryName,mapping,content!!).build()
+                DebugInfoBuilder(classFile,qualifiedName,mapping,content!!).build()
         }
 
         override fun createArchive(path: String?, archiveName: String?, manifest: Manifest?) {}

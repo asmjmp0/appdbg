@@ -7,6 +7,7 @@ import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
+import jmp0.decompiler.AppdbgDecompiler
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
@@ -310,6 +311,9 @@ class Main {
 //            testAES(false)
 //            testFile(false)
 //            testSharedPreferences(true)
+            // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/TestAES.class debug info
+            // temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class without debug info
+//            AppdbgDecompiler(File("test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/TestAES.class")).decompile()
         }
     }
 }

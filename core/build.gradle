@@ -38,6 +38,8 @@ dependencies {
     api 'com.github.zhkl0228:unidbg-android:0.9.6'
     api 'com.github.zhkl0228:unidbg-dynarmic:0.9.5'
     implementation 'io.github.qsy7.java.dependencies:slf4j-simple:0.1.0'
+    implementation 'org.ow2.asm:asm:9.3'
+    implementation 'org.ow2.asm:asm-util:9.3'
     compileOnly fileTree(dir:'../libs/',includes:['*jar'])
     compileOnly fileTree(dir:'../libs/tempLibs',includes:['*jar'])
 }
