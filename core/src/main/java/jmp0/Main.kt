@@ -292,6 +292,41 @@ class Main {
             clazz.getDeclaredMethod("testAll").invoke(ins)
         }
 
+        fun testReflection(force: Boolean){
+            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+                object : IInterceptor {
+                    override fun nativeCalled(
+                        uuid: String,
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): IInterceptor.ImplStatus {
+                        return IInterceptor.ImplStatus(false,null)
+                    }
+
+                    override fun methodCalled(
+                        uuid: String,
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
+                    ): Any? {
+                        logger.info("$className.$funcName$signature called")
+                        return null
+                    }
+
+                    override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                        TODO("Not yet implemented")
+                    }
+
+                })
+
+            val clazz = ae.findClass("jmp0.test.testapp.reflection.TestReflection")
+            val method = clazz.getDeclaredMethod("testAll")
+            method.invoke(null)
+        }
+
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -311,9 +346,10 @@ class Main {
 //            testAES(false)
 //            testFile(false)
 //            testSharedPreferences(true)
+//            testReflection(false)
             // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/TestAES.class debug info
             // temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class without debug info
-//            AppdbgDecompiler(File("test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/TestAES.class")).decompile()
+//            AppdbgDecompiler(File("temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class")).decompile()
         }
     }
 }

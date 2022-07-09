@@ -7,12 +7,14 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.TextView
 import jmp0.test.testapp.net.TestNetWork
+import jmp0.test.testapp.reflection.TestReflection
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        SharedPreferencesTest(this).testAll()
+        TestReflection.testAll()
+//        SharedPreferencesTest(this).testAll()
 //        TestContext(this).testAll()
 //        TestAES()
 //        TestNative().testAll()
