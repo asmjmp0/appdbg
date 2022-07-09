@@ -26,37 +26,86 @@ class DebugInfoBuilder(private val classFile:File,
         }
         -1
     }
-    fun Label.addSourceLineOffset(sourceLine:Short,byteOffset: Int){
-        val clazz = Label::class.java
 
-        val flagsField = clazz.getDeclaredField("flags")
-        flagsField.isAccessible = true
-        flagsField.setShort(this,5)
-
-        val lineNumberField = clazz.getDeclaredField("lineNumber")
-        lineNumberField.isAccessible = true
-        lineNumberField.setShort(this,sourceLine)
-
-        val bytecodeOffsetField = clazz.getDeclaredField("bytecodeOffset")
-        bytecodeOffsetField.isAccessible = true
-        bytecodeOffsetField.setInt(this,byteOffset)
-    }
-
-    @Deprecated("test use only")
-    private inner class TestMethodVisitor(private val mMapping:MutableMap<Int, Int>,private val methodVisitor:MethodVisitor):CodeSizeEvaluator(infoOpcode,methodVisitor){
-
+    private inner class DebugInfoMethodVisitor(private val mMapping:MutableMap<Int, Int>, methodVisitor:MethodVisitor):CodeSizeEvaluator(infoOpcode,methodVisitor){
+        private fun checkAndInsertDebugLabel(type: String){
+            if (mMapping.containsKey(minSize)) with(Label()) {
+                val sourceLine = classBeginLine+ mMapping[minSize]!!
+                visitLabel(this)
+                visitLineNumber(sourceLine,this)
+            }
+        }
         override fun visitInsn(opcode: Int) {
-            println(minSize)
-            println(maxSize)
-            println("==============")
+            checkAndInsertDebugLabel("visitInsn")
             super.visitInsn(opcode)
-            println(minSize)
-            println(maxSize)
         }
-        override fun visitEnd() {
-            super.visitEnd()
 
+        override fun visitIntInsn(opcode: Int, operand: Int) {
+            checkAndInsertDebugLabel("visitIntInsn")
+            super.visitIntInsn(opcode, operand)
         }
+
+        override fun visitVarInsn(opcode: Int, `var`: Int) {
+            checkAndInsertDebugLabel("visitVarInsn")
+            super.visitVarInsn(opcode, `var`)
+        }
+
+        override fun visitTypeInsn(opcode: Int, type: String?) {
+            checkAndInsertDebugLabel("visitTypeInsn")
+            super.visitTypeInsn(opcode, type)
+        }
+
+        override fun visitFieldInsn(opcode: Int, owner: String?, name: String?, desc: String?) {
+            checkAndInsertDebugLabel("visitFieldInsn")
+            super.visitFieldInsn(opcode, owner, name, desc)
+        }
+
+
+        override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, desc: String?, itf: Boolean) {
+            checkAndInsertDebugLabel("visitMethodInsn")
+            super.visitMethodInsn(opcode, owner, name, desc, itf)
+        }
+
+        override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, desc: String?) {
+            checkAndInsertDebugLabel("visitMethodInsn")
+            super.visitMethodInsn(opcode, owner, name, desc)
+        }
+
+        override fun visitInvokeDynamicInsn(name: String?, desc: String?, bsm: Handle?, vararg bsmArgs: Any?) {
+            checkAndInsertDebugLabel("visitInvokeDynamicInsn")
+            super.visitInvokeDynamicInsn(name, desc, bsm, *bsmArgs)
+        }
+
+        override fun visitJumpInsn(opcode: Int, label: Label?) {
+            checkAndInsertDebugLabel("visitJumpInsn")
+            super.visitJumpInsn(opcode, label)
+        }
+
+        override fun visitLdcInsn(cst: Any?) {
+            checkAndInsertDebugLabel("visitLdcInsn")
+            super.visitLdcInsn(cst)
+        }
+
+        override fun visitIincInsn(`var`: Int, increment: Int) {
+            checkAndInsertDebugLabel("visitIincInsn")
+            super.visitIincInsn(`var`, increment)
+        }
+
+        override fun visitTableSwitchInsn(min: Int, max: Int, dflt: Label?, vararg labels: Label?) {
+            checkAndInsertDebugLabel("visitTableSwitchInsn")
+            super.visitTableSwitchInsn(min, max, dflt, *labels)
+        }
+
+        override fun visitLookupSwitchInsn(dflt: Label?, keys: IntArray?, labels: Array<out Label>?) {
+            checkAndInsertDebugLabel("visitLookupSwitchInsn")
+            super.visitLookupSwitchInsn(dflt, keys, labels)
+        }
+
+        override fun visitMultiANewArrayInsn(desc: String?, dims: Int) {
+            checkAndInsertDebugLabel("visitMultiANewArrayInsn")
+            super.visitMultiANewArrayInsn(desc, dims)
+        }
+
     }
     private fun getMethodMapping(name: String,desc: String):MutableMap<Int, Int>?{
         if (!mapping.containsKey(fullClassName)) return null
@@ -79,16 +128,16 @@ class DebugInfoBuilder(private val classFile:File,
                 getMethodMapping(name, desc) ?: return super.visitMethod(access, name, desc, signature, exceptions)
             val methodVisitor = super.visitMethod(access, name, desc, signature, exceptions)
             println(name)
-            return TestMethodVisitor(mMapping, methodVisitor)
+            return DebugInfoMethodVisitor(mMapping, methodVisitor)
 
         }
     }
     fun build(){
+        println(classFile.canonicalPath)
         val classReader = ClassReader(classFile.readBytes())
-        val classWriter = ClassWriter(classReader,ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
+        val classWriter = ClassWriter(classReader,ClassWriter.COMPUTE_MAXS)
         classReader.accept(DebugInfoClassVisitor(classWriter),0)
         val data = classWriter.toByteArray()
-        File("temp/TestAES.class").writeBytes(data)
-
+        classFile.writeBytes(data)
     }
 }
