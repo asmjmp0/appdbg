@@ -27,6 +27,13 @@ class DebugInfoBuilder(private val classFile:File,
         -1
     }
 
+    val apkPathDir by lazy {
+        classFile.canonicalPath.run {
+            val idx = indexOf("/classes/")
+            File(substring(0,idx),"decompile_source")
+        }
+    }
+
     private inner class DebugInfoMethodVisitor(private val mMapping:MutableMap<Int, Int>, methodVisitor:MethodVisitor):CodeSizeEvaluator(infoOpcode,methodVisitor){
         private fun checkAndInsertDebugLabel(type: String){
             if (mMapping.containsKey(minSize)) with(Label()) {
@@ -127,11 +134,12 @@ class DebugInfoBuilder(private val classFile:File,
             val mMapping =
                 getMethodMapping(name, desc) ?: return super.visitMethod(access, name, desc, signature, exceptions)
             val methodVisitor = super.visitMethod(access, name, desc, signature, exceptions)
-            println(name)
             return DebugInfoMethodVisitor(mMapping, methodVisitor)
 
         }
     }
+
+
     fun build(){
         println(classFile.canonicalPath)
         val classReader = ClassReader(classFile.readBytes())
@@ -139,5 +147,9 @@ class DebugInfoBuilder(private val classFile:File,
         classReader.accept(DebugInfoClassVisitor(classWriter),0)
         val data = classWriter.toByteArray()
         classFile.writeBytes(data)
+        val idx = fullClassName.lastIndexOf('/')
+        val packageName = fullClassName.substring(0, idx)
+        val sourceName = fullClassName.substring(idx) + ".java"
+        File(File(apkPathDir,packageName).apply { mkdirs() },sourceName).writeBytes(decompileText.toByteArray())
     }
 }

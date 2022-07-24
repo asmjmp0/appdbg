@@ -28,6 +28,7 @@ class ApkFile(private val stream:InputStream,private val name:String,force: Bool
     var assetsDir = File(dir,"assets")
     var arscFileName = "resources.arsc"
     var sharedPreferencesDir = File(dir,"sharedpreferences").apply { if (!exists()) mkdir() }
+    var decompileSourceDir:File = File(dir,"decompile_source").apply { if (!exists()) mkdir() }
 
     init {
         //release apktool

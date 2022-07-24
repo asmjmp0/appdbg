@@ -343,7 +343,7 @@ class Main {
 //            testBase64()
 //            testJni(false)
 //            testNetWork(false)
-//            testAES(false)
+            testAES(false)
 //            testFile(false)
 //            testSharedPreferences(true)
 //            testReflection(false)
