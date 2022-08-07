@@ -2,12 +2,15 @@ package jmp0
 import android.telephony.TelephonyManager
 import javassist.CtClass
 import jmp0.apk.ApkFile
+import jmp0.apk.config.DefaultApkConfig
+import jmp0.apk.config.IApkConfig
 import jmp0.app.AndroidEnvironment
 import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.decompiler.AppdbgDecompiler
+import jmp0.util.DexUtils
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
@@ -24,15 +27,15 @@ class Main {
      * or
      * Prohibited package for non-bootstrap classes: %s from %s
      * and change "java/" to "patch" before the string
-     * macos:
+     * osx:
      * need to resign
      * find => security find-identity -v -p codesigning
      * resign => codesign -f -s "Apple Development:xxxx" libjvm.dylib
      */
     companion object {
         val logger = Logger.getLogger(javaClass)
-        fun getBaseAndroidEnv(force:Boolean) =
-            AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+        fun getBaseAndroidEnv(apkConfig: IApkConfig = DefaultApkConfig()) =
+            AndroidEnvironment(ApkFile(File( "test-app/build/outputs/apk/debug/test-app-debug.apk"),apkConfig),
                 object : IInterceptor {
                     override fun nativeCalled(
                         uuid: String,
@@ -60,9 +63,9 @@ class Main {
 
                 })
 
-        fun testLooper(force:Boolean) {
+        fun testLooper() {
             val androidEnvironment =
-                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force),
+                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
                     absAndroidRuntimeClass = object : ClassLoadedCallbackBase() {
                         override fun afterResolveClassImpl(
                             androidEnvironment: AndroidEnvironment,
@@ -126,7 +129,7 @@ class Main {
 
         fun testBase64() {
             val androidEnvironment =
-                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), false),
+                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
                     object : IInterceptor {
                         override fun nativeCalled(
                             uuid: String,
@@ -160,9 +163,9 @@ class Main {
             androidEnvironment.destroy()
         }
 
-        fun testJni(force: Boolean) {
+        fun testJni() {
             val androidEnvironment =
-                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
                     object : UnidbgInterceptor("libnative-lib.so") {
                         override fun otherNativeCalled(uuid: String, className: String, funcName: String,
                             signature: String, param: Array<out Any?>
@@ -189,8 +192,8 @@ class Main {
             androidEnvironment.destroy()
         }
 
-        fun testNetWork(force: Boolean){
-            val ae = getBaseAndroidEnv(force)
+        fun testNetWork(){
+            val ae = getBaseAndroidEnv()
             val ret = ae.loadClass("jmp0.test.testapp.net.TestNetWork").run {
                 val ins = getDeclaredConstructor().newInstance()
                 getDeclaredMethod("test").invoke(ins)
@@ -199,8 +202,8 @@ class Main {
             logger.info(ret)
         }
 
-        fun testContext(force: Boolean){
-            val ae = getBaseAndroidEnv(force)
+        fun testContext(){
+            val ae = getBaseAndroidEnv()
             val contextClazz = ae.findClass("android.content.Context")
             val ret = ae.loadClass("jmp0.test.testapp.TestContext").run {
                 val ins = getDeclaredConstructor(contextClazz).newInstance(ae.context)
@@ -209,16 +212,23 @@ class Main {
             }
         }
 
-        fun testAES(force: Boolean){
-            val ae = getBaseAndroidEnv(force)
+        fun testAES(){
+            val ae = getBaseAndroidEnv(object:IApkConfig{
+                override fun forceDecompile(): Boolean = true
+
+                override fun generateJarFile(): Boolean = true
+
+                override fun jarWithSourceLine(): Boolean = true
+
+            })
             val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
             val ins = clazz.getDeclaredConstructor().newInstance()
             val ret = clazz.getDeclaredMethod("testAll").invoke(ins)
             logger.info(ret)
         }
 
-        fun testFile(force: Boolean){
-            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+        fun testFile(){
+            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
                 object : IInterceptor {
                     override fun nativeCalled(
                         uuid: String,
@@ -254,8 +264,8 @@ class Main {
             clazz.getDeclaredMethod("testAll").invoke(ins)
         }
 
-        fun testSharedPreferences(force: Boolean){
-            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+        fun testSharedPreferences(){
+            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
                 object : IInterceptor {
                     override fun nativeCalled(
                         uuid: String,
@@ -292,8 +302,8 @@ class Main {
             clazz.getDeclaredMethod("testAll").invoke(ins)
         }
 
-        fun testReflection(force: Boolean){
-            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"), force,force),
+        fun testReflection(){
+            val ae = AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
                 object : IInterceptor {
                     override fun nativeCalled(
                         uuid: String,
@@ -338,15 +348,17 @@ class Main {
 //                println(it)
 //
 //            }
-//            testContext(false)
-//            testLooper(false)
+
+//            testPdd()
+//            testContext()
+//            testLooper()
 //            testBase64()
-//            testJni(false)
-//            testNetWork(false)
-            testAES(false)
-//            testFile(false)
-//            testSharedPreferences(true)
-//            testReflection(false)
+//            testJni()
+//            testNetWork()
+            testAES()
+//            testFile()
+//            testSharedPreferences()
+//            testReflection()
             // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/TestAES.class debug info
             // temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class without debug info
 //            AppdbgDecompiler(File("temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class")).decompile()

@@ -141,7 +141,6 @@ class DebugInfoBuilder(private val classFile:File,
 
 
     fun build(){
-        println(classFile.canonicalPath)
         val classReader = ClassReader(classFile.readBytes())
         val classWriter = ClassWriter(classReader,ClassWriter.COMPUTE_MAXS)
         classReader.accept(DebugInfoClassVisitor(classWriter),0)

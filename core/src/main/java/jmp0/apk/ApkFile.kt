@@ -1,15 +1,20 @@
 package jmp0.apk
 
+import jmp0.apk.config.DefaultApkConfig
+import jmp0.apk.config.IApkConfig
 import jmp0.conf.CommonConf
 import jmp0.util.ApkToolUtils
 import jmp0.util.DexUtils
 import org.apache.log4j.Logger
 import java.io.File
 import java.io.InputStream
+import java.util.LinkedList
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
-class ApkFile(private val stream:InputStream,private val name:String,force: Boolean,private val generateJar:Boolean = false) {
+class ApkFile(private val stream:InputStream,private val name:String,apkConfig: IApkConfig = DefaultApkConfig()) {
 
-    constructor(apkFile: File,force:Boolean = false,generateJar:Boolean = false):this(apkFile.inputStream(),apkFile.name,force,generateJar)
+    constructor(apkFile: File,apkConfig: IApkConfig = DefaultApkConfig()):this(apkFile.inputStream(),apkFile.name,apkConfig)
 
     private val logger = Logger.getLogger(javaClass)
     private val copyDir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${CommonConf.copyDirName}").apply {
@@ -46,20 +51,22 @@ class ApkFile(private val stream:InputStream,private val name:String,force: Bool
         if (!dir.exists()){
             copyApkFile = copyApk()
             releaseApkFile()
-            releaseDex()
+            releaseDex(apkConfig.jarWithSourceLine())
+            DexUtils.generateDevelopJar(classesDir,apkConfig.generateJarFile())
         }else{
-            if (force){
+            if (apkConfig.forceDecompile()){
                 copyApkFile = copyApk()
+                logger.debug("force enabled, delete the dir")
                 dir.deleteRecursively()
                 releaseApkFile()
-                logger.debug("force enabled, delete the dir")
+                releaseDex(apkConfig.jarWithSourceLine())
+                DexUtils.generateDevelopJar(classesDir,apkConfig.generateJarFile())
             }else {
                 copyApkFile = File(copyDir,name)
                 logger.debug("apk dir exists, just use it")
             }
-            releaseDex()
         }
-        DexUtils.generateDevelopJar(classesDir,generateJar)
+
         manifest = ManifestAnalyse(File(dir,"AndroidManifest.xml"))
         packageName = manifest.packaeName
         getResources()
@@ -84,13 +91,27 @@ class ApkFile(private val stream:InputStream,private val name:String,force: Bool
         }
     }
 
-    private fun releaseDex(){
+    private fun releaseDex(generateSourceLine:Boolean){
+        val list = LinkedList<File>();
         classesDir.apply { if(!exists()) mkdir() else return }
         dir.listFiles()!!.forEach {
             if (it.name.endsWith(".dex")){
-                logger.debug("release ${it.name} ...")
-                DexUtils.releaseDexClassFile(it,classesDir)
+                list.add(it)
             }
         }
+        releaseDexFileImpl(list.toTypedArray(),generateSourceLine)
+    }
+
+    private fun releaseDexFileImpl(dexArr:Array<File>,generateSourceLine:Boolean){
+        val service = Executors.newFixedThreadPool(4)
+        dexArr.forEach {
+            service.execute {
+                logger.info("$it has submitted to decompiler")
+                DexUtils.releaseDexClassFile(it,classesDir,generateSourceLine)
+                logger.info("$it decompile completely")
+            }
+        }
+        service.shutdown()
+        service.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS)
     }
 }

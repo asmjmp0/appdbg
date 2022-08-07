@@ -17,7 +17,7 @@ object DexUtils {
      * @param name 需要被释放成的文件夹
      * @param out 目的文件夹
      */
-    fun releaseByteArrDexClassFile(byteArray: ByteArray,name: String,out: File){
+    fun releaseByteArrDexClassFile(byteArray: ByteArray,name: String,out: File,generateSourceLine:Boolean){
         // TODO: 2022/4/1 generate app class file with debug info,which make it possible to debug class file well
         Dex2jar.from(byteArray).eachClassData { data, className ->
             //first is the path where the class should be store
@@ -32,7 +32,10 @@ object DexUtils {
                 },it[it.size-1])
             }.also {
                 val f = File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").apply { writeBytes(data) }
-//                AppdbgDecompiler(f).decompile()
+                println(f)
+                if (generateSourceLine){
+                    AppdbgDecompiler(f).decompile()
+                }
             }
         }
     }
@@ -41,8 +44,8 @@ object DexUtils {
      * @param dexFile 源dexFile
      * @param out 目的文件夹
      */
-    fun releaseDexClassFile(dexFile: File,out: File) =
-        releaseByteArrDexClassFile(dexFile.readBytes(),dexFile.name,out)
+    fun releaseDexClassFile(dexFile: File,out: File,generateSourceLine:Boolean) =
+        releaseByteArrDexClassFile(dexFile.readBytes(),dexFile.name,out,generateSourceLine)
 
     fun generateDevelopJar(out:File,generateJar:Boolean){
         //make jar debug libs for develop mode

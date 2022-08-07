@@ -525,9 +525,10 @@ public final class DeadCodeHelper {
 
 
   public static void mergeBasicBlocks(ControlFlowGraph graph) {
-
-    while (true) {
-
+    int maxLoopCount = 100000;
+    int count = 0;
+    while (count < maxLoopCount) {
+      count++;
       boolean merged = false;
 
       for (BasicBlock block : graph.getBlocks()) {
@@ -569,6 +570,9 @@ public final class DeadCodeHelper {
       if (!merged) {
         break;
       }
+    }
+    if (count == maxLoopCount){
+      System.err.println("fernflower mergeBasicBlocks bug trigger just ignore");
     }
   }
 }
