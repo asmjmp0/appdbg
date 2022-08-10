@@ -11,21 +11,7 @@ class DebugInfoBuilder(private val classFile:File,
 
     val infoOpcode = Opcodes.ASM5
 
-    val classBeginLine by lazy {
-        val className = fullClassName.run {
-            if (contains("/")) {
-                val sr = split('/')
-                sr[sr.size-1]
-            }else this
-        }
-        var num = 1
-        decompileText.reader().readLines().forEach { line->
-            if (line.contains("class $className"))
-                return@lazy num
-            num++
-        }
-        -1
-    }
+    val classBeginLine = mapping[fullClassName]!!["headerCounts"]!!.keys.iterator().next()
 
     val apkPathDir by lazy {
         classFile.canonicalPath.run {

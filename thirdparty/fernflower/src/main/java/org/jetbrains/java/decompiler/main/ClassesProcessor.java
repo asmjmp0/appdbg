@@ -369,7 +369,15 @@ public class ClassesProcessor implements CodeConstants {
 
         int offsetLines = buffer.countLines();
 
+        int headLine = buffer.countLines();
+        Map<String, Map<String, Map<Integer, Integer>>> map =  DecompilerContext.getBytecodeSourceMapper().getMapping();
+        Map<Integer,Integer> temp = new HashMap<>();
+        temp.put(headLine,headLine);
+        map.get(cl.qualifiedName).put("headerCounts",temp);
+
         buffer.append(classBuffer);
+
+
 
         if (DecompilerContext.getOption(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING)) {
           BytecodeSourceMapper mapper = DecompilerContext.getBytecodeSourceMapper();

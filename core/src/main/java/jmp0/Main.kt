@@ -214,7 +214,7 @@ class Main {
 
         fun testAES(){
             val ae = getBaseAndroidEnv(object:IApkConfig{
-                override fun forceDecompile(): Boolean = true
+                override fun forceDecompile(): Boolean = false
 
                 override fun generateJarFile(): Boolean = true
 
@@ -361,7 +361,7 @@ class Main {
 //            testReflection()
             // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/TestAES.class debug info
             // temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class without debug info
-//            AppdbgDecompiler(File("temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class")).decompile()
+//            AppdbgDecompiler(File("temp/test-app-debug.apk/classes/jmp0/test/testapp/TestKotlin.class")).decompile()
         }
     }
 }

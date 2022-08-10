@@ -32,7 +32,6 @@ object DexUtils {
                 },it[it.size-1])
             }.also {
                 val f = File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").apply { writeBytes(data) }
-                println(f)
                 if (generateSourceLine){
                     AppdbgDecompiler(f).decompile()
                 }
