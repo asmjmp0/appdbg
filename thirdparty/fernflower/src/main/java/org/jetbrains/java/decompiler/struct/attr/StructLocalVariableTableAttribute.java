@@ -70,12 +70,16 @@ public class StructLocalVariableTableAttribute extends StructGeneralAttribute {
     return localVariables.stream().filter(v -> v.start_pc == 0).collect(Collectors.toMap(v -> v.index, v -> v.name, (n1, n2) -> n2));
   }
 
-  private static final class LocalVariable {
-    final int start_pc;
-    final int length;
-    final String name;
-    final String descriptor;
-    final int index;
+  public List<LocalVariable> getLocalVariables(){
+      return this.localVariables;
+  }
+
+  public static final class LocalVariable {
+    public final int start_pc;
+    public final int length;
+    public final String name;
+    public final String descriptor;
+    public final int index;
 
     private LocalVariable(int start_pc, int length, String name, String descriptor, int index) {
       this.start_pc = start_pc;

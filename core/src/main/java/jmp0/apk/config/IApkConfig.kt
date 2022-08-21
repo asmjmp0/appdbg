@@ -15,5 +15,5 @@ interface IApkConfig {
      *  use fernflower decompiler,generate fake source code，make it possible
      *  to debug single step.
      */
-    fun jarWithSourceLine():Boolean
+    fun jarWithDebugInfo():Boolean
 }

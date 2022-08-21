@@ -3,6 +3,9 @@ package org.jetbrains.java.decompiler.main;
 
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapper;
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapperDescription;
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapperObject;
 import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
@@ -33,6 +36,8 @@ import org.jetbrains.java.decompiler.util.TextBuffer;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.jetbrains.java.decompiler.struct.attr.StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TABLE;
 
 public class ClassWriter {
   private final PoolInterceptor interceptor;
@@ -805,7 +810,6 @@ public class ClassWriter {
 
           index += md.params[i].getStackSize();
         }
-
         buffer.append(')');
 
         StructExceptionsAttribute attr = mt.getAttribute(StructGeneralAttribute.ATTRIBUTE_EXCEPTIONS);
@@ -894,6 +898,20 @@ public class ClassWriter {
     finally {
       DecompilerContext.setProperty(DecompilerContext.CURRENT_METHOD_WRAPPER, outerWrapper);
     }
+
+    try {
+      BytecodeLocalValueMapper mapper = DecompilerContext.getBytecodeLocalValueMapper();
+      BytecodeLocalValueMapperObject object = mapper.getDescriptionObject(methodWrapper.methodStruct.getName()+ methodWrapper.methodStruct.getDescriptor());
+      Map<VarVersionPair, String> names = methodWrapper.varproc.getMapVarNames();
+      for (VarVersionPair item : names.keySet()){
+        object.add(new BytecodeLocalValueMapperDescription().setValue(
+                names.get(item),
+                methodWrapper.varproc.getVarVersions().getVarType(item).toString(),""
+                // fixme [asmjmp0] to get local value start and end offset
+                ,-1,-1,
+                methodWrapper.varproc.getVarVersions().getMapOriginalVarIndices().get(item.var)));
+      }
+    }catch (Exception ignore){}
 
     // save total lines
     // TODO: optimize

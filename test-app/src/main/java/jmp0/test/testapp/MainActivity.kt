@@ -13,7 +13,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        TestReflection.testAll()
+//        TestReflection.testAll()
+        DebugTest(111,"22").testAll(1);
 //        SharedPreferencesTest(this).testAll()
 //        TestContext(this).testAll()
 //        TestAES()

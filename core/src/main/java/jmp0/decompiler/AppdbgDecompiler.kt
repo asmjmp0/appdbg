@@ -1,6 +1,7 @@
 package jmp0.decompiler
 
 import org.apache.log4j.Logger
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapper
 import org.jetbrains.java.decompiler.main.decompiler.BaseDecompiler
 import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger
@@ -41,11 +42,12 @@ class AppdbgDecompiler(private val classFile:File) : BaseDecompiler(IBytecodePro
             qualifiedName: String,
             entryName: String,
             content: String?,
-            mapping: MutableMap<String, MutableMap<String, MutableMap<Int, Int>>>?
+            mapping: MutableMap<String, MutableMap<String, MutableMap<Int, Int>>>?,
+            mapper: BytecodeLocalValueMapper
         ) {
             if ((content == null) or (content == "") ) return
             if ((mapping!=null) and (mapping!!.isNotEmpty()))
-                DebugInfoBuilder(classFile,qualifiedName,mapping,content!!).build()
+                DebugInfoBuilder(classFile,qualifiedName,mapping,mapper,content!!).build()
         }
 
         override fun createArchive(path: String?, archiveName: String?, manifest: Manifest?) {}

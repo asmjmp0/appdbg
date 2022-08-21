@@ -22,7 +22,7 @@ public class VarProcessor {
   public static final int VAR_FINAL = 3;
 
   private final VarNamesCollector varNamesCollector = new VarNamesCollector();
-  private final StructMethod method;
+  public final StructMethod method;
   private final MethodDescriptor methodDescriptor;
   private Map<VarVersionPair, String> mapVarNames = new HashMap<>();
   private VarVersionsProcessor varVersions;
@@ -119,6 +119,14 @@ public class VarProcessor {
 
   public Collection<String> getVarNames() {
     return mapVarNames != null ? mapVarNames.values() : Collections.emptySet();
+  }
+
+  public Map<VarVersionPair, String> getMapVarNames(){
+      return mapVarNames;
+  }
+
+  public VarVersionsProcessor getVarVersions(){
+      return varVersions;
   }
 
   public int getVarFinal(VarVersionPair pair) {

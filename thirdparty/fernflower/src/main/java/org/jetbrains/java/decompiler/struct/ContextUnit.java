@@ -2,6 +2,7 @@
 package org.jetbrains.java.decompiler.struct;
 
 import org.jetbrains.java.decompiler.main.DecompilerContext;
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapper;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
@@ -104,7 +105,8 @@ public class ContextUnit {
               if (DecompilerContext.getOption(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING)) {
                 mapping = DecompilerContext.getBytecodeSourceMapper().getMapping();
               }
-              resultSaver.saveClassFile(filename, cl.qualifiedName, entryName, content, mapping);
+              BytecodeLocalValueMapper mapper = DecompilerContext.getBytecodeLocalValueMapper();
+              resultSaver.saveClassFile(filename, cl.qualifiedName, entryName, content, mapping, mapper);
             }
           }
         }

@@ -1,5 +1,7 @@
 package jmp0.decompiler
 
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapper
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapperObject
 import org.objectweb.asm.*
 import org.objectweb.asm.commons.CodeSizeEvaluator
 import java.io.File
@@ -7,11 +9,12 @@ import java.io.File
 class DebugInfoBuilder(private val classFile:File,
                        private val fullClassName:String,
                        private val mapping:MutableMap<String, MutableMap<String, MutableMap<Int, Int>>>,
+                       private val mapper: BytecodeLocalValueMapper,
                        private val decompileText:String) {
 
     val infoOpcode = Opcodes.ASM5
 
-    val classBeginLine = mapping[fullClassName]!!["headerCounts"]!!.keys.iterator().next()
+    val classBeginLine = mapping[fullClassName]!!["headerCounts"]!!.keys.iterator().next() + 1
 
     val apkPathDir by lazy {
         classFile.canonicalPath.run {
@@ -20,7 +23,8 @@ class DebugInfoBuilder(private val classFile:File,
         }
     }
 
-    private inner class DebugInfoMethodVisitor(private val mMapping:MutableMap<Int, Int>, methodVisitor:MethodVisitor):CodeSizeEvaluator(infoOpcode,methodVisitor){
+    private inner class DebugInfoMethodVisitor(private val mMapping:MutableMap<Int, Int>, private val descriptionObject: BytecodeLocalValueMapperObject, methodVisitor:MethodVisitor):CodeSizeEvaluator(infoOpcode,methodVisitor){
+        private lateinit var beginLabel:Label;
         private fun checkAndInsertDebugLabel(type: String){
             if (mMapping.containsKey(minSize)) with(Label()) {
                 val sourceLine = classBeginLine+ mMapping[minSize]!!
@@ -99,6 +103,20 @@ class DebugInfoBuilder(private val classFile:File,
             super.visitMultiANewArrayInsn(desc, dims)
         }
 
+        override fun visitCode() {
+            beginLabel = Label()
+            visitLabel(beginLabel)
+            super.visitCode()
+        }
+
+        override fun visitEnd() {
+            val endLabel = Label()
+            visitLabel(endLabel)
+            descriptionObject.travel {
+                this.visitLocalVariable(it.name,it.desc,"",beginLabel,endLabel,it.index);
+            }
+            super.visitEnd()
+        }
     }
     private fun getMethodMapping(name: String,desc: String):MutableMap<Int, Int>?{
         if (!mapping.containsKey(fullClassName)) return null
@@ -120,7 +138,8 @@ class DebugInfoBuilder(private val classFile:File,
             val mMapping =
                 getMethodMapping(name, desc) ?: return super.visitMethod(access, name, desc, signature, exceptions)
             val methodVisitor = super.visitMethod(access, name, desc, signature, exceptions)
-            return DebugInfoMethodVisitor(mMapping, methodVisitor)
+            val descriptionObject = mapper.getDescriptionObject(name+desc)
+            return DebugInfoMethodVisitor(mMapping,descriptionObject, methodVisitor)
 
         }
     }

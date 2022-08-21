@@ -51,7 +51,7 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
         if (!dir.exists()){
             copyApkFile = copyApk()
             releaseApkFile()
-            releaseDex(apkConfig.jarWithSourceLine())
+            releaseDex(apkConfig.jarWithDebugInfo())
             DexUtils.generateDevelopJar(classesDir,apkConfig.generateJarFile())
         }else{
             if (apkConfig.forceDecompile()){
@@ -59,7 +59,7 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
                 logger.debug("force enabled, delete the dir")
                 dir.deleteRecursively()
                 releaseApkFile()
-                releaseDex(apkConfig.jarWithSourceLine())
+                releaseDex(apkConfig.jarWithDebugInfo())
                 DexUtils.generateDevelopJar(classesDir,apkConfig.generateJarFile())
             }else {
                 copyApkFile = File(copyDir,name)

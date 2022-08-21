@@ -6,7 +6,7 @@ make it possible to run android dex file in original Java Virtual Machine.
 - change every item of the class after it was loaded
 - hook java method
 - implement native method by yourself or [unidbg](https://github.com/zhkl0228/unidbg)...
-- provide java method level debug ability (dex2jar transformed class file without debug info,so we can't step in)
+- provide fake source line level debug ability powered by fernflower!!!
 
 ## Start
 
@@ -49,14 +49,20 @@ make it possible to run android dex file in original Java Virtual Machine.
 - result
 ![](assets/jni3.png)
   
-## Method level debug
-1. run code ,and the jar file will be generated in libs/tempLibs dir
-![](assets/method_level_debug0.png)
-2. sync gradle file
-![](assets/method_level_debug1.png)
-3. set breakpoint on method line
-4. run code with debug mode eg. test testJni(false) in Main class
-![](assets/method_level_debug2.png)
+## source line level debug
+1. implement IApkConfig and set generateJarFile and jarWithDebugInfo **true**,run code,and the jar file will be generated in libs/tempLibs dir
+![](assets/debug/debug0.png)
+2. sync gradle file,and IDEA will index it
+![](assets/debug/debug1.png)
+3. select one file you want to debug,and click the label.
+![](assets/debug/debug2.png)
+4. chose the source files generated at temp/**apkName**/decompile_source, click **open** button.
+![](assets/debug/debug3.png)
+5. set IApkConfig forceDecompile **false**,and set source line breakpoint.
+![](assets/debug/debug4.png)
+![](assets/debug/debug5.png)
+6. run code with **debug mode**!!!
+![](assets/debug/debug0.gif)
 
 ## About
 it's hard for me to implement all Android runtime well，if you can help me to make this project better,Thanks for your contribution. 
@@ -67,3 +73,4 @@ it's hard for me to implement all Android runtime well，if you can help me to m
 - [Apktool](https://github.com/iBotPeaches/Apktool)
 - [javassist](https://github.com/jboss-javassist/javassist)
 - [unidbg](https://github.com/zhkl0228/unidbg)
+- [fernflower](https://github.com/fesh0r/fernflower)

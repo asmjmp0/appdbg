@@ -3,6 +3,7 @@ package org.jetbrains.java.decompiler.main.decompiler;
 
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.Fernflower;
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapper;
 import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
@@ -170,7 +171,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
   }
 
   @Override
-  public void saveClassFile(String path, String qualifiedName, String entryName, String content, Map<String, Map<String, Map<Integer, Integer>>> mapping) {
+  public void saveClassFile(String path, String qualifiedName, String entryName, String content, Map<String, Map<String, Map<Integer, Integer>>> mapping, BytecodeLocalValueMapper mapper) {
     File file = new File(getAbsolutePath(path), entryName);
     try (Writer out = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
       out.write(content);

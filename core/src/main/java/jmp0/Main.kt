@@ -218,7 +218,7 @@ class Main {
 
                 override fun generateJarFile(): Boolean = true
 
-                override fun jarWithSourceLine(): Boolean = true
+                override fun jarWithDebugInfo(): Boolean = true
 
             })
             val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
@@ -337,6 +337,21 @@ class Main {
             method.invoke(null)
         }
 
+        fun testDebug(){
+            val ae = getBaseAndroidEnv(object:IApkConfig{
+                override fun forceDecompile(): Boolean = false
+
+                override fun generateJarFile(): Boolean = true
+
+                override fun jarWithDebugInfo(): Boolean = true
+
+            })
+
+            val clazz = ae.findClass("jmp0.test.testapp.DebugTest")
+            val instance:Any = clazz.getDeclaredConstructor(Int::class.java,String::class.java).newInstance(10,"AAAA")
+            clazz.getDeclaredMethod("testAll",Int::class.java).invoke(instance,1)
+        }
+
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -355,13 +370,14 @@ class Main {
 //            testBase64()
 //            testJni()
 //            testNetWork()
-            testAES()
+//            testAES()
 //            testFile()
 //            testSharedPreferences()
 //            testReflection()
-            // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/TestAES.class debug info
-            // temp/test-app-debug.apk/classes/jmp0/test/testapp/TestAES.class without debug info
-//            AppdbgDecompiler(File("temp/test-app-debug.apk/classes/jmp0/test/testapp/TestKotlin.class")).decompile()
+            testDebug()
+            // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/DebugTest.class debug info
+//             temp/test-app-debug.apk/classes/jmp0/test/testapp/DebugTest.class without debug info
+//            AppdbgDecompiler(File("temp/test-app-debug.apk/classes/jmp0/test/testapp/DebugTest.class")).decompile()
         }
     }
 }

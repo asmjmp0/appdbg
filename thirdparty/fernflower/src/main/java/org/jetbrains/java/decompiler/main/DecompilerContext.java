@@ -1,6 +1,7 @@
 // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.java.decompiler.main;
 
+import org.jetbrains.java.decompiler.main.collectors.BytecodeLocalValueMapper;
 import org.jetbrains.java.decompiler.main.collectors.BytecodeSourceMapper;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
 import org.jetbrains.java.decompiler.main.collectors.ImportCollector;
@@ -28,6 +29,8 @@ public class DecompilerContext {
   private VarProcessor varProcessor;
   private CounterContainer counterContainer;
   private BytecodeSourceMapper bytecodeSourceMapper;
+
+  private BytecodeLocalValueMapper bytecodeLocalValueMapper;
 
   public DecompilerContext(Map<String, Object> properties,
                            IFernflowerLogger logger,
@@ -70,6 +73,7 @@ public class DecompilerContext {
     context.importCollector = importCollector;
     context.counterContainer = new CounterContainer();
     context.bytecodeSourceMapper = new BytecodeSourceMapper();
+    context.bytecodeLocalValueMapper = new BytecodeLocalValueMapper();
   }
 
   public static void startMethod(VarProcessor varProcessor) {
@@ -125,5 +129,9 @@ public class DecompilerContext {
 
   public static BytecodeSourceMapper getBytecodeSourceMapper() {
     return getCurrentContext().bytecodeSourceMapper;
+  }
+
+  public static BytecodeLocalValueMapper getBytecodeLocalValueMapper() {
+    return getCurrentContext().bytecodeLocalValueMapper;
   }
 }
