@@ -525,12 +525,9 @@ public final class DeadCodeHelper {
 
 
   public static void mergeBasicBlocks(ControlFlowGraph graph) {
-    int maxLoopCount = 100000;
-    int count = 0;
-    while (count < maxLoopCount) {
-      count++;
+    while (true) {
       boolean merged = false;
-
+      int originBlocksCount = graph.getBlocks().size();
       for (BasicBlock block : graph.getBlocks()) {
 
         InstructionSequence seq = block.getSeq();
@@ -541,12 +538,12 @@ public final class DeadCodeHelper {
           if (next != graph.getLast() && (seq.isEmpty() || seq.getLastInstr().group != CodeConstants.GROUP_SWITCH)) {
 
             if (next.getPredecessors().size() == 1 && next.getPredecessorExceptions().isEmpty()
-                && next != graph.getFirst()) {
+                    && next != graph.getFirst()) {
               // TODO: implement a dummy start block
               boolean sameRanges = true;
               for (ExceptionRangeCFG range : graph.getExceptions()) {
                 if (range.getProtectedRange().contains(block) ^
-                    range.getProtectedRange().contains(next)) {
+                        range.getProtectedRange().contains(next)) {
                   sameRanges = false;
                   break;
                 }
@@ -566,13 +563,9 @@ public final class DeadCodeHelper {
           }
         }
       }
-
-      if (!merged) {
+      if (!merged || graph.getBlocks().size() == originBlocksCount) {
         break;
       }
-    }
-    if (count == maxLoopCount){
-      System.err.println("fernflower mergeBasicBlocks bug trigger just ignore");
     }
   }
 }

@@ -370,11 +370,11 @@ class Main {
 //            testBase64()
 //            testJni()
 //            testNetWork()
-//            testAES()
+            testAES()
 //            testFile()
 //            testSharedPreferences()
 //            testReflection()
-            testDebug()
+//            testDebug()
             // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/DebugTest.class debug info
 //             temp/test-app-debug.apk/classes/jmp0/test/testapp/DebugTest.class without debug info
 //            AppdbgDecompiler(File("temp/test-app-debug.apk/classes/jmp0/test/testapp/DebugTest.class")).decompile()

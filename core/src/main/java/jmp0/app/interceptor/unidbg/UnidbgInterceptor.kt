@@ -46,10 +46,8 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
             }
             emulator!!.memory.setLibraryResolver(AndroidResolver(23))
             vm = emulator!!.createDalvikVM(androidEnvironment!!.apkFile.copyApkFile)
-
             vm.setJni(AppdbgJni(vm,androidEnvironment!!))
-            md = vm.loadLibrary((soName.split('.')[0]).substring(3),
-                File(androidEnvironment!!.apkFile.nativeLibraryDir,soName).readBytes(),true)
+            md = vm.loadLibrary(File(androidEnvironment!!.apkFile.nativeLibraryDir,soName),true)
             md.callJNI_OnLoad(emulator)
         }
     }

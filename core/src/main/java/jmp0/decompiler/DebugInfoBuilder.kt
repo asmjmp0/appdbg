@@ -152,8 +152,14 @@ class DebugInfoBuilder(private val classFile:File,
         val data = classWriter.toByteArray()
         classFile.writeBytes(data)
         val idx = fullClassName.lastIndexOf('/')
-        val packageName = fullClassName.substring(0, idx)
-        val sourceName = fullClassName.substring(idx) + ".java"
+        var packageName = ""
+        val sourceName: String
+        if(idx == -1){
+            sourceName = "$fullClassName.java"
+        }else{
+            packageName = fullClassName.substring(0, idx)
+            sourceName = fullClassName.substring(idx) + ".java"
+        }
         File(File(apkPathDir,packageName).apply { mkdirs() },sourceName).writeBytes(decompileText.toByteArray())
     }
 }
