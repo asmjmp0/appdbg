@@ -18,7 +18,7 @@ class DebugInfoBuilder(private val classFile:File,
 
     val apkPathDir by lazy {
         classFile.canonicalPath.run {
-            val idx = indexOf("/classes/")
+            val idx = indexOf("${File.separator}classes${File.separator}")
             File(substring(0,idx),"decompile_source")
         }
     }

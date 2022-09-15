@@ -10,7 +10,7 @@ make it possible to run android dex file in original Java Virtual Machine.
 
 ## Start
 
-- **only test fully with jdk 1.8**
+- **only test fully with jdk 1.8 on OSX!!!**
 
 1. open the project with IDEA
 
