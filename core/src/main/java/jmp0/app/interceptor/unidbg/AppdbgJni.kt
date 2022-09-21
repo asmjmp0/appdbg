@@ -26,7 +26,8 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         val method = clazz.getMethod(methodName,*signatureInfo.paramTypes)
         val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo)
         val res = method.invoke(null,*params)
-        return UnidbgWrapperUtils.toUnidbgObject(vm,res)
+        val name = method.returnType.name.replace('.','/')
+        return UnidbgWrapperUtils.toUnidbgObject(vm,res,name)
     }
 
     override fun newObjectV(
@@ -84,7 +85,8 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         val method = clazz.getMethod(methodName,*signatureInfo.paramTypes)
         val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo)
         val res = method.invoke(dvmObject.value,*params)
-        return UnidbgWrapperUtils.toUnidbgObject(vm, res)
+        val name = method.returnType.name.replace('.','/')
+        return UnidbgWrapperUtils.toUnidbgObject(vm, res, name)
     }
 
     override fun setObjectField(vm: BaseVM?, dvmObject: DvmObject<*>, dvmField: DvmField, value: DvmObject<*>) {
