@@ -12,6 +12,7 @@ import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.decompiler.AppdbgDecompiler
 import jmp0.util.DexUtils
 import jmp0.util.SystemReflectUtils.invokeEx
+import jmp0.util.reflection
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import org.slf4j.LoggerFactory
@@ -186,9 +187,10 @@ class Main {
 
                     })
             androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false);
-            val clazz = androidEnvironment.loadClass("jmp0.test.testapp.TestNative")
-            val ins = clazz.getDeclaredConstructor().newInstance()
-            clazz.getDeclaredMethod("testAll").invokeEx(ins)
+            reflection(androidEnvironment,"jmp0.test.testapp.TestNative"){
+                constructor()()
+                method("testAll")(this.ins)
+            }
             androidEnvironment.destroy()
         }
 
