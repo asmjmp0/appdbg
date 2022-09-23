@@ -1,7 +1,7 @@
 package jmp0.app.interceptor.unidbg
 
 import com.github.unidbg.arm.backend.BackendFactory
-import com.github.unidbg.arm.backend.DynarmicFactory
+import com.github.unidbg.arm.backend.Unicorn2Factory
 import com.github.unidbg.file.linux.AndroidFileIO
 import com.github.unidbg.linux.android.AndroidARMEmulator
 import com.github.unidbg.linux.android.AndroidResolver
@@ -39,7 +39,7 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
             androidEnvironment = DbgContext.getAndroidEnvironment(uuid)
         if (emulator == null){
             emulator = object :AndroidARMEmulator(androidEnvironment!!.apkFile.packageName,null,
-                setOf<BackendFactory>(DynarmicFactory(true))){
+                setOf<BackendFactory>(Unicorn2Factory(true))){
                 override fun createSyscallHandler(svcMemory: SvcMemory?): UnixSyscallHandler<AndroidFileIO> {
                     return super.createSyscallHandler(svcMemory)
                 }
@@ -47,6 +47,7 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
             emulator!!.memory.setLibraryResolver(AndroidResolver(23))
             vm = emulator!!.createDalvikVM(androidEnvironment!!.apkFile.copyApkFile)
             vm.setJni(AppdbgJni(vm,androidEnvironment!!))
+//            vm.setVerbose(true)
             md = vm.loadLibrary(File(androidEnvironment!!.apkFile.nativeLibraryDir,soName),true)
             md.callJNI_OnLoad(emulator)
         }
