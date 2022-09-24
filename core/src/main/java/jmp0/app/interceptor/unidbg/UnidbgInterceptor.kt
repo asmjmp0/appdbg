@@ -1,9 +1,10 @@
 package jmp0.app.interceptor.unidbg
 
+import com.github.unidbg.AndroidEmulator
 import com.github.unidbg.arm.backend.BackendFactory
-import com.github.unidbg.arm.backend.Unicorn2Factory
 import com.github.unidbg.file.linux.AndroidFileIO
 import com.github.unidbg.linux.android.AndroidARMEmulator
+import com.github.unidbg.linux.android.AndroidEmulatorBuilder
 import com.github.unidbg.linux.android.AndroidResolver
 import com.github.unidbg.linux.android.dvm.*
 import com.github.unidbg.linux.android.dvm.wrapper.DvmInteger
@@ -28,7 +29,7 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
     private val logger = Logger.getLogger(UnidbgInterceptor::class.java)
 
     private var androidEnvironment:AndroidEnvironment? = null
-    private var emulator:AndroidARMEmulator? = null
+    private var emulator:AndroidEmulator? = null
     private lateinit var vm: VM
     private lateinit var md:DalvikModule
 
@@ -38,16 +39,11 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
         if (androidEnvironment == null)
             androidEnvironment = DbgContext.getAndroidEnvironment(uuid)
         if (emulator == null){
-            emulator = object :AndroidARMEmulator(androidEnvironment!!.apkFile.packageName,null,
-                setOf<BackendFactory>(Unicorn2Factory(true))){
-                override fun createSyscallHandler(svcMemory: SvcMemory?): UnixSyscallHandler<AndroidFileIO> {
-                    return super.createSyscallHandler(svcMemory)
-                }
-            }
+            emulator = AndroidEmulatorBuilder.for32Bit().build()
             emulator!!.memory.setLibraryResolver(AndroidResolver(23))
             vm = emulator!!.createDalvikVM(androidEnvironment!!.apkFile.copyApkFile)
             vm.setJni(AppdbgJni(vm,androidEnvironment!!))
-//            vm.setVerbose(true)
+            vm.setVerbose(true)
             md = vm.loadLibrary(File(androidEnvironment!!.apkFile.nativeLibraryDir,soName),true)
             md.callJNI_OnLoad(emulator)
         }

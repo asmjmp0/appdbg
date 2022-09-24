@@ -5,8 +5,9 @@ import com.github.unidbg.linux.android.dvm.array.ArrayObject
 import com.github.unidbg.linux.android.dvm.wrapper.DvmBoolean
 import com.github.unidbg.linux.android.dvm.wrapper.DvmInteger
 import com.github.unidbg.linux.android.dvm.wrapper.DvmLong
+import jmp0.app.AndroidEnvironment
 import jmp0.util.ReflectUtilsBase
-import jmp0.util.SystemReflectUtils
+import jmp0.util.SystemReflectUtils.setEx
 import java.util.LinkedList
 
 /**
@@ -14,7 +15,7 @@ import java.util.LinkedList
  * Create on 2022/4/22
  */
 object UnidbgWrapperUtils {
-    fun toOriginalObject(vaList: VaList, signatureInfo: ReflectUtilsBase.SignatureInfo):Array<Any?>{
+    fun toOriginalObject(vaList: VaList, signatureInfo: ReflectUtilsBase.SignatureInfo,androidEnvironment: AndroidEnvironment):Array<Any?>{
         if (signatureInfo.paramTypes.isEmpty()) return emptyArray()
         val retArr = ArrayList<Any?>()
         val size = signatureInfo.paramTypes.size
@@ -38,6 +39,7 @@ object UnidbgWrapperUtils {
                 }
                 else -> {
                     val dvmObj = vaList.getObjectArg<DvmObject<*>>(i)
+                    dvmObj.repair(androidEnvironment)
                     retArr.add(dvmObj.value)
                 }
             }
@@ -79,5 +81,12 @@ object UnidbgWrapperUtils {
             retArr.add(toUnidbgObject(vm,it))
         }
         return retArr.toArray()
+    }
+
+    fun DvmObject<*>.repair(androidEnvironment:AndroidEnvironment): DvmObject<*> {
+        if(this is DvmClass && value == null)
+            DvmObject::class.java.getDeclaredField("value")
+            .setEx(this,androidEnvironment.findClass(className.replace('/','.')))
+        return this
     }
 }

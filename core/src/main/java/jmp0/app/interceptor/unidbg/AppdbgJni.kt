@@ -2,6 +2,7 @@ package jmp0.app.interceptor.unidbg
 
 import com.github.unidbg.linux.android.dvm.*
 import jmp0.app.AndroidEnvironment
+import jmp0.app.interceptor.unidbg.UnidbgWrapperUtils.repair
 import jmp0.util.ReflectUtilsBase
 import jmp0.util.SystemReflectUtils
 import org.apache.log4j.Logger
@@ -24,7 +25,7 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         val signatureInfo = SystemReflectUtils.getSignatureInfo(clazzName+'.'+methodName+dvmMethod.args,androidEnvironment.id)
         val clazz = androidEnvironment.findClass(clazzName)
         val method = clazz.getMethod(methodName,*signatureInfo.paramTypes)
-        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo)
+        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo,androidEnvironment)
         val res = method.invoke(null,*params)
         val name = method.returnType.name.replace('.','/')
         return UnidbgWrapperUtils.toUnidbgObject(vm,res,name)
@@ -45,7 +46,7 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         )
         val clazz = androidEnvironment.findClass(clazzName)
         val method = clazz.getConstructor(*signatureInfo.paramTypes)
-        val params = UnidbgWrapperUtils.toOriginalObject(vaList, signatureInfo)
+        val params = UnidbgWrapperUtils.toOriginalObject(vaList, signatureInfo,androidEnvironment)
         return UnidbgWrapperUtils.toUnidbgObject(vm, method.newInstance(*params))
     }
 
@@ -64,7 +65,8 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         )
         val clazz = androidEnvironment.findClass(clazzName)
         val method = clazz.getMethod(methodName,*signatureInfo.paramTypes)
-        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo)
+        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo,androidEnvironment)
+        dvmObject.repair(androidEnvironment)
         method.invoke(dvmObject.value,*params)
     }
 
@@ -83,7 +85,8 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         )
         val clazz = androidEnvironment.findClass(clazzName)
         val method = clazz.getMethod(methodName,*signatureInfo.paramTypes)
-        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo)
+        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo,androidEnvironment)
+        dvmObject.repair(androidEnvironment)
         val res = method.invoke(dvmObject.value,*params)
         val name = method.returnType.name.replace('.','/')
         return UnidbgWrapperUtils.toUnidbgObject(vm, res, name)
@@ -91,68 +94,68 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
 
     override fun setObjectField(vm: BaseVM?, dvmObject: DvmObject<*>, dvmField: DvmField, value: DvmObject<*>) {
         logger.info("call method ${dvmObject.objectType.className} setObjectField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         ins!!.javaClass.getField(dvmField.fieldName).set(ins,value.value)
     }
 
     override fun getObjectField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField): DvmObject<*> {
         logger.info("call method ${dvmObject.objectType.className} getObjectField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         val res = ins!!.javaClass.getField(dvmField.fieldName).get(ins)
         return UnidbgWrapperUtils.toUnidbgObject(vm,res)
     }
 
     override fun setIntField(vm: BaseVM?, dvmObject: DvmObject<*>, dvmField: DvmField, value: Int) {
         logger.info("call method ${dvmObject.objectType.className} setIntField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         ins!!.javaClass.getField(dvmField.fieldName).set(ins,value)
     }
 
     override fun getIntField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField): Int {
         logger.info("call method ${dvmObject.objectType.className} getIntField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         return ins!!.javaClass.getField(dvmField.fieldName).get(ins) as Int
     }
 
     override fun setBooleanField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField, value: Boolean) {
         logger.info("call method ${dvmObject.objectType.className} setBooleanField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         ins!!.javaClass.getField(dvmField.fieldName).set(ins,value)
     }
 
     override fun getBooleanField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField): Boolean {
         logger.info("call method ${dvmObject.objectType.className} getBooleanField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         return ins!!.javaClass.getField(dvmField.fieldName).get(ins) as Boolean
     }
 
     override fun setFloatField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField, value: Float) {
         logger.info("call method ${dvmObject.objectType.className} setFloatField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         ins!!.javaClass.getField(dvmField.fieldName).set(ins,value)
     }
 
     override fun getFloatField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField): Float {
         logger.info("call method ${dvmObject.objectType.className} getFloatField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         return ins!!.javaClass.getField(dvmField.fieldName).get(ins) as Float
     }
 
     override fun setLongField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField, value: Long) {
         logger.info("call method ${dvmObject.objectType.className} setLongField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         ins!!.javaClass.getField(dvmField.fieldName).set(ins,value)
     }
 
     override fun getLongField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField): Long {
         logger.info("call method ${dvmObject.objectType.className} getLongField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         return ins!!.javaClass.getField(dvmField.fieldName).get(ins) as Long
     }
 
     override fun setDoubleField(vm: BaseVM, dvmObject: DvmObject<*>, dvmField: DvmField, value: Double) {
         logger.info("call method ${dvmObject.objectType.className} setDoubleField[${dvmField.fieldName}] pass to appdbg!!")
-        val ins = dvmObject.value
+        val ins = dvmObject.repair(androidEnvironment).value
         ins!!.javaClass.getField(dvmField.fieldName).set(ins,value)
     }
 
@@ -161,7 +164,7 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
     override fun setStaticObjectField(vm: BaseVM?, dvmClass: DvmClass, dvmField: DvmField, value: DvmObject<*>) {
         logger.info("call method ${dvmClass.className} setStaticObjectField[${dvmField.fieldName}] pass to appdbg!!")
         val clazz = androidEnvironment.findClass(dvmClass.className.replace('/','.'))
-        clazz.getField(dvmField.fieldName).set(null,value.value)
+        clazz.getField(dvmField.fieldName).set(null,value.repair(androidEnvironment).value)
     }
 
     override fun getStaticObjectField(vm: BaseVM, dvmClass: DvmClass, dvmField: DvmField): DvmObject<*> {
@@ -187,8 +190,6 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         val clazz = androidEnvironment.findClass(dvmClass.className.replace('/','.'))
         clazz.getField(dvmField.fieldName).set(null,value)
     }
-
-    // FIXME: 2022/4/22 getStaticDoubleField not implement
 
     // FIXME: 2022/4/22 setStaticByteField not implement
 

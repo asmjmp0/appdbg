@@ -100,6 +100,9 @@ abstract class ReflectUtilsBase {
     fun Field.getEx(ins: Any) =
         setAccessibleEx().get(ins)
 
+    fun Field.setEx(ins: Any,value:Any?) =
+        setAccessibleEx().set(ins,value)
+
     fun Any.getObjectEx(name:String) =
         javaClass.getDeclaredField(name).getEx(this)
 
