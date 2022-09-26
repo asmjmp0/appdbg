@@ -44,7 +44,7 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
             vm = emulator!!.createDalvikVM(androidEnvironment!!.apkFile.copyApkFile)
             vm.setJni(AppdbgJni(vm,androidEnvironment!!))
             vm.setVerbose(true)
-            md = vm.loadLibrary(File(androidEnvironment!!.apkFile.nativeLibraryDir,soName),true)
+            md = vm.loadLibrary(soName,true)
             md.callJNI_OnLoad(emulator)
         }
     }

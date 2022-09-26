@@ -77,7 +77,8 @@ class AndroidEnvironment(val apkFile: ApkFile,
                         if (args[0] == null) return null
                         when(args[0]){
                             is String->{
-                                val ret = methodInterceptor.ioResolver(args[0] as String)
+                                val ret =try { methodInterceptor.ioResolver(args[0] as String) }
+                                catch (e:Exception){ IInterceptor.ImplStatus(false,null) }
                                 return if (!ret.implemented) args[0]
                                 else ret.result.toString()
                             }

@@ -19,7 +19,7 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         dvmMethod: DvmMethod,
         vaList: VaList
     ): DvmObject<*> {
-        logger.info("from jni call ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+        logger.info("callStaticObjectMethodV ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
         val clazzName = dvmClass.className.replace('/','.')
         val methodName = dvmMethod.methodName
         val signatureInfo = SystemReflectUtils.getSignatureInfo(clazzName+'.'+methodName+dvmMethod.args,androidEnvironment.id)
@@ -37,7 +37,7 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         dvmMethod: DvmMethod,
         vaList: VaList
     ): DvmObject<*> {
-        logger.info("new object ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+        logger.info("newObjectV ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
         val clazzName = dvmClass.className.replace('/', '.')
         val methodName = dvmMethod.methodName
         val signatureInfo = SystemReflectUtils.getSignatureInfo(
@@ -56,7 +56,7 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         dvmMethod: DvmMethod,
         vaList: VaList
     ) {
-        logger.info("call method ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+        logger.info("callVoidMethodV ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
         val clazzName = dvmObject.objectType.className.replace('/','.')
         val methodName = dvmMethod.methodName
         val signatureInfo = SystemReflectUtils.getSignatureInfo(
@@ -76,7 +76,7 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         dvmMethod: DvmMethod,
         vaList: VaList
     ): DvmObject<*> {
-        logger.info("call method ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+        logger.info("callObjectMethodV ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
         val clazzName = dvmObject.objectType.className.replace('/','.')
         val methodName = dvmMethod.methodName
         val signatureInfo = SystemReflectUtils.getSignatureInfo(
