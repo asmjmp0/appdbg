@@ -1,13 +1,9 @@
 package jmp0.util
 
+import net.lingala.zip4j.ZipFile
 import java.io.*
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 
 object ZipUtility {
     private val BUFFER_SIZE = 4096
@@ -61,22 +57,23 @@ object ZipUtility {
         }
         bos.close()
     }
-
+    @SuppressWarnings("unused")
      fun zip(sourceDirPath: String, zipFilePath: String) {
-        val p: Path = Files.createFile(Paths.get(zipFilePath))
-        ZipOutputStream(Files.newOutputStream(p)).use { zs ->
-            val pp: Path = Paths.get(sourceDirPath)
-            Files.walk(pp)
-                .filter { path -> !Files.isDirectory(path) }
-                .forEach { path ->
-                    if (path.startsWith("$pp${File.separator}kotlin"))
-                        //exclude kotlin package
-                        return@forEach
-                    val zipEntry = ZipEntry(pp.relativize(path).toString())
-                    zs.putNextEntry(zipEntry)
-                    zs.write(Files.readAllBytes(path))
-                    zs.closeEntry()
-                }
-        }
+         ZipFile(zipFilePath).addFolder(File(sourceDirPath))
+//        val p: Path = Files.createFile(Paths.get(zipFilePath))
+//        ZipOutputStream(Files.newOutputStream(p)).use { zs ->
+//            val pp: Path = Paths.get(sourceDirPath)
+//            Files.walk(pp)
+//                .filter { path -> !Files.isDirectory(path) }
+//                .forEach { path ->
+//                    if (path.startsWith("$pp${File.separator}kotlin"))
+//                        //exclude kotlin package
+//                        return@forEach
+//                    val zipEntry = ZipEntry(pp.relativize(path).toString())
+//                    zs.putNextEntry(zipEntry)
+//                    zs.write(Files.readAllBytes(path))
+//                    zs.closeEntry()
+//                }
+//        }
     }
 }

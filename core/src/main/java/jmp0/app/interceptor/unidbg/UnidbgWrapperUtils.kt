@@ -49,7 +49,7 @@ object UnidbgWrapperUtils {
     }
 
     fun toUnidbgObject(vm:VM,obj:Any?,className:String? = null):DvmObject<out Any>{
-        if (obj == null) return DvmObjectWrapper(vm.resolveClass("java/lang/String"),null)
+        if (obj == null) return DvmObjectWrapper(vm.resolveClass("java/lang/Object"),null)
         //fixme wrapper fix
         when(obj){
             is String -> return StringObject(vm,obj)
