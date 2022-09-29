@@ -37,6 +37,22 @@ object UnidbgWrapperUtils {
                     val longObj = vaList.getLongArg(i)
                     retArr.add(longObj)
                 }
+                "byte"->{
+                    val byteObj = vaList.getIntArg(i).toByte()
+                    retArr.add(byteObj)
+                }
+                "char"->{
+                    val charObj = vaList.getIntArg(i).toChar()
+                    retArr.add(charObj)
+                }
+                "short"->{
+                    val shortObj = vaList.getIntArg(i).toShort()
+                    retArr.add(shortObj)
+                }
+                "boolean"->{
+                    val booleanObj = vaList.getIntArg(i) == 1
+                    retArr.add(booleanObj)
+                }
                 else -> {
                     val dvmObj = vaList.getObjectArg<DvmObject<*>>(i)
                     dvmObj.repair(androidEnvironment)
@@ -70,15 +86,18 @@ object UnidbgWrapperUtils {
                 return ArrayObject(*objectList.toTypedArray())
             }
         }
-        val clazzName = className?:obj.javaClass.name.replace(".","/")
+        val clazzName = className?:obj::class.java.name.replace(".","/")
         return DvmObjectWrapper(vm.resolveClass(clazzName),obj)
     }
 
-    fun wrapperToUnidbgParams(vm: VM,param: Array<out Any?>): Array<out Any> {
-        val retArr = ArrayList<Any>()
+    fun wrapperToUnidbgParams(vm: VM,param: Array<out Any?>,signatureInfo: ReflectUtilsBase.SignatureInfo): Array<out Any> {
+        val retArr = ArrayList<Any?>()
         if (param.isEmpty()) return retArr.toArray()
-        param.forEach {
-            retArr.add(toUnidbgObject(vm,it))
+        for (i in param.indices){
+            when(signatureInfo.paramTypes[i].name){
+                "byte","short","int","long","char","float","double","boolean"-> retArr.add(param[i])
+                else -> retArr.add(toUnidbgObject(vm,param[i],signatureInfo.paramTypes[i].name))
+            }
         }
         return retArr.toArray()
     }

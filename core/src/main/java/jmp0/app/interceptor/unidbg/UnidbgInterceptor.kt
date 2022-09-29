@@ -51,7 +51,7 @@ abstract class UnidbgInterceptor(private val soName:String): IInterceptor {
 
 
     private fun callUnidbgJniMethod(clazz: DvmClass,methodName:String,signature:String,signatureInfo: ReflectUtilsBase.SignatureInfo,param: Array<out Any?>): IInterceptor.ImplStatus {
-        val params = UnidbgWrapperUtils.wrapperToUnidbgParams(vm,param)
+        val params = UnidbgWrapperUtils.wrapperToUnidbgParams(vm,param,signatureInfo)
         val res:Any? = when(signatureInfo.returnType!!){
             Int::class.java-> clazz.callStaticJniMethodInt(emulator,methodName+signature,*params)
             Boolean::class.java-> clazz.callStaticJniMethodBoolean(emulator,methodName+signature,*params)

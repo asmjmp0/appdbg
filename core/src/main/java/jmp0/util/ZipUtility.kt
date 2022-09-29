@@ -57,7 +57,7 @@ object ZipUtility {
         }
         bos.close()
     }
-    @SuppressWarnings("unused")
+
      fun zip(sourceDirPath: String, zipFilePath: String) {
          ZipFile(zipFilePath).addFolder(File(sourceDirPath))
 //        val p: Path = Files.createFile(Paths.get(zipFilePath))
