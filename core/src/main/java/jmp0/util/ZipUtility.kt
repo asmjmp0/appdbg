@@ -1,9 +1,13 @@
 package jmp0.util
 
 import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.ExcludeFileFilter
+import net.lingala.zip4j.model.ZipParameters
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import kotlin.io.path.Path
+import kotlin.io.path.name
 
 object ZipUtility {
     private val BUFFER_SIZE = 4096
@@ -58,8 +62,11 @@ object ZipUtility {
         bos.close()
     }
 
-     fun zip(sourceDirPath: String, zipFilePath: String) {
-         ZipFile(zipFilePath).addFolder(File(sourceDirPath))
+     fun zip(sourceDirPath: String, zipFilePath: String,mExcludeFileFilter: ExcludeFileFilter?) {
+         ZipFile(zipFilePath).addFolder(File(sourceDirPath), ZipParameters().apply {
+             isIncludeRootFolder = false
+             mExcludeFileFilter?.let { excludeFileFilter = it }
+         })
 //        val p: Path = Files.createFile(Paths.get(zipFilePath))
 //        ZipOutputStream(Files.newOutputStream(p)).use { zs ->
 //            val pp: Path = Paths.get(sourceDirPath)

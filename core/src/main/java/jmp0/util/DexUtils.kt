@@ -3,9 +3,11 @@ package jmp0.util
 import com.googlecode.d2j.dex.Dex2jar
 import jmp0.conf.CommonConf
 import jmp0.decompiler.AppdbgDecompiler
+import net.lingala.zip4j.model.ExcludeFileFilter
 import org.apache.log4j.Logger
 import java.io.File
 import java.util.zip.ZipFile
+import kotlin.io.path.Path
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.system.exitProcess
@@ -54,7 +56,10 @@ object DexUtils {
                 else {
                     deleteRecursively()
                     mkdirs()
-                }},Random.nextULong().toString()+".jar").canonicalPath)
+                }},Random.nextULong().toString()+".jar").canonicalPath ){
+                val temp = Path(out.path).relativize(Path(it.path))
+                temp.startsWith("android") || temp.startsWith("kotlin")
+            }
         }
     }
 
