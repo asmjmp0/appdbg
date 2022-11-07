@@ -14,6 +14,11 @@ import kotlin.system.exitProcess
 
 object DexUtils {
     val logger = Logger.getLogger(javaClass)
+
+    private fun pathFilter(path:String):Boolean =
+        //avoid JetBrains kotlin plugin inner error
+         path.startsWith("org/intellij/lang/annotations") || path.startsWith("org/jetbrains/annotations")
+
     /**
      * @param byteArray 源dexFile
      * @param name 需要被释放成的文件夹
@@ -33,6 +38,8 @@ object DexUtils {
                     }.toString()
                 },it[it.size-1])
             }.also {
+                if(pathFilter(it.first)) return@also
+
                 val f = File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").apply { writeBytes(data) }
                 if (generateSourceLine){
                     AppdbgDecompiler(f).decompile()
@@ -58,10 +65,7 @@ object DexUtils {
                     mkdirs()
                 }},Random.nextULong().toString()+".jar").canonicalPath ){
                 val temp = Path(out.path).relativize(Path(it.path))
-                temp.startsWith("android") ||
-                        temp.startsWith("kotlin") ||
-                        temp.startsWith("org/intellij/lang/annotations") ||
-                        temp.startsWith("org/jetbrains/annotations")
+                temp.startsWith("android") || temp.startsWith("kotlin")
 
             }
         }

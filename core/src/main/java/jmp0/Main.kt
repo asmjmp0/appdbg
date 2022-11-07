@@ -8,6 +8,7 @@ import jmp0.app.AndroidEnvironment
 import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
+import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.decompiler.AppdbgDecompiler
 import jmp0.util.DexUtils
@@ -67,22 +68,6 @@ class Main {
         fun testLooper() {
             val androidEnvironment =
                 AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
-                    absAndroidRuntimeClass = object : ClassLoadedCallbackBase() {
-                        override fun afterResolveClassImpl(
-                            androidEnvironment: AndroidEnvironment,
-                            ctClass: CtClass
-                        ): CtClass {
-                            return ctClass
-                        }
-
-                        override fun beforeResolveClassImpl(
-                            androidEnvironment: AndroidEnvironment,
-                            className: String,
-                            classLoader: XAndroidClassLoader
-                        ): Class<*>? {
-                            return null
-                        }
-                    },
                     methodInterceptor = object : IInterceptor {
                         override fun nativeCalled(
                             uuid: String,
@@ -166,7 +151,20 @@ class Main {
 
         fun testJni() {
             val androidEnvironment =
-                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk")),
+                AndroidEnvironment(ApkFile(File("test-app/build/outputs/apk/debug/test-app-debug.apk"),object :IApkConfig{
+                    override fun forceDecompile(): Boolean {
+                        return false
+                    }
+
+                    override fun generateJarFile(): Boolean {
+                        return true
+                    }
+
+                    override fun jarWithDebugInfo(): Boolean {
+                        return true
+                    }
+
+                }),
                     object : UnidbgInterceptor("native-lib") {
                         override fun otherNativeCalled(uuid: String, className: String, funcName: String,
                             signature: String, param: Array<out Any?>
@@ -186,6 +184,12 @@ class Main {
                         }
 
                     })
+            androidEnvironment.addAfterClassInterceptor(object :RuntimeClassInterceptorBase(androidEnvironment){
+                override fun doChange(ctClass: CtClass): CtClass {
+                    println("test->"+ctClass.name)
+                    return ctClass
+                }
+            })
             androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false);
             reflection(androidEnvironment,"jmp0.test.testapp.TestNative"){
                 constructor()()
@@ -370,9 +374,9 @@ class Main {
 //            testContext()
 //            testLooper()
 //            testBase64()
-//            testJni()
+            testJni()
 //            testNetWork()
-            testAES()
+//            testAES()
 //            testFile()
 //            testSharedPreferences()
 //            testReflection()
