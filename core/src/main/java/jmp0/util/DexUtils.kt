@@ -58,7 +58,11 @@ object DexUtils {
                     mkdirs()
                 }},Random.nextULong().toString()+".jar").canonicalPath ){
                 val temp = Path(out.path).relativize(Path(it.path))
-                temp.startsWith("android") || temp.startsWith("kotlin")
+                temp.startsWith("android") ||
+                        temp.startsWith("kotlin") ||
+                        temp.startsWith("org/intellij/lang/annotations") ||
+                        temp.startsWith("org/jetbrains/annotations")
+
             }
         }
     }
