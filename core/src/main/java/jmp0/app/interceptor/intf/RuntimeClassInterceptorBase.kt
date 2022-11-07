@@ -8,7 +8,7 @@ import jmp0.app.AndroidEnvironment
  * Create on 2022/3/7
  * use to give base func and a interface to  pass chain
  */
-abstract class RuntimeClassInterceptorBase(private val androidEnvironment: AndroidEnvironment,private val ctClass: CtClass) {
+abstract class RuntimeClassInterceptorBase(private val androidEnvironment: AndroidEnvironment) {
 
     protected fun checkNativeFlag(modifiers:Int ) =
         (modifiers and Modifier.NATIVE) == Modifier.NATIVE
@@ -110,5 +110,5 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
                     generateToBaseTypeBody("ret",returnType) + "}"
         }
 
-    abstract fun doChange():CtClass
+    abstract fun doChange(ctClass: CtClass):CtClass
 }

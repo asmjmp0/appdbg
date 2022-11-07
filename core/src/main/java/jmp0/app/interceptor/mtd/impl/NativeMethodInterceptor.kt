@@ -6,11 +6,11 @@ import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import org.apache.log4j.Logger
 
 
-class NativeMethodInterceptor(private val androidEnvironment: AndroidEnvironment, private val ctClass: CtClass)
-    : RuntimeClassInterceptorBase(androidEnvironment,ctClass) {
+class NativeMethodInterceptor(private val androidEnvironment: AndroidEnvironment)
+    : RuntimeClassInterceptorBase(androidEnvironment) {
     private val logger = Logger.getLogger(javaClass)
 
-    override fun doChange():CtClass{
+    override fun doChange(ctClass: CtClass):CtClass{
         ctClass.declaredMethods.forEach {
             //判断是否为native函数
             if(checkNativeFlag(it.modifiers)){

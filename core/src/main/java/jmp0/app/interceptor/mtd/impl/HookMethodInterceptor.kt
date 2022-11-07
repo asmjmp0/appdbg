@@ -9,10 +9,10 @@ import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/3/7
  */
-class HookMethodInterceptor(private val androidEnvironment: AndroidEnvironment,private val ctClass: CtClass)
-    : RuntimeClassInterceptorBase(androidEnvironment,ctClass) {
+class HookMethodInterceptor(private val androidEnvironment: AndroidEnvironment)
+    : RuntimeClassInterceptorBase(androidEnvironment) {
 
-    override fun doChange(): CtClass {
+    override fun doChange(ctClass: CtClass): CtClass {
         for (declaredMethod in ctClass.declaredMethods) {
 
             //native function can't be hooked,se ClassNativeInterceptor

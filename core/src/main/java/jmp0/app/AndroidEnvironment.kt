@@ -6,6 +6,7 @@ import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.FrameWorkClassNoFoundException
 import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
+import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
 import jmp0.app.mock.annotations.MethodHookClass
@@ -24,15 +25,8 @@ import java.util.*
 // TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
 class AndroidEnvironment(val apkFile: ApkFile,
                          private val methodInterceptor: IInterceptor,
-                         private val absAndroidRuntimeClass: ClassLoadedCallbackBase = object :
+                         private val androidRuntimeClass: ClassLoadedCallbackBase = object :
                              ClassLoadedCallbackBase(){
-                             override fun afterResolveClassImpl(
-                                 androidEnvironment: AndroidEnvironment,
-                                 ctClass: CtClass
-                             ): CtClass {
-                                 return ctClass
-                             }
-
                              override fun beforeResolveClassImpl(
                                  androidEnvironment: AndroidEnvironment,
                                  className: String,
@@ -185,7 +179,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
 
     private fun loadClass(file: File): Class<*> {
-        val data = absAndroidRuntimeClass.afterResolveClass(
+        val data = androidRuntimeClass.afterResolveClass(
             this,ClassPool.getDefault().makeClass(file.inputStream(),false)
         ).toBytecode()
         return androidLoader.xDefineClass(null,data,0,data.size)
@@ -198,7 +192,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
      */
     fun loadClass(className: String): Class<*> {
         val mClassName = className.replace("[]","")
-        return absAndroidRuntimeClass.beforeResolveClass(this,mClassName,androidLoader)
+        return androidRuntimeClass.beforeResolveClass(this,mClassName,androidLoader)
            ?:loadClass(androidFindClass(mClassName)?:throw FrameWorkClassNoFoundException("$mClassName not find from frame work")).apply { logger.trace("$this loaded!") }
     }
 
@@ -225,6 +219,11 @@ class AndroidEnvironment(val apkFile: ApkFile,
      */
     fun registerMethodHook(signature:String,replace:Boolean)
         = DbgContext.registerMethodHook(id,signature,replace)
+
+    fun addAfterClassInterceptor(classInterceptorBase: RuntimeClassInterceptorBase){
+        androidRuntimeClass.addAfterClassInterceptor(classInterceptorBase)
+    }
+
 
     override fun toString(): String =
         "${javaClass.simpleName}[$processName ]"
