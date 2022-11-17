@@ -1,15 +1,14 @@
 package jmp0.util
 
-import jmp0.app.AndroidEnvironment
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-class ReflectionHelper(private val androidEnvironment: AndroidEnvironment,fullClassName: String) {
-    private val clazz = androidEnvironment.findClass(fullClassName)
+class ReflectionHelper(private val classLoader: ClassLoader,fullClassName: String) {
+    private val clazz = Class.forName(fullClassName,false,classLoader)
     var ins:Any? = null
 
-    fun clazz(name: String): Class<*> = androidEnvironment.findClass(name)
+    fun clazz(name: String): Class<*> = Class.forName(name,false,classLoader)
 
     fun field(name:String): Field = clazz.getDeclaredField(name)
 
@@ -48,8 +47,8 @@ class ReflectionHelper(private val androidEnvironment: AndroidEnvironment,fullCl
     /**
      * new a reflectionHelper environment with the androidEnvironment
      */
-    fun reflection(fullClassName: String, block: ReflectionHelper.()->Any?):Any? = ReflectionHelper(androidEnvironment,fullClassName).block()
+    fun reflection(fullClassName: String, block: ReflectionHelper.()->Any?):Any? = ReflectionHelper(classLoader,fullClassName).block()
 
 }
 
-fun reflection(androidEnvironment: AndroidEnvironment,fullClassName: String, block: ReflectionHelper.()->Any?):Any?  = ReflectionHelper(androidEnvironment,fullClassName).block()
+fun reflection(classLoader: ClassLoader,fullClassName: String, block: ReflectionHelper.()->Any?):Any?  = ReflectionHelper(classLoader,fullClassName).block()

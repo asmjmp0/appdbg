@@ -10,6 +10,8 @@ import java.util.*
  * Create on 2022/3/8
  */
 object DbgContext {
+    val appClassLoader: ClassLoader = this::class.java.classLoader
+
     private val contextHashMap = hashMapOf<String,AndroidEnvironment>()
 
     private val methodHookHashMap = hashMapOf<String,ArrayList<MethodHookInfo>>()

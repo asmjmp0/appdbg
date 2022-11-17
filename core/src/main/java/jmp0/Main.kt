@@ -191,7 +191,7 @@ class Main {
                 }
             })
             androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false);
-            reflection(androidEnvironment,"jmp0.test.testapp.TestNative"){
+            reflection(androidEnvironment.getClassLoader(),"jmp0.test.testapp.TestNative"){
                 constructor()()
                 method("testAll")(this.ins)
             }
@@ -357,7 +357,6 @@ class Main {
             val instance:Any = clazz.getDeclaredConstructor(Int::class.java,String::class.java).newInstance(10,"AAAA")
             clazz.getDeclaredMethod("testAll",Int::class.java).invoke(instance,1)
         }
-
 
         @JvmStatic
         fun main(args: Array<String>) {

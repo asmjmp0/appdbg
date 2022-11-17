@@ -2,6 +2,7 @@ package jmp0.app.mock
 
 import javassist.ClassPool
 import javassist.CtClass
+import jmp0.app.DbgContext
 import jmp0.app.mock.annotations.HookReturnType
 import jmp0.app.mock.annotations.MethodHookClass
 import jmp0.app.mock.annotations.NativeHookClass
@@ -11,6 +12,7 @@ import jmp0.util.FileUtils
 import jmp0.util.SystemReflectUtils
 import java.lang.reflect.Method
 import jmp0.util.SystemReflectUtils.getMethodWithSignature
+import jmp0.util.reflection
 import java.io.File
 
 /**
@@ -69,17 +71,17 @@ class MethodManager(private val mUuid: String) {
     }
 
     private fun setNativeCallList(){
-        SystemReflectUtils.getAllClassWithAnnotation(CommonConf.Mock.mockNativeClassPackageName,NativeHookClass::class.java){ fullClassName->
+        SystemReflectUtils.getAllClassWithAnnotation(CommonConf.Mock.mockNativeClassPackageName,NativeHookClass::class.java){ fullClassName,isInner->
             val ctClass = ClassPool.getDefault().getCtClass(fullClassName)
-            val targetClass = (ctClass.annotations.find { it is NativeHookClass } as NativeHookClass).targetClass
+            val targetClass = if(isInner) fullClassName else (ctClass.annotations.find { it is NativeHookClass } as NativeHookClass).targetClass
             setCallListInternal(targetClass,ctClass,nativeHashMap)
         }
     }
 
     private fun setMethodCallList(){
-        SystemReflectUtils.getAllClassWithAnnotation(CommonConf.Mock.mockMethodClassPackageName,MethodHookClass::class.java){ fullClassName->
+        SystemReflectUtils.getAllClassWithAnnotation(CommonConf.Mock.mockMethodClassPackageName,MethodHookClass::class.java){ fullClassName,isInner->
             val ctClass = ClassPool.getDefault().getCtClass(fullClassName)
-            val targetClass = (ctClass.annotations.find { it is MethodHookClass } as MethodHookClass).targetClass
+            val targetClass = if(isInner) fullClassName else (ctClass.annotations.find { it is MethodHookClass } as MethodHookClass).targetClass
             setCallListInternal(targetClass,ctClass,methodHashMap)
         }
     }

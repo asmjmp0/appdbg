@@ -118,10 +118,12 @@ class AndroidEnvironment(val apkFile: ApkFile,
      *  modify java/ to xxxxx before characteristic string
      */
     private fun loadUserSystemClass(){
-        SystemReflectUtils.getAllClassWithAnnotation(CommonConf.Mock.userSystemClassPackageName, ClassReplaceTo::class.java){ fullClassName->
+        SystemReflectUtils.getAllClassWithAnnotation(CommonConf.Mock.userSystemClassPackageName, ClassReplaceTo::class.java){ fullClassName,isInner->
             val ctClass = ClassPool.getDefault().getCtClass(fullClassName)
-            val targetClassName = (ctClass.annotations.find { annotation-> annotation is ClassReplaceTo } as ClassReplaceTo).to
-            if (targetClassName != "") ctClass.replaceClassName(fullClassName,targetClassName)
+            if (!isInner){
+                val targetClassName = (ctClass.annotations.find { annotation-> annotation is ClassReplaceTo } as ClassReplaceTo).to
+                if (targetClassName != "") ctClass.replaceClassName(fullClassName,targetClassName)
+            }
             //set uuid as xxUuid
             try {
                 val field = ctClass.getDeclaredField("xxUuid")
