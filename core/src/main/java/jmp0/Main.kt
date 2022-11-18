@@ -1,22 +1,15 @@
 package jmp0
-import android.telephony.TelephonyManager
 import javassist.CtClass
 import jmp0.apk.ApkFile
 import jmp0.apk.config.DefaultApkConfig
 import jmp0.apk.config.IApkConfig
 import jmp0.app.AndroidEnvironment
-import jmp0.app.classloader.ClassLoadedCallbackBase
-import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
-import jmp0.decompiler.AppdbgDecompiler
-import jmp0.util.DexUtils
 import jmp0.util.SystemReflectUtils.invokeEx
 import jmp0.util.reflection
-import org.apache.log4j.Level
 import org.apache.log4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 
 // TODO: 2022/3/11 整理log factory
@@ -165,7 +158,7 @@ class Main {
                     }
 
                 }),
-                    object : UnidbgInterceptor("native-lib") {
+                    object : UnidbgInterceptor(true){
                         override fun otherNativeCalled(uuid: String, className: String, funcName: String,
                             signature: String, param: Array<out Any?>
                         ): IInterceptor.ImplStatus {

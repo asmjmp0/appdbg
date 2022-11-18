@@ -5,13 +5,15 @@ import jmp0.apk.ApkFile
 import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.FrameWorkClassNoFoundException
 import jmp0.app.classloader.XAndroidClassLoader
+import jmp0.app.conversation.AppdbgConversationSchemaEnum
+import jmp0.app.conversation.IAppdbgConversationHandler
 import jmp0.app.interceptor.intf.IInterceptor
+import jmp0.app.interceptor.intf.NativeImplementInterceptor
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
+import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
-import jmp0.app.mock.annotations.MethodHookClass
 import jmp0.conf.CommonConf
-import jmp0.util.FileUtils
 import jmp0.util.SystemReflectUtils
 import jmp0.util.ZipUtility
 import org.apache.log4j.Logger
@@ -37,6 +39,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
                          }) {
     private val logger = Logger.getLogger(javaClass)
     private val androidLoader = XAndroidClassLoader(this)
+    private val conversationHandlerMap:EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler> = EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler>(AppdbgConversationSchemaEnum::class.java)
     val id = UUID.randomUUID().toString()
     var processName = id
     var context:Any
@@ -51,10 +54,16 @@ class AndroidEnvironment(val apkFile: ApkFile,
         MethodManager.getInstance(id).getMethodMap().forEach{
             registerMethodHook(it.key,true)
         }
+        initConversationHandler()
         initIOResolver()
         val loopClazz = findClass("android.os.Looper")
         loopClazz.getDeclaredMethod("prepareMainLooper").invoke(null)
         context = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
+    }
+
+    private fun initConversationHandler(){
+        if (methodInterceptor is NativeImplementInterceptor)
+            setConversationHandler(AppdbgConversationSchemaEnum.NATIVE, methodInterceptor)
     }
 
     private fun initIOResolver(){
@@ -226,6 +235,19 @@ class AndroidEnvironment(val apkFile: ApkFile,
         androidRuntimeClass.addAfterClassInterceptor(classInterceptorBase)
     }
 
+    fun loadLibrary(soName:String){
+        if (methodInterceptor is NativeImplementInterceptor) methodInterceptor.loadLibrary(this,soName)
+        else throw Exception("$methodInterceptor is not instanceof NativeImplementInterceptor!")
+    }
+
+
+    fun setConversationHandler(appdbgConversationSchemaEnum: AppdbgConversationSchemaEnum,
+                               iAppdbgConversationHandler: IAppdbgConversationHandler){
+        this.conversationHandlerMap[appdbgConversationSchemaEnum] = iAppdbgConversationHandler
+    }
+
+    fun getConversationHandler(appdbgConversationSchemaEnum: AppdbgConversationSchemaEnum) =
+        this.conversationHandlerMap[appdbgConversationSchemaEnum]
 
     override fun toString(): String =
         "${javaClass.simpleName}[$processName ]"

@@ -1,7 +1,9 @@
 package jmp0.app.mock.system
 
-import jmp0.app.AndroidEnvironment
 import jmp0.app.DbgContext
+import jmp0.app.classloader.XAndroidClassLoader
+import jmp0.app.conversation.AppdbgConversationSchemaEnum
+import jmp0.app.conversation.impl.ntv.NativeData
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.util.SystemReflectUtils.findSystemClass
 import jmp0.util.reflection
@@ -32,7 +34,9 @@ class System {
 
         @JvmStatic //the annotation is important
         fun loadLibrary(libName: String) {
+            val ae = DbgContext.getAndroidEnvironmentWithClassLoader(this::class.java.classLoader as XAndroidClassLoader)
             logger.info("want to load $libName...")
+            ae.getConversationHandler(AppdbgConversationSchemaEnum.NATIVE)?.appdbgConversationHandle(ae,NativeData(libName))
         }
 
         @JvmStatic

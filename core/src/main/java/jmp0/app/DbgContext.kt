@@ -1,6 +1,7 @@
 package jmp0.app
 
 import jmp0.apk.ApkFile
+import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.mock.MethodManager
 import java.lang.StringBuilder
 import java.util.*
@@ -14,6 +15,8 @@ object DbgContext {
 
     private val contextHashMap = hashMapOf<String,AndroidEnvironment>()
 
+    private val classLoaderHashMap = hashMapOf<XAndroidClassLoader,AndroidEnvironment>()
+
     private val methodHookHashMap = hashMapOf<String,ArrayList<MethodHookInfo>>()
 
     data class MethodHookInfo(val signature:String,val replace:Boolean)
@@ -22,6 +25,8 @@ object DbgContext {
         = synchronized(DbgContext::class.java){
         //init context map
         contextHashMap[uuid] = androidEnvironment
+        //init classloader map
+        classLoaderHashMap[androidEnvironment.getClassLoader()] = androidEnvironment
         //init method hook map
         methodHookHashMap[uuid] = ArrayList()
 
@@ -36,6 +41,10 @@ object DbgContext {
     @JvmStatic
     fun getAndroidEnvironment(uuid: String) =
         contextHashMap[uuid]
+
+    @JvmStatic
+    fun getAndroidEnvironmentWithClassLoader(classLoader: XAndroidClassLoader) =
+        classLoaderHashMap[classLoader]!!
 
 
     @JvmStatic
