@@ -94,13 +94,13 @@ abstract class ReflectUtilsBase {
         else getDeclaredMethod(signatureInfo.funcName,*(signatureInfo.paramTypes))
     }
 
-    fun Method.invokeEx(ins:Any?,vararg parameter:Any):Any? =
+    fun Method.invokeEx(ins:Any?,vararg parameter:Any?):Any? =
         setAccessibleEx().invoke(ins,*parameter)
 
-    fun Field.getEx(ins: Any) =
+    fun Field.getEx(ins: Any?) =
         setAccessibleEx().get(ins)
 
-    fun Field.setEx(ins: Any,value:Any?) =
+    fun Field.setEx(ins: Any?,value:Any?) =
         setAccessibleEx().set(ins,value)
 
     fun Any.getObjectEx(name:String) =

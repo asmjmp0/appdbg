@@ -235,8 +235,8 @@ class AndroidEnvironment(val apkFile: ApkFile,
         androidRuntimeClass.addAfterClassInterceptor(classInterceptorBase)
     }
 
-    fun loadLibrary(soName:String){
-        if (methodInterceptor is NativeImplementInterceptor) methodInterceptor.loadLibrary(this,soName)
+    fun loadLibrary(soName:String,fullPath:Boolean){
+        if (methodInterceptor is NativeImplementInterceptor) methodInterceptor.loadLibrary(this,soName,fullPath)
         else throw Exception("$methodInterceptor is not instanceof NativeImplementInterceptor!")
     }
 

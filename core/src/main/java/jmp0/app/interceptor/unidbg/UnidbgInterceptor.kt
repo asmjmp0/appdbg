@@ -12,6 +12,7 @@ import jmp0.app.interceptor.intf.NativeImplementInterceptor
 import jmp0.util.ReflectUtilsBase
 import jmp0.util.SystemReflectUtils
 import org.apache.log4j.Logger
+import java.io.File
 import java.lang.IllegalArgumentException
 
 /**
@@ -37,9 +38,11 @@ abstract class UnidbgInterceptor(private val autoLoad:Boolean): NativeImplementI
         return IInterceptor.ImplStatus(false, null)
     }
 
-    override fun loadLibrary(androidEnvironment: AndroidEnvironment, soName: String) {
+    override fun loadLibrary(androidEnvironment: AndroidEnvironment, soName: String, fullPath: Boolean) {
         checkAndCreateVMAndJni(androidEnvironment)
-        vm!!.loadLibrary(soName, true).callJNI_OnLoad(emulator)
+        if (fullPath){
+            vm!!.loadLibrary(File(soName),true).callJNI_OnLoad(emulator)
+        }else vm!!.loadLibrary(soName, true).callJNI_OnLoad(emulator)
     }
 
     private fun checkAndCreateVMAndJni(androidEnvironment: AndroidEnvironment) = synchronized(this::vm) {
