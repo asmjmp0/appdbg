@@ -473,8 +473,12 @@ public final class DomHelper {
         // collect statement nodes
         HashSet<Statement> setHandlers = new HashSet<>();
         setHandlers.add(head);
+        long beginTime = System.currentTimeMillis();
         while (true) {
-
+          if(System.currentTimeMillis() - beginTime > 1000 * 20){
+            System.out.println("fernflower findGeneralStatement method dead loop occurred!");
+            return null;
+          }
           boolean hdfound = false;
           for (Statement handler : setHandlers) {
             if (setNodes.contains(handler)) {
