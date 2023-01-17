@@ -8,5 +8,5 @@ import jmp0.app.interceptor.intf.IInterceptor
  * Create on 2022/11/18
  */
 interface IAppdbgConversationHandler {
-    fun appdbgConversationHandle(androidEnvironment: AndroidEnvironment, data: IAppdbgConversationData):IInterceptor.ImplStatus
+    fun appdbgConversationHandle(androidEnvironment: AndroidEnvironment, conversation: IAppdbgConversation<*>):IInterceptor.ImplStatus
 }

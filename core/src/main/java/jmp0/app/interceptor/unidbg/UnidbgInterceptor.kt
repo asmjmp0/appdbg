@@ -5,7 +5,9 @@ import com.github.unidbg.linux.android.AndroidEmulatorBuilder
 import com.github.unidbg.linux.android.AndroidResolver
 import com.github.unidbg.linux.android.dvm.*
 import jmp0.app.AndroidEnvironment
+import jmp0.app.conversation.IAppdbgConversation
 import jmp0.app.conversation.IAppdbgConversationData
+import jmp0.app.conversation.impl.ntv.NativeConversation
 import jmp0.app.conversation.impl.ntv.NativeData
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.intf.NativeImplementInterceptor
@@ -28,12 +30,12 @@ abstract class UnidbgInterceptor(private val autoLoad:Boolean): NativeImplementI
 
     override fun appdbgConversationHandle(
         androidEnvironment: AndroidEnvironment,
-        data: IAppdbgConversationData
+        conversation: IAppdbgConversation<*>
     ): IInterceptor.ImplStatus {
         if (!autoLoad) return IInterceptor.ImplStatus(false, null)
-        with(data as NativeData) {
-            logger.info("use auto load library soName-> $soName")
-            loadLibrary(androidEnvironment, soName)
+        if (conversation is NativeConversation){
+            logger.info("use auto load library soName-> ${conversation.data.soName}")
+            loadLibrary(androidEnvironment, conversation.data.soName)
         }
         return IInterceptor.ImplStatus(false, null)
     }

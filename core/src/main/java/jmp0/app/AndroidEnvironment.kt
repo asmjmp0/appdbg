@@ -243,6 +243,10 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
     fun setConversationHandler(appdbgConversationSchemaEnum: AppdbgConversationSchemaEnum,
                                iAppdbgConversationHandler: IAppdbgConversationHandler){
+        if (this.conversationHandlerMap.containsKey(appdbgConversationSchemaEnum)){
+            val ins = this.getConversationHandler(appdbgConversationSchemaEnum)
+            logger.warn("${appdbgConversationSchemaEnum} already has instance ${ins},which you do will overwrite the ins!")
+        }
         this.conversationHandlerMap[appdbgConversationSchemaEnum] = iAppdbgConversationHandler
     }
 

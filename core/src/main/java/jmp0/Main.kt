@@ -4,6 +4,10 @@ import jmp0.apk.ApkFile
 import jmp0.apk.config.DefaultApkConfig
 import jmp0.apk.config.IApkConfig
 import jmp0.app.AndroidEnvironment
+import jmp0.app.conversation.AppdbgConversationSchemaEnum
+import jmp0.app.conversation.IAppdbgConversation
+import jmp0.app.conversation.IAppdbgConversationHandler
+import jmp0.app.conversation.impl.sp.SharedPreferencesConversation
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
@@ -295,6 +299,30 @@ class Main {
                     }
 
                 })
+            ae.setConversationHandler(AppdbgConversationSchemaEnum.SHARED_PREFERENCES,object :IAppdbgConversationHandler{
+                override fun appdbgConversationHandle(
+                    androidEnvironment: AndroidEnvironment,
+                    conversation: IAppdbgConversation<*>
+                ): IInterceptor.ImplStatus {
+                    with(conversation as SharedPreferencesConversation){
+                        val keyName = conversation.data.params[0] as String
+                        when(conversation.data.methodName){
+                            "getString"->{
+                                if (keyName == "test1"){
+                                    return IInterceptor.ImplStatus(true,"SharedPreferencesConversation Test")
+                                }
+                            }
+                            "getInt"->{
+                                if (keyName == "test2"){
+                                    return IInterceptor.ImplStatus(true,666)
+                                }
+                            }
+
+                        }
+                    }
+                    return IInterceptor.ImplStatus(false,null)
+                }
+            })
             val contextClazz = ae.findClass("android.content.Context")
             val clazz = ae.loadClass("jmp0.test.testapp.SharedPreferencesTest")
             val ins = clazz.getDeclaredConstructor(contextClazz).newInstance(ae.context)
@@ -366,11 +394,11 @@ class Main {
 //            testContext()
 //            testLooper()
 //            testBase64()
-            testJni()
+//            testJni()
 //            testNetWork()
 //            testAES()
 //            testFile()
-//            testSharedPreferences()
+            testSharedPreferences()
 //            testReflection()
 //            testDebug()
             // test-app/build/intermediates/javac/debug/classes/jmp0/test/testapp/DebugTest.class debug info
