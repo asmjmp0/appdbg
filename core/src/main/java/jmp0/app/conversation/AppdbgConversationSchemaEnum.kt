@@ -6,5 +6,6 @@ package jmp0.app.conversation
  */
 enum class AppdbgConversationSchemaEnum(/*not use,just a description*/ val description:String) {
     NATIVE("native implement,native conversation."),
-    SHARED_PREFERENCES("shared preferences data conversation.")
+    SHARED_PREFERENCES("shared preferences data conversation."),
+    POSIX("posix interface implement.")
 }
