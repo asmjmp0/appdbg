@@ -64,6 +64,10 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
      */
     private data class BaseTypeBody(val method:String,val type: String)
     private fun generateToBaseTypeBody(returnValueName: String,returnType: String):String{
+        if (returnType == "Byte[]"){
+            //fixup kotlin Byte[] is byte[]
+            return "return $returnValueName;"
+        }
         val arr = returnType.contains("[]")
         var returnTypeTemp = returnType;
         if(arr){
@@ -105,7 +109,11 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
                                    signature:String,returnType:String):String =
         if (returnType == "Void"){
             "{$hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}"
-        }else{
+            //fixup kotlin Byte[] is byte[]
+        }else if (returnType == "Byte[]") {
+            "{" + "byte[] ret = (byte[]) $hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);" +
+                    generateToBaseTypeBody("ret",returnType) + "}"
+        } else{
             "{" + "$returnType ret = ($returnType) $hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);" +
                     generateToBaseTypeBody("ret",returnType) + "}"
         }

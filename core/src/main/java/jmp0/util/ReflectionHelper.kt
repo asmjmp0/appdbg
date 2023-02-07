@@ -34,7 +34,7 @@ class ReflectionHelper(private val classLoader: ClassLoader,fullClassName: Strin
         set(ins,any)
     }
 
-    fun method(name:String,vararg classes: Class<*>):Method = clazz.getDeclaredMethod(name,*classes)
+    fun method(name:String,vararg classes: Class<*>):Method = clazz.getDeclaredMethod(name,*classes).apply { isAccessible = true }
 
     fun constructor(vararg classes: Class<*>):Constructor<*> = clazz.getDeclaredConstructor(*classes)
 
