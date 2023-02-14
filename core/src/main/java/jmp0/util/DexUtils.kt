@@ -39,10 +39,13 @@ object DexUtils {
                 },it[it.size-1])
             }.also {
                 if(pathFilter(it.first)) return@also
-
-                val f = File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").apply { writeBytes(data) }
-                if (generateSourceLine){
-                    AppdbgDecompiler(f).decompile()
+                try {
+                    val f = File(File(out,it.first).apply {if (!exists()) mkdirs()},it.second+".class").apply { writeBytes(data) }
+                    if (generateSourceLine){
+                        AppdbgDecompiler(f).decompile()
+                    }
+                }catch (e:Exception){
+                    e.printStackTrace();
                 }
             }
         }
