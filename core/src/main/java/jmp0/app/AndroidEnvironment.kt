@@ -13,9 +13,11 @@ import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
+import jmp0.app.mock.system.service.MockServiceManager
 import jmp0.conf.CommonConf
 import jmp0.util.SystemReflectUtils
 import jmp0.util.ZipUtility
+import jmp0.util.reflection
 import org.apache.log4j.Logger
 import java.io.File
 import java.lang.reflect.InvocationHandler
@@ -40,6 +42,11 @@ class AndroidEnvironment(val apkFile: ApkFile,
     private val logger = Logger.getLogger(javaClass)
     private val androidLoader = XAndroidClassLoader(this)
     private val conversationHandlerMap:EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler> = EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler>(AppdbgConversationSchemaEnum::class.java)
+    private val serviceManager by lazy {
+        reflection(androidLoader,"jmp0.app.mock.system.service.MockServiceManager"){
+            constructor()()
+        }
+    }
     val id = UUID.randomUUID().toString()
     var processName = id
     var context:Any
@@ -58,7 +65,9 @@ class AndroidEnvironment(val apkFile: ApkFile,
         initIOResolver()
         val loopClazz = findClass("android.os.Looper")
         loopClazz.getDeclaredMethod("prepareMainLooper").invoke(null)
-        context = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
+        val contextIns = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
+        context = findClass("android.content.ContextWrapper").getDeclaredConstructor(findClass("android.content.Context")).newInstance(contextIns)
+
     }
 
     private fun initConversationHandler(){
@@ -252,6 +261,14 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
     fun getConversationHandler(appdbgConversationSchemaEnum: AppdbgConversationSchemaEnum) =
         this.conversationHandlerMap[appdbgConversationSchemaEnum]
+
+    fun getService(name:String):Any?{
+        return reflection(getClassLoader(),"jmp0.app.mock.system.service.MockServiceManager"){
+            method("getService",String::class.java)(
+                serviceManager,name
+            )
+        }
+    }
 
     override fun toString(): String =
         "${javaClass.simpleName}[$processName ]"

@@ -6,6 +6,7 @@ import com.github.unidbg.linux.android.dvm.wrapper.DvmBoolean
 import com.github.unidbg.linux.android.dvm.wrapper.DvmInteger
 import com.github.unidbg.linux.android.dvm.wrapper.DvmLong
 import jmp0.app.AndroidEnvironment
+import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.util.ReflectUtilsBase
 import jmp0.util.SystemReflectUtils.setEx
 import java.util.LinkedList
@@ -15,7 +16,20 @@ import java.util.LinkedList
  * Create on 2022/4/22
  */
 object UnidbgWrapperUtils {
-    fun toOriginalObject(vaList: VaList, signatureInfo: ReflectUtilsBase.SignatureInfo,androidEnvironment: AndroidEnvironment):Array<Any?>{
+    private fun VM.resolveClassEx(obj:Any):DvmClass{
+        val clazz = obj::class.java
+        val interfaceList:LinkedList<DvmClass> = LinkedList<DvmClass>()
+        var superClass:DvmClass? = null
+        val name = obj::class.java.name.replace(".","/")
+        clazz.interfaces.forEach { it->
+            interfaceList.add(resolveClass(it.name))
+        }
+        clazz.superclass?.also {
+            superClass = resolveClass(it.name)
+        }
+        return this.resolveClass(name,superClass,*interfaceList.toTypedArray())
+    }
+    fun toOriginalObject(vaList: VarArg, signatureInfo: ReflectUtilsBase.SignatureInfo,androidEnvironment: AndroidEnvironment):Array<Any?>{
         if (signatureInfo.paramTypes.isEmpty()) return emptyArray()
         val retArr = ArrayList<Any?>()
         val size = signatureInfo.paramTypes.size
@@ -86,8 +100,7 @@ object UnidbgWrapperUtils {
                 return ArrayObject(*objectList.toTypedArray())
             }
         }
-        val clazzName = className?:obj::class.java.name.replace(".","/")
-        return DvmObjectWrapper(vm.resolveClass(clazzName),obj)
+        return DvmObjectWrapper(vm.resolveClassEx(obj),obj)
     }
 
     fun wrapperToUnidbgParams(vm: VM,param: Array<out Any?>,signatureInfo: ReflectUtilsBase.SignatureInfo): Array<out Any> {

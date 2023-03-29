@@ -73,6 +73,28 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         method.invokeEx(dvmObject.value,*params)
     }
 
+    override fun callObjectMethod(
+        vm: BaseVM,
+        dvmObject: DvmObject<*>,
+        dvmMethod: DvmMethod,
+        varArg: VarArg
+    ): DvmObject<*> {
+        logger.info("callObjectMethod ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+        val clazzName = dvmObject.objectType.className.replace('/','.')
+        val methodName = dvmMethod.methodName
+        val signatureInfo = SystemReflectUtils.getSignatureInfo(
+            clazzName + '.' + methodName + dvmMethod.args,
+            androidEnvironment.id
+        )
+        val clazz = androidEnvironment.findClass(clazzName)
+        val method = clazz.getDeclaredMethod(methodName,*signatureInfo.paramTypes)
+        val params = UnidbgWrapperUtils.toOriginalObject(varArg,signatureInfo,androidEnvironment)
+        dvmObject.repair(androidEnvironment)
+        val res = method.invokeEx(dvmObject.value,*params)
+        val name = method.returnType.name.replace('.','/')
+        return UnidbgWrapperUtils.toUnidbgObject(vm, res, name)
+    }
+
     override fun callObjectMethodV(
         vm: BaseVM,
         dvmObject: DvmObject<*>,

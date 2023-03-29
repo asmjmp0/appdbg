@@ -17,6 +17,7 @@ import android.view.Display
 import android.view.DisplayAdjustments
 import jmp0.app.AndroidEnvironment
 import jmp0.app.DbgContext
+import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.system.service.MockSubscriptionManager
 import jmp0.app.mock.system.service.MockTelephonyManager
@@ -55,7 +56,7 @@ class UserContext:Context() {
     }
 
     override fun getPackageManager(): PackageManager {
-        TODO("Not yet implemented")
+        return jmp0.app.mock.system.manager.MockPackageManager();
     }
 
     override fun getContentResolver(): ContentResolver {
