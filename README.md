@@ -35,7 +35,7 @@ make it possible to run android dex file in original Java Virtual Machine.
 
 7. build test apk by [test-app sub project](test-app)
 
-8. run [main](core/src/main/java/jmp0/Main.kt)
+8. run test suites in [testSuites](core/src/test/java/suites)
    
 ![](assets/1.png)
 

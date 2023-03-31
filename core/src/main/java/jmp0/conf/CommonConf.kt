@@ -5,7 +5,7 @@ import java.io.File
 object CommonConf {
     const val tempDirName = "temp"
     const val copyDirName = "copy"
-    val workDir: String = System.getProperty("user.dir")
+    var workDir: String = System.getProperty("user.dir")
 
     //framework
     val frameworkFileName = "android-all-6.0.0_r1-robolectric-0"
