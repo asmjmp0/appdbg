@@ -40,7 +40,12 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         dvmMethod: DvmMethod,
         vaList: VaList
     ): DvmObject<*> {
-        logger.info("newObjectV ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+        logger.info("newObjectV ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg[newObject]!!")
+        return this.newObject(vm,dvmClass,dvmMethod,vaList)
+    }
+
+    override fun newObject(vm: BaseVM, dvmClass: DvmClass, dvmMethod: DvmMethod, varArg: VarArg): DvmObject<*> {
+        logger.info("newObject ${dvmClass.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
         val clazzName = dvmClass.className.replace('/', '.')
         val methodName = dvmMethod.methodName
         val signatureInfo = SystemReflectUtils.getSignatureInfo(
@@ -49,8 +54,23 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         )
         val clazz = androidEnvironment.findClass(clazzName)
         val method = clazz.getConstructor(*signatureInfo.paramTypes)
-        val params = UnidbgWrapperUtils.toOriginalObject(vaList, signatureInfo,androidEnvironment)
+        val params = UnidbgWrapperUtils.toOriginalObject(varArg, signatureInfo,androidEnvironment)
         return UnidbgWrapperUtils.toUnidbgObject(vm, method.newInstance(*params))
+    }
+
+    override fun callVoidMethod(vm: BaseVM, dvmObject: DvmObject<*>, dvmMethod: DvmMethod, varArg: VarArg) {
+        logger.info("callVoidMethod ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
+        val clazzName = dvmObject.objectType.className.replace('/','.')
+        val methodName = dvmMethod.methodName
+        val signatureInfo = SystemReflectUtils.getSignatureInfo(
+            clazzName + '.' + methodName + dvmMethod.args,
+            androidEnvironment.id
+        )
+        val clazz = androidEnvironment.findClass(clazzName)
+        val method = clazz.getDeclaredMethod(methodName,*signatureInfo.paramTypes)
+        val params = UnidbgWrapperUtils.toOriginalObject(varArg,signatureInfo,androidEnvironment)
+        dvmObject.repair(androidEnvironment)
+        method.invokeEx(dvmObject.value,*params)
     }
 
     override fun callVoidMethodV(
@@ -71,6 +91,21 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo,androidEnvironment)
         dvmObject.repair(androidEnvironment)
         method.invokeEx(dvmObject.value,*params)
+    }
+
+    override fun callIntMethod(vm: BaseVM, dvmObject: DvmObject<*>, dvmMethod: DvmMethod, varArg: VarArg): Int {
+        logger.info("callIntMethod ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg[callObjectMethod]!!")
+        return this.callObjectMethod(vm, dvmObject, dvmMethod, varArg).value as Int
+    }
+
+    override fun callBooleanMethod(
+        vm: BaseVM,
+        dvmObject: DvmObject<*>,
+        dvmMethod: DvmMethod,
+        varArg: VarArg
+    ): Boolean {
+        logger.info("callBooleanMethod ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg[callObjectMethod]!!")
+        return this.callObjectMethod(vm, dvmObject, dvmMethod, varArg).value as Boolean
     }
 
     override fun callObjectMethod(

@@ -272,14 +272,20 @@ class AndroidEnvironment(val apkFile: ApkFile,
     }
 
     fun runInvokeFile(invokeFile:IAndroidInvokeFile){
-        val ctClazz = ClassPool.getDefault().get(invokeFile::class.java.name)
-        val data = ctClazz.toBytecode()
-        val clazz = this.getClassLoader().xDefineClass(null,data,0,data.size)
+        SystemReflectUtils.getAllClassWithAnnotation(invokeFile::class.java.`package`.name,Annotation::class.java){fullClassName,_ ->
+            if(fullClassName.startsWith(invokeFile::class.java.name)){
+                val ctClazz = ClassPool.getDefault().get(fullClassName)
+                val data = ctClazz.toBytecode()
+                this.getClassLoader().xDefineClass(null,data,0,data.size)
+            }
+        }
+
         val ae = this
-        reflection(this.getClassLoader(),clazz.name){
+        reflection(this.getClassLoader(),invokeFile::class.java.name){
             constructor()()
             method("run",AndroidEnvironment::class.java)(ins,ae)
         }
+
     }
 
     override fun toString(): String =
