@@ -2,10 +2,11 @@ package suites
 
 import TestBase
 import jmp0.app.AndroidEnvironment
+import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
 import org.junit.jupiter.api.Test
 
-class DebugTest:TestBase() {
+class DebugTest:TestBase(),IAndroidInvokeFile {
 
     @Test override fun test() {
         val ae = AndroidEnvironment(TestUtil.testApkFile, object : IInterceptor {
@@ -34,9 +35,11 @@ class DebugTest:TestBase() {
             }
 
         })
+        ae.runInvokeFile(this)
+        ae.destroy()
+    }
 
-        val clazz = ae.findClass("jmp0.test.testapp.DebugTest")
-        val instance:Any = clazz.getDeclaredConstructor(Int::class.java,String::class.java).newInstance(10,"AAAA")
-        clazz.getDeclaredMethod("testAll",Int::class.java).invoke(instance,1)
+    override fun run(androidEnvironment: AndroidEnvironment) {
+        jmp0.test.testapp.DebugTest(10,"AAAA").testAll(1)
     }
 }

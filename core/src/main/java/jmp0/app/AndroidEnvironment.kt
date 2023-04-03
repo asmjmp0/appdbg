@@ -1,5 +1,6 @@
 package jmp0.app
 
+import io.github.classgraph.ClassGraph
 import javassist.*
 import jmp0.apk.ApkFile
 import jmp0.app.classloader.ClassLoadedCallbackBase
@@ -267,6 +268,17 @@ class AndroidEnvironment(val apkFile: ApkFile,
             method("getService",String::class.java)(
                 serviceManager,name
             )
+        }
+    }
+
+    fun runInvokeFile(invokeFile:IAndroidInvokeFile){
+        val ctClazz = ClassPool.getDefault().get(invokeFile::class.java.name)
+        val data = ctClazz.toBytecode()
+        val clazz = this.getClassLoader().xDefineClass(null,data,0,data.size)
+        val ae = this
+        reflection(this.getClassLoader(),clazz.name){
+            constructor()()
+            method("run",AndroidEnvironment::class.java)(ins,ae)
         }
     }
 

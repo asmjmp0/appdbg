@@ -3,10 +3,12 @@ package suites
 import TestBase
 import TestUtil
 import jmp0.app.AndroidEnvironment
+import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
+import jmp0.test.testapp.net.TestNetWork
 import org.junit.jupiter.api.Test
 
-class NetWorkTest:TestBase() {
+class NetWorkTest:TestBase(),IAndroidInvokeFile {
     @Test
     override fun test(){
         val ae = AndroidEnvironment(
@@ -36,12 +38,16 @@ class NetWorkTest:TestBase() {
             }
 
         })
+//        val ret = ae.loadClass("jmp0.test.testapp.net.TestNetWork").run {
+//            val ins = getDeclaredConstructor().newInstance()
+//            getDeclaredMethod("test").invoke(ins)
 
-        val ret = ae.loadClass("jmp0.test.testapp.net.TestNetWork").run {
-            val ins = getDeclaredConstructor().newInstance()
-            getDeclaredMethod("test").invoke(ins)
+        ae.runInvokeFile(this)
+        ae.destroy()
+    }
 
-        }
+    override fun run(androidEnvironment: AndroidEnvironment) {
+        val ret = TestNetWork().test()
         TestUtil.logger.info(ret)
     }
 }

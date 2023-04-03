@@ -3,10 +3,11 @@ package suites
 import TestBase
 import TestUtil
 import jmp0.app.AndroidEnvironment
+import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
 import org.junit.jupiter.api.Test
 
-class AESTest:TestBase() {
+class AESTest:TestBase(),IAndroidInvokeFile {
 
     @Test
     override fun test() {
@@ -37,9 +38,17 @@ class AESTest:TestBase() {
 
             })
 
-        val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
-        val ins = clazz.getDeclaredConstructor().newInstance()
-        val ret = clazz.getDeclaredMethod("testAll").invoke(ins)
+//        val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
+//        val ins = clazz.getDeclaredConstructor().newInstance()
+//        val ret = clazz.getDeclaredMethod("testAll").invoke(ins)
+//        TestUtil.logger.info(ret)
+
+        ae.runInvokeFile(this)
+        ae.destroy()
+    }
+
+    override fun run(androidEnvironment: AndroidEnvironment) {
+        val ret = jmp0.test.testapp.TestAES().testAll()
         TestUtil.logger.info(ret)
     }
 }

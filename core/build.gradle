@@ -42,10 +42,13 @@ dependencies {
     implementation 'net.lingala.zip4j:zip4j:2.10.0'
     implementation 'io.github.qsy7.java.dependencies:slf4j-simple:0.1.0'
     implementation 'org.ow2.asm:asm-debug-all:5.0.3'
+    implementation 'net.dongliu:apk-parser:2.6.10'
     compileOnly files('../libs/'+android_lib_name)
 
     testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
     testCompileOnly fileTree(dir:'../libs/tempLibs',includes:['*jar'])
+    testCompileOnly files('../libs/'+android_lib_name)
+
 }
 
 sourceCompatibility = "1.8"

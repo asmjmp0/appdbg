@@ -2,6 +2,7 @@ package suites
 
 import TestBase
 import jmp0.app.AndroidEnvironment
+import jmp0.app.IAndroidInvokeFile
 import jmp0.app.conversation.AppdbgConversationSchemaEnum
 import jmp0.app.conversation.IAppdbgConversation
 import jmp0.app.conversation.IAppdbgConversationHandler
@@ -9,7 +10,7 @@ import jmp0.app.conversation.impl.sp.SharedPreferencesConversation
 import jmp0.app.interceptor.intf.IInterceptor
 import org.junit.jupiter.api.Test
 
-class SharedPreferencesTest:TestBase() {
+class SharedPreferencesTest:TestBase(),IAndroidInvokeFile {
 
     @Test override fun test() {
         val ae = AndroidEnvironment(TestUtil.testApkFile, object : IInterceptor {
@@ -63,9 +64,15 @@ class SharedPreferencesTest:TestBase() {
                 return IInterceptor.ImplStatus(false,null)
             }
         })
-        val contextClazz = ae.findClass("android.content.Context")
-        val clazz = ae.loadClass("jmp0.test.testapp.SharedPreferencesTest")
-        val ins = clazz.getDeclaredConstructor(contextClazz).newInstance(ae.context)
-        clazz.getDeclaredMethod("testAll").invoke(ins)
+//        val contextClazz = ae.findClass("android.content.Context")
+//        val clazz = ae.loadClass("jmp0.test.testapp.SharedPreferencesTest")
+//        val ins = clazz.getDeclaredConstructor(contextClazz).newInstance(ae.context)
+//        clazz.getDeclaredMethod("testAll").invoke(ins)
+        ae.runInvokeFile(this)
+        ae.destroy()
+    }
+
+    override fun run(androidEnvironment: AndroidEnvironment) {
+        jmp0.test.testapp.SharedPreferencesTest(androidEnvironment.context as android.content.Context).testAll()
     }
 }

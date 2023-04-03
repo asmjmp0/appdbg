@@ -3,10 +3,11 @@ package suites
 import TestBase
 import TestUtil
 import jmp0.app.AndroidEnvironment
+import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
 import org.junit.jupiter.api.Test
 
-class ContextTest:TestBase() {
+class ContextTest:TestBase(),IAndroidInvokeFile {
     @Test
     override fun test(){
         val androidEnvironment = AndroidEnvironment(
@@ -36,12 +37,15 @@ class ContextTest:TestBase() {
                 }
 
             })
+//        val contextClazz = androidEnvironment.findClass("android.content.Context")
+//        val ret = androidEnvironment.loadClass("jmp0.test.testapp.TestContext").run {
+//            val ins = getDeclaredConstructor(contextClazz).newInstance(androidEnvironment.context)
+//            getDeclaredMethod("testAll").invoke(ins)
+        androidEnvironment.runInvokeFile(this)
+        androidEnvironment.destroy()
+    }
 
-        val contextClazz = androidEnvironment.findClass("android.content.Context")
-        val ret = androidEnvironment.loadClass("jmp0.test.testapp.TestContext").run {
-            val ins = getDeclaredConstructor(contextClazz).newInstance(androidEnvironment.context)
-            getDeclaredMethod("testAll").invoke(ins)
-
-        }
+    override fun run(androidEnvironment: AndroidEnvironment) {
+        jmp0.test.testapp.TestContext(androidEnvironment.context as android.content.Context).testAll()
     }
 }

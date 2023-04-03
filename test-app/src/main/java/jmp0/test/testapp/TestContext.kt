@@ -11,6 +11,7 @@ import android.telecom.TelecomManager
 import android.telephony.TelephonyManager
 import android.util.Log
 import java.security.Provider
+import kotlin.math.log
 
 /**
  * @author jmp0 <jmp0@qq.com>
@@ -30,6 +31,11 @@ class TestContext(private val context: Context) {
         Log.d("asmjmp0", Settings.Secure.getString(context.contentResolver,"android_id"))
     }
 
+    fun testPackageInfo(){
+        val info = context.packageManager.getPackageInfo(context.packageName,0).signatures
+        Log.d("asmjmp0", info.contentDeepToString())
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ServiceCast", "MissingPermission")
     fun testIMEI(){
@@ -44,10 +50,12 @@ class TestContext(private val context: Context) {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun testAll(){
-//        testAssetManager()
-//        testResources()
+        testAssetManager()
+        testResources()
         testContentResolver()
         testIMEI()
+        testPackageInfo()
     }
 }

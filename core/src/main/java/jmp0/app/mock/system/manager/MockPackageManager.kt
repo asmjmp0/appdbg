@@ -14,12 +14,27 @@ import android.net.Uri
 import android.os.Handler
 import android.os.UserHandle
 import android.os.storage.VolumeInfo
+import jmp0.app.DbgContext
+import jmp0.app.classloader.XAndroidClassLoader
 import jmp0.app.mock.annotations.ClassReplaceTo
+import java.util.LinkedList
 
 @ClassReplaceTo("")
 class MockPackageManager:PackageManager() {
+    val ae = DbgContext.getAndroidEnvironmentWithClassLoader(this.javaClass.classLoader as XAndroidClassLoader)
     override fun getPackageInfo(p0: String?, p1: Int): PackageInfo {
-        TODO("Not yet implemented")
+        if(ae.apkFile.packageName != p0) throw NameNotFoundException()
+        val packageInfo = PackageInfo()
+        packageInfo.packageName = ae.apkFile.packageName
+        packageInfo.versionCode = ae.apkFile.getVersionCode().toInt()
+        packageInfo.versionName = ae.apkFile.getVersionName()
+        //packageInfo.sharedUserLabel = ae.apkFile.getShareUserLabel()
+        val signatureList = LinkedList<Signature>();
+        ae.apkFile.getSignatures().forEach {
+            signatureList.add(Signature(it.data))
+        }
+        packageInfo.signatures = signatureList.toTypedArray()
+        return packageInfo
     }
 
     override fun currentToCanonicalPackageNames(p0: Array<out String>?): Array<String> {

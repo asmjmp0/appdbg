@@ -3,11 +3,13 @@ package suites
 import TestBase
 import TestUtil
 import jmp0.app.AndroidEnvironment
+import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
+import jmp0.test.testapp.TestKotlin
 import jmp0.util.SystemReflectUtils.invokeEx
 import org.junit.jupiter.api.Test
 
-class LooperTest:TestBase() {
+class LooperTest:TestBase(),IAndroidInvokeFile {
 
     @Test
     override fun test(){
@@ -38,12 +40,12 @@ class LooperTest:TestBase() {
                 }
 
             })
+        androidEnvironment.runInvokeFile(this)
+        androidEnvironment.destroy()
+    }
 
-        val TestJavaclazz = androidEnvironment.loadClass("jmp0.test.testapp.TestKotlin")
-
-        val ret = TestJavaclazz.getDeclaredMethod("testLopper")
-            .invokeEx(TestJavaclazz.getConstructor().newInstance())
-
+    override fun run(androidEnvironment: AndroidEnvironment) {
+        val ret = TestKotlin().testLopper()
         TestUtil.logger.debug("testLopper => $ret")
     }
 }

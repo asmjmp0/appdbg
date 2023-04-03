@@ -5,10 +5,14 @@ import jmp0.apk.config.IApkConfig
 import jmp0.conf.CommonConf
 import jmp0.util.ApkToolUtils
 import jmp0.util.DexUtils
+import net.dongliu.apk.parser.ApkFile
+import net.dongliu.apk.parser.ApkParsers
+import net.dongliu.apk.parser.bean.CertificateMeta
 import org.apache.log4j.Logger
 import java.io.File
 import java.io.InputStream
 import java.util.LinkedList
+import java.util.StringJoiner
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -22,7 +26,6 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
     }
     val dir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${name}")
     val classesDir = File(dir,"classes")
-    private var manifest:ManifestAnalyse
     val copyApkFile:File
 
     var packageName:String
@@ -34,6 +37,7 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
     var arscFileName = "resources.arsc"
     var sharedPreferencesDir = File(dir,"sharedpreferences").apply { if (!exists()) mkdir() }
     var decompileSourceDir:File = File(dir,"decompile_source").apply { if (!exists()) mkdir() }
+    private val dongliuApkFile:net.dongliu.apk.parser.ApkFile
 
     init {
         //release apktool
@@ -66,12 +70,24 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
                 logger.debug("apk dir exists, just use it")
             }
         }
-
-        manifest = ManifestAnalyse(File(dir,"AndroidManifest.xml"))
-        packageName = manifest.packaeName
         getResources()
+        dongliuApkFile = ApkFile(copyApkFile)
+        packageName = dongliuApkFile.apkMeta.packageName
 
     }
+    fun getVersionCode(): Long = dongliuApkFile.apkMeta.versionCode
+
+    fun getVersionName():String = dongliuApkFile.apkMeta.versionName
+    fun getSignatures(): Array<CertificateMeta> {
+        val certificateMetas = LinkedList<CertificateMeta>()
+        dongliuApkFile.apkSingers.forEach {
+            certificateMetas.addAll(it.certificateMetas)
+        }
+        return certificateMetas.toTypedArray()
+    }
+
+
+
 
     private fun copyApk() =
         File(copyDir,name).apply {
@@ -103,7 +119,7 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
     }
 
     private fun releaseDexFileImpl(dexArr:Array<File>,generateSourceLine:Boolean){
-        val service = Executors.newFixedThreadPool(4)
+        val service = Executors.newFixedThreadPool(1)
         dexArr.forEach {
             service.execute {
                 logger.info("$it has submitted to decompiler")

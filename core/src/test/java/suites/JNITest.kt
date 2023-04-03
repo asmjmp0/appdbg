@@ -4,13 +4,15 @@ import TestBase
 import TestUtil
 import javassist.CtClass
 import jmp0.app.AndroidEnvironment
+import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
+import jmp0.test.testapp.TestNative
 import jmp0.util.reflection
 import org.junit.jupiter.api.Test
 
-class JNITest:TestBase() {
+class JNITest:TestBase(),IAndroidInvokeFile {
 
     @Test
     override fun test(){
@@ -39,11 +41,16 @@ class JNITest:TestBase() {
                 return ctClass
             }
         })
+//        reflection(androidEnvironment.getClassLoader(),"jmp0.test.testapp.TestNative"){
+//            constructor()()
+//            method("testAll")(this.ins)
+//        }
         androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false);
-        reflection(androidEnvironment.getClassLoader(),"jmp0.test.testapp.TestNative"){
-            constructor()()
-            method("testAll")(this.ins)
-        }
+        androidEnvironment.runInvokeFile(this)
         androidEnvironment.destroy()
+    }
+
+    override fun run(androidEnvironment: AndroidEnvironment) {
+        TestNative().testAll()
     }
 }
