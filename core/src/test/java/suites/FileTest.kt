@@ -5,7 +5,6 @@ import TestUtil
 import jmp0.app.AndroidEnvironment
 import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
-import jmp0.test.testapp.FileTest
 import org.junit.jupiter.api.Test
 
 class FileTest:TestBase(),IAndroidInvokeFile {
@@ -40,11 +39,14 @@ class FileTest:TestBase(),IAndroidInvokeFile {
                 }
 
             })
-        ae.runInvokeFile(this)
+        val clazz = ae.loadClass("jmp0.test.testapp.FileTest")
+        val ins = clazz.getDeclaredConstructor().newInstance()
+        clazz.getDeclaredMethod("testAll").invoke(ins)
+//        ae.runInvokeFile(this)
         ae.destroy()
     }
 
     override fun run(androidEnvironment: AndroidEnvironment) {
-        FileTest().testAll()
+//        FileTest().testAll()
     }
 }

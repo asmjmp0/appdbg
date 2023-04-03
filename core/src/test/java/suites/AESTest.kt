@@ -38,17 +38,17 @@ class AESTest:TestBase(),IAndroidInvokeFile {
 
             })
 
-//        val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
-//        val ins = clazz.getDeclaredConstructor().newInstance()
-//        val ret = clazz.getDeclaredMethod("testAll").invoke(ins)
-//        TestUtil.logger.info(ret)
+        val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
+        val ins = clazz.getDeclaredConstructor().newInstance()
+        val ret = clazz.getDeclaredMethod("testAll").invoke(ins)
+        TestUtil.logger.info(ret)
 
-        ae.runInvokeFile(this)
+//        ae.runInvokeFile(this)
         ae.destroy()
     }
 
     override fun run(androidEnvironment: AndroidEnvironment) {
-        val ret = jmp0.test.testapp.TestAES().testAll()
-        TestUtil.logger.info(ret)
+//        val ret = jmp0.test.testapp.TestAES().testAll()
+//        TestUtil.logger.info(ret)
     }
 }

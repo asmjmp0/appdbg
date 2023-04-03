@@ -37,15 +37,16 @@ class ContextTest:TestBase(),IAndroidInvokeFile {
                 }
 
             })
-//        val contextClazz = androidEnvironment.findClass("android.content.Context")
-//        val ret = androidEnvironment.loadClass("jmp0.test.testapp.TestContext").run {
-//            val ins = getDeclaredConstructor(contextClazz).newInstance(androidEnvironment.context)
-//            getDeclaredMethod("testAll").invoke(ins)
-        androidEnvironment.runInvokeFile(this)
+        val contextClazz = androidEnvironment.findClass("android.content.Context")
+        val ret = androidEnvironment.loadClass("jmp0.test.testapp.TestContext").run {
+            val ins = getDeclaredConstructor(contextClazz).newInstance(androidEnvironment.context)
+            getDeclaredMethod("testAll").invoke(ins)
+        }
+//        androidEnvironment.runInvokeFile(this)
         androidEnvironment.destroy()
     }
 
     override fun run(androidEnvironment: AndroidEnvironment) {
-        jmp0.test.testapp.TestContext(androidEnvironment.context as android.content.Context).testAll()
+//        jmp0.test.testapp.TestContext(androidEnvironment.context as android.content.Context).testAll()
     }
 }

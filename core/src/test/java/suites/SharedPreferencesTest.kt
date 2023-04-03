@@ -64,15 +64,15 @@ class SharedPreferencesTest:TestBase(),IAndroidInvokeFile {
                 return IInterceptor.ImplStatus(false,null)
             }
         })
-//        val contextClazz = ae.findClass("android.content.Context")
-//        val clazz = ae.loadClass("jmp0.test.testapp.SharedPreferencesTest")
-//        val ins = clazz.getDeclaredConstructor(contextClazz).newInstance(ae.context)
-//        clazz.getDeclaredMethod("testAll").invoke(ins)
-        ae.runInvokeFile(this)
+        val contextClazz = ae.findClass("android.content.Context")
+        val clazz = ae.loadClass("jmp0.test.testapp.SharedPreferencesTest")
+        val ins = clazz.getDeclaredConstructor(contextClazz).newInstance(ae.context)
+        clazz.getDeclaredMethod("testAll").invoke(ins)
+//        ae.runInvokeFile(this)
         ae.destroy()
     }
 
     override fun run(androidEnvironment: AndroidEnvironment) {
-        jmp0.test.testapp.SharedPreferencesTest(androidEnvironment.context as android.content.Context).testAll()
+//        jmp0.test.testapp.SharedPreferencesTest(androidEnvironment.context as android.content.Context).testAll()
     }
 }

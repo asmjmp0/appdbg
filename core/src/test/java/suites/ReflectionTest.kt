@@ -35,11 +35,14 @@ class ReflectionTest:TestBase(),IAndroidInvokeFile {
             }
 
         })
-        ae.runInvokeFile(this)
+        val clazz = ae.findClass("jmp0.test.testapp.reflection.TestReflection")
+        val method = clazz.getDeclaredMethod("testAll")
+        method.invoke(null)
+//        ae.runInvokeFile(this)
         ae.destroy()
     }
 
     override fun run(androidEnvironment: AndroidEnvironment) {
-        jmp0.test.testapp.reflection.TestReflection.testAll()
+//        jmp0.test.testapp.reflection.TestReflection.testAll()
     }
 }

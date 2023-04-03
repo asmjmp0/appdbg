@@ -35,11 +35,14 @@ class DebugTest:TestBase(),IAndroidInvokeFile {
             }
 
         })
-        ae.runInvokeFile(this)
+        val clazz = ae.findClass("jmp0.test.testapp.DebugTest")
+        val instance:Any = clazz.getDeclaredConstructor(Int::class.java,String::class.java).newInstance(10,"AAAA")
+        clazz.getDeclaredMethod("testAll",Int::class.java).invoke(instance,1)
+//        ae.runInvokeFile(this)
         ae.destroy()
     }
 
     override fun run(androidEnvironment: AndroidEnvironment) {
-        jmp0.test.testapp.DebugTest(10,"AAAA").testAll(1)
+//        jmp0.test.testapp.DebugTest(10,"AAAA").testAll(1)
     }
 }
