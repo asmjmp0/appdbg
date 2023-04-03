@@ -67,6 +67,7 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
                 DexUtils.generateDevelopJar(classesDir,apkConfig.generateJarFile())
             }else {
                 copyApkFile = File(copyDir,name)
+                DexUtils.generateDevelopJar(classesDir, apkConfig.forceGenerateJarFile())
                 logger.debug("apk dir exists, just use it")
             }
         }

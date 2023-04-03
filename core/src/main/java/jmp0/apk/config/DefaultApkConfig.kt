@@ -5,6 +5,8 @@ class DefaultApkConfig:IApkConfig {
 
     override fun generateJarFile(): Boolean = false
 
+    override fun forceGenerateJarFile(): Boolean = false
+
     override fun jarWithDebugInfo(): Boolean = false
 
 }

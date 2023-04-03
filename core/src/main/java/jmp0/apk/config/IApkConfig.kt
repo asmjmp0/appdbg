@@ -12,6 +12,11 @@ interface IApkConfig {
     fun generateJarFile():Boolean
 
     /**
+     * force to generate Jar file which make it possible to debug it.
+     */
+    fun forceGenerateJarFile():Boolean
+
+    /**
      *  use fernflower decompiler,generate fake source code，make it possible
      *  to debug single step.
      */

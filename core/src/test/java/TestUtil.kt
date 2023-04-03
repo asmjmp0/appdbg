@@ -7,6 +7,7 @@ object TestUtil {
     val testApkFile = ApkFile(this.javaClass.classLoader.getResource("appdbg-test.apk")!!.openStream(),"appdbg-test.apk",object :IApkConfig{
         override fun forceDecompile(): Boolean = false
         override fun generateJarFile(): Boolean = true
+        override fun forceGenerateJarFile(): Boolean = false
         override fun jarWithDebugInfo(): Boolean = true
     })
 
