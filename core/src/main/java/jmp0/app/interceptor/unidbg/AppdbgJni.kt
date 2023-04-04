@@ -79,18 +79,8 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         dvmMethod: DvmMethod,
         vaList: VaList
     ) {
-        logger.info("callVoidMethodV ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
-        val clazzName = dvmObject.objectType.className.replace('/','.')
-        val methodName = dvmMethod.methodName
-        val signatureInfo = SystemReflectUtils.getSignatureInfo(
-            clazzName + '.' + methodName + dvmMethod.args,
-            androidEnvironment.id
-        )
-        val clazz = androidEnvironment.findClass(clazzName)
-        val method = clazz.getDeclaredMethod(methodName,*signatureInfo.paramTypes)
-        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo,androidEnvironment)
-        dvmObject.repair(androidEnvironment)
-        method.invokeEx(dvmObject.value,*params)
+        logger.info("callVoidMethodV ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg[callVoidMethod]!!")
+        this.callVoidMethod(vm,dvmObject,dvmMethod,vaList)
     }
 
     override fun callIntMethod(vm: BaseVM, dvmObject: DvmObject<*>, dvmMethod: DvmMethod, varArg: VarArg): Int {
@@ -136,20 +126,8 @@ class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnviro
         dvmMethod: DvmMethod,
         vaList: VaList
     ): DvmObject<*> {
-        logger.info("callObjectMethodV ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg!!")
-        val clazzName = dvmObject.objectType.className.replace('/','.')
-        val methodName = dvmMethod.methodName
-        val signatureInfo = SystemReflectUtils.getSignatureInfo(
-            clazzName + '.' + methodName + dvmMethod.args,
-            androidEnvironment.id
-        )
-        val clazz = androidEnvironment.findClass(clazzName)
-        val method = clazz.getDeclaredMethod(methodName,*signatureInfo.paramTypes)
-        val params = UnidbgWrapperUtils.toOriginalObject(vaList,signatureInfo,androidEnvironment)
-        dvmObject.repair(androidEnvironment)
-        val res = method.invokeEx(dvmObject.value,*params)
-        val name = method.returnType.name.replace('.','/')
-        return UnidbgWrapperUtils.toUnidbgObject(vm, res, name)
+        logger.info("callObjectMethodV ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg[callObjectMethod]!!")
+        return this.callObjectMethod(vm,dvmObject,dvmMethod,vaList)
     }
 
     override fun setObjectField(vm: BaseVM?, dvmObject: DvmObject<*>, dvmField: DvmField, value: DvmObject<*>) {

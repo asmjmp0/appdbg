@@ -38,8 +38,7 @@ class UserContext:Context() {
     private val logger = Logger.getLogger(UserContext::class.java)
 
     private fun getEnv(): AndroidEnvironment {
-        val uuid = this::class.java.getDeclaredField("xxUuid").get(null) as String
-        return DbgContext.getAndroidEnvironment(uuid)!!
+        return DbgContext.getAndroidEnvironmentWithClassLoader(this.javaClass.classLoader as XAndroidClassLoader)
     }
 
     override fun getAssets(): AssetManager {
