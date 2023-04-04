@@ -3,6 +3,7 @@ package jmp0.app.interceptor.mtd.impl
 import javassist.CtClass
 import jmp0.app.AndroidEnvironment
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
+import jmp0.util.SystemReflectUtils.getSignature
 import org.apache.log4j.Logger
 
 

@@ -1,12 +1,16 @@
 package jmp0.util
 
 import io.github.classgraph.ClassGraph
+import javassist.CtMethod
 import jmp0.app.DbgContext
 
 object SystemReflectUtils : ReflectUtilsBase() {
     private val classLoader = ClassLoader.getSystemClassLoader()
     fun String.findSystemClass() =
         Class.forName(this, false, DbgContext.appClassLoader)
+
+    fun getSignature(method: CtMethod) =
+        "${method.declaringClass.name}.${method.name}${method.signature}"
 
     fun getAllClassWithAnnotation(
         packageName: String,

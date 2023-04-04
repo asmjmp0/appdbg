@@ -41,7 +41,8 @@ class JNITest:TestBase(),IAndroidInvokeFile {
                 return ctClass
             }
         })
-        androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false);
+        androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false)
+        androidEnvironment.registerMethodHook(androidEnvironment.findClass("jmp0.test.testapp.TestNative").getDeclaredMethod("testAll"),false)
         reflection(androidEnvironment.getClassLoader(),"jmp0.test.testapp.TestNative"){
             constructor()()
             method("testAll")(this.ins)

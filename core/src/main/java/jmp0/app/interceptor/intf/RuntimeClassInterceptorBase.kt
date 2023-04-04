@@ -16,14 +16,8 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
     protected fun eraseNativeFlag(modifiers: Int) =
         (modifiers and (Modifier.NATIVE.inv()))
 
-    protected fun getSignature(constructor:CtConstructor) =
-        "${constructor.declaringClass.name}.${constructor.name}${constructor.signature}"
 
-    protected fun getSignature(method:CtMethod) =
-        "${method.declaringClass.name}.${method.name}${method.signature}"
-
-
-    protected fun replaceType(type:String):String {
+    private fun replaceType(type:String):String {
         var arr = false
         var temp = type
         if (temp.contains("[]")) {

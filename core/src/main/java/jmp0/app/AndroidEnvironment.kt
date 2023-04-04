@@ -243,6 +243,17 @@ class AndroidEnvironment(val apkFile: ApkFile,
     fun registerMethodHook(signature:String,replace:Boolean)
         = DbgContext.registerMethodHook(id,signature,replace)
 
+    fun registerMethodHook(method: Method,replace:Boolean){
+        val ctClass = ClassPool.getDefault().getCtClass(method.declaringClass.name)
+        val typeCtClasses = LinkedList<CtClass>()
+        method.parameterTypes.forEach{
+            typeCtClasses.add(ClassPool.getDefault().getCtClass(it.name))
+        }
+        val ctMethod = ctClass.getDeclaredMethod(method.name,typeCtClasses.toTypedArray())
+        val signature = SystemReflectUtils.getSignature(ctMethod)
+        DbgContext.registerMethodHook(id,signature,replace)
+    }
+
     fun addAfterClassInterceptor(classInterceptorBase: RuntimeClassInterceptorBase){
         androidRuntimeClass.addAfterClassInterceptor(classInterceptorBase)
     }
