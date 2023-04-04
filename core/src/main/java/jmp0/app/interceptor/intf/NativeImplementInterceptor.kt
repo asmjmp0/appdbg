@@ -8,5 +8,6 @@ import jmp0.app.conversation.IAppdbgConversationHandler
  * Create on 2022/11/18
  */
 interface NativeImplementInterceptor : IInterceptor, IAppdbgConversationHandler {
+    fun androidEnvironmentInitFinish(androidEnvironment: AndroidEnvironment)
     fun loadLibrary(androidEnvironment: AndroidEnvironment, soName: String,fullPath:Boolean = false)
 }

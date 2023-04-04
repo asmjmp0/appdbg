@@ -21,12 +21,16 @@ import java.lang.IllegalArgumentException
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/3/10
  */
-abstract class UnidbgInterceptor(private val autoLoad:Boolean): NativeImplementInterceptor {
+abstract class UnidbgInterceptor(val apkFile: File,private val autoLoad:Boolean): NativeImplementInterceptor {
     private val logger = Logger.getLogger(UnidbgInterceptor::class.java)
     private var emulator: AndroidEmulator = AndroidEmulatorBuilder.for32Bit().build().also {
         it.memory.setLibraryResolver(AndroidResolver(23))
     }
-    private var vm: VM? = null
+    private val vm: VM = emulator.createDalvikVM(apkFile).apply { setVerbose(true) }
+
+    override fun androidEnvironmentInitFinish(androidEnvironment: AndroidEnvironment) {
+        vm.setJni(AppdbgJni(androidEnvironment))
+    }
 
     override fun appdbgConversationHandle(
         androidEnvironment: AndroidEnvironment,
@@ -41,17 +45,9 @@ abstract class UnidbgInterceptor(private val autoLoad:Boolean): NativeImplementI
     }
 
     override fun loadLibrary(androidEnvironment: AndroidEnvironment, soName: String, fullPath: Boolean) {
-        checkAndCreateVMAndJni(androidEnvironment)
         if (fullPath){
-            vm!!.loadLibrary(File(soName),true).callJNI_OnLoad(emulator)
-        }else vm!!.loadLibrary(soName, true).callJNI_OnLoad(emulator)
-    }
-
-    private fun checkAndCreateVMAndJni(androidEnvironment: AndroidEnvironment) = synchronized(this::vm) {
-        if (this.vm != null) return@synchronized
-        this.vm = emulator.createDalvikVM(androidEnvironment.apkFile.copyApkFile)
-        this.vm!!.setJni(AppdbgJni(this.vm!!, androidEnvironment))
-        this.vm!!.setVerbose(true)
+            vm.loadLibrary(File(soName),true).callJNI_OnLoad(emulator)
+        }else vm.loadLibrary(soName, true).callJNI_OnLoad(emulator)
     }
 
 
@@ -101,7 +97,7 @@ abstract class UnidbgInterceptor(private val autoLoad:Boolean): NativeImplementI
         param: Array<out Any?>
     ): IInterceptor.ImplStatus {
         logger.info("call native method $className.$funcName$signature")
-        val clazz = vm!!.resolveClass(className.replace('.', '/'))
+        val clazz = vm.resolveClass(className.replace('.', '/'))
         val signatureInfo = SystemReflectUtils.getSignatureInfo("$className.$funcName$signature", uuid)
         return try {
             callUnidbgJniMethod(clazz, funcName, signature, signatureInfo, param)

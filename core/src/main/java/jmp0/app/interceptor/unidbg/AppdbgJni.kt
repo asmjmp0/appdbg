@@ -14,7 +14,7 @@ import org.apache.log4j.Logger
  * @author jmp0 <jmp0@qq.com>
  * Create on 2022/4/22
  */
-class AppdbgJni(private val vm: VM,private val androidEnvironment: AndroidEnvironment):AbstractJni() {
+class AppdbgJni(private val androidEnvironment: AndroidEnvironment):AbstractJni() {
     private val logger = Logger.getLogger(AppdbgJni::class.java)
     override fun callStaticObjectMethodV(
         vm: BaseVM,

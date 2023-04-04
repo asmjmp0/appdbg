@@ -16,7 +16,7 @@ class JNITest:TestBase(),IAndroidInvokeFile {
 
     @Test
     override fun test(){
-        val androidEnvironment = AndroidEnvironment(TestUtil.testApkFile,object : UnidbgInterceptor(true){
+        val androidEnvironment = AndroidEnvironment(TestUtil.testApkFile,object : UnidbgInterceptor(TestUtil.testApkFile.copyApkFile,true){
                     override fun otherNativeCalled(uuid: String, className: String, funcName: String,
                                                    signature: String, param: Array<out Any?>
                     ): IInterceptor.ImplStatus {

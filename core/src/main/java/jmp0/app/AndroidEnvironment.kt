@@ -68,7 +68,9 @@ class AndroidEnvironment(val apkFile: ApkFile,
         loopClazz.getDeclaredMethod("prepareMainLooper").invoke(null)
         val contextIns = findClass("jmp0.app.mock.system.user.UserContext").getDeclaredConstructor().newInstance()
         context = findClass("android.content.ContextWrapper").getDeclaredConstructor(findClass("android.content.Context")).newInstance(contextIns)
-
+        if (this.methodInterceptor is NativeImplementInterceptor){
+            this.methodInterceptor.androidEnvironmentInitFinish(this)
+        }
     }
 
     private fun initConversationHandler(){
