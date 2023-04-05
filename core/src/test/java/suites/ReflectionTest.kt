@@ -23,6 +23,7 @@ class ReflectionTest:TestBase(),IAndroidInvokeFile {
             override fun methodCalled(
                 uuid: String,
                 className: String,
+                instance: Any?,
                 funcName: String,
                 signature: String,
                 param: Array<out Any?>

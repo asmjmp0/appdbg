@@ -13,6 +13,9 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
     protected fun checkNativeFlag(modifiers:Int ) =
         (modifiers and Modifier.NATIVE) == Modifier.NATIVE
 
+    protected fun checkStaticFlag(modifiers: Int) =
+        (modifiers and Modifier.STATIC) == Modifier.STATIC
+
     protected fun eraseNativeFlag(modifiers: Int) =
         (modifiers and (Modifier.NATIVE.inv()))
 
@@ -100,15 +103,15 @@ abstract class RuntimeClassInterceptorBase(private val androidEnvironment: Andro
      * @return the body of ctMethod
      */
     protected fun generateHookBody(hookFunc:String,className: String,funcName:String,
-                                   signature:String,returnType:String):String =
+                                   signature:String,returnType:String,isStatic:Boolean):String =
         if (returnType == "Void"){
-            "{$hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);}"
+            "{$hookFunc(\"${androidEnvironment.id}\",\"$className\",${if(isStatic) null else "\$0"},\"$funcName\",\"$signature\",\$args);}"
             //fixup kotlin Byte[] is byte[]
         }else if (returnType == "Byte[]") {
-            "{" + "byte[] ret = (byte[]) $hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);" +
+            "{" + "byte[] ret = (byte[]) $hookFunc(\"${androidEnvironment.id}\",\"$className\",${if(isStatic) null else "\$0"},\"$funcName\",\"$signature\",\$args);" +
                     generateToBaseTypeBody("ret",returnType) + "}"
         } else{
-            "{" + "$returnType ret = ($returnType) $hookFunc(\"${androidEnvironment.id}\",\"$className\",\"$funcName\",\"$signature\",\$args);" +
+            "{" + "$returnType ret = ($returnType) $hookFunc(\"${androidEnvironment.id}\",\"$className\",${if(isStatic) null else "\$0"},\"$funcName\",\"$signature\",\$args);" +
                     generateToBaseTypeBody("ret",returnType) + "}"
         }
 

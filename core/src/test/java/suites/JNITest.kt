@@ -4,9 +4,11 @@ import TestBase
 import TestUtil
 import javassist.CtClass
 import jmp0.app.AndroidEnvironment
+import jmp0.app.DbgContext
 import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
+import jmp0.app.interceptor.mtd.CallBridge
 import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 //import jmp0.test.testapp.TestNative
 import jmp0.util.reflection
@@ -23,11 +25,17 @@ class JNITest:TestBase(),IAndroidInvokeFile {
                         TODO("Not yet implemented")
                     }
 
-                    override fun methodCalled(uuid: String, className: String, funcName: String,
-                                              signature: String, param: Array<out Any?>
+                    override fun methodCalled(
+                        uuid: String,
+                        className: String,
+                        instance: Any?,
+                        funcName: String,
+                        signature: String,
+                        param: Array<out Any?>
                     ): Any? {
                         TestUtil.logger.info("$className.$funcName$signature called")
-                        return null
+                        val res = CallBridge.methodCallReal(uuid, className, instance, funcName, signature, param)
+                        return res
                     }
 
                     override fun ioResolver(path: String): IInterceptor.ImplStatus {
@@ -41,8 +49,8 @@ class JNITest:TestBase(),IAndroidInvokeFile {
                 return ctClass
             }
         })
-        androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V",false)
-        androidEnvironment.registerMethodHook(androidEnvironment.findClass("jmp0.test.testapp.TestNative").getDeclaredMethod("testAll"),false)
+        androidEnvironment.registerMethodHook("jmp0.test.testapp.TestNative.testAll()V")
+//        androidEnvironment.registerMethodHook(androidEnvironment.findClass("jmp0.test.testapp.TestNative").getDeclaredMethod("testAll"))
         reflection(androidEnvironment.getClassLoader(),"jmp0.test.testapp.TestNative"){
             constructor()()
             method("testAll")(this.ins)

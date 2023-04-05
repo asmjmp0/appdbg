@@ -3,6 +3,7 @@ package jmp0.app.interceptor.mtd.impl
 import javassist.CtClass
 import jmp0.app.AndroidEnvironment
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
+import jmp0.app.interceptor.mtd.CallBridge
 import jmp0.util.SystemReflectUtils.getSignature
 import org.apache.log4j.Logger
 
@@ -24,16 +25,16 @@ class NativeMethodInterceptor(private val androidEnvironment: AndroidEnvironment
                 val sig = getSignature(it)
                 logger.trace("set native hook to $sig")
                 try {
-                    val res = generateHookBody("jmp0.app.interceptor.mtd.CallBridge.nativeCalled",
-                        className,funcName,signature,retTypeName)
+                    val res = generateHookBody(CallBridge.nativeCalledName,
+                        className,funcName,signature,retTypeName,true)
                     it.setBody(res)
                 }catch (e:Exception){
                     if ("NotFound" in e.message!!){
                         val a = e.message!!.indexOf(":")
                         val needClassName = e.message!!.substring(a+2,e.message!!.length)
                         androidEnvironment.loadClass(needClassName)
-                        it.setBody(generateHookBody("jmp0.app.interceptor.mtd.CallBridge.nativeCalled",
-                            className,funcName,signature,retTypeName))
+                        it.setBody(generateHookBody(CallBridge.nativeCalledName,
+                            className,funcName,signature,retTypeName,true))
                     }else throw e
                 }
 

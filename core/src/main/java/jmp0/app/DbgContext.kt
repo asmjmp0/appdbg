@@ -52,8 +52,8 @@ object DbgContext {
         getAndroidEnvironment(uuid)?.getMethodInterceptor()
     }
 
-    fun registerMethodHook(uuid: String,signature:String,replace:Boolean) = synchronized(methodHookHashMap){
-        methodHookHashMap[uuid]?.add(MethodHookInfo(signature,replace))
+    fun registerMethodHook(uuid: String,signature:String) = synchronized(methodHookHashMap){
+        methodHookHashMap[uuid]?.add(MethodHookInfo(signature,true))
     }
 
     fun getMethodHookList(uuid: String)

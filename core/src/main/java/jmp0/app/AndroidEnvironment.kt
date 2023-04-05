@@ -60,7 +60,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
         loadUserSystemClass()
         //impotent init MethodManager and set java method hook
         MethodManager.getInstance(id).getMethodMap().forEach{
-            registerMethodHook(it.key,true)
+            registerMethodHook(it.key)
         }
         initConversationHandler()
         initIOResolver()
@@ -240,19 +240,19 @@ class AndroidEnvironment(val apkFile: ApkFile,
      * @param signature which looks like xxxxx
      * @param implemented if it is ture the method while be replace by your method
      */
-    fun registerMethodHook(signature:String,replace:Boolean)
-        = DbgContext.registerMethodHook(id,signature,replace)
+    fun registerMethodHook(signature:String)
+        = DbgContext.registerMethodHook(id,signature)
 
-    fun registerMethodHook(method: Method,replace:Boolean){
-        val ctClass = ClassPool.getDefault().getCtClass(method.declaringClass.name)
-        val typeCtClasses = LinkedList<CtClass>()
-        method.parameterTypes.forEach{
-            typeCtClasses.add(ClassPool.getDefault().getCtClass(it.name))
-        }
-        val ctMethod = ctClass.getDeclaredMethod(method.name,typeCtClasses.toTypedArray())
-        val signature = SystemReflectUtils.getSignature(ctMethod)
-        DbgContext.registerMethodHook(id,signature,replace)
-    }
+//    fun registerMethodHook(method: Method){
+//        val ctClass = ClassPool.getDefault().getCtClass(method.declaringClass.name)
+//        val typeCtClasses = LinkedList<CtClass>()
+//        method.parameterTypes.forEach{
+//            typeCtClasses.add(ClassPool.getDefault().getCtClass(it.name))
+//        }
+//        val ctMethod = ctClass.getDeclaredMethod(method.name,typeCtClasses.toTypedArray())
+//        val signature = SystemReflectUtils.getSignature(ctMethod)
+//        DbgContext.registerMethodHook(id,signature)
+//    }
 
     fun addAfterClassInterceptor(classInterceptorBase: RuntimeClassInterceptorBase){
         androidRuntimeClass.addAfterClassInterceptor(classInterceptorBase)

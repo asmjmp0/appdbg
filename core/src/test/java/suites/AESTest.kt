@@ -3,8 +3,10 @@ package suites
 import TestBase
 import TestUtil
 import jmp0.app.AndroidEnvironment
+import jmp0.app.DbgContext
 import jmp0.app.IAndroidInvokeFile
 import jmp0.app.interceptor.intf.IInterceptor
+import jmp0.app.interceptor.mtd.CallBridge
 import org.junit.jupiter.api.Test
 
 class AESTest:TestBase(),IAndroidInvokeFile {
@@ -25,11 +27,15 @@ class AESTest:TestBase(),IAndroidInvokeFile {
                 override fun methodCalled(
                     uuid: String,
                     className: String,
+                    instance: Any?,
                     funcName: String,
                     signature: String,
                     param: Array<out Any?>
                 ): Any? {
-                    TODO("Not yet implemented")
+                    if (funcName == "decrypt"){
+                        return CallBridge.methodCallReal(uuid, className, instance, funcName, signature, param)
+                    }
+                    return null
                 }
 
                 override fun ioResolver(path: String): IInterceptor.ImplStatus {
@@ -37,7 +43,7 @@ class AESTest:TestBase(),IAndroidInvokeFile {
                 }
 
             })
-
+        ae.registerMethodHook("jmp0.test.testapp.TestAES.decrypt(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")
         val clazz = ae.loadClass("jmp0.test.testapp.TestAES")
         val ins = clazz.getDeclaredConstructor().newInstance()
         val ret = clazz.getDeclaredMethod("testAll").invoke(ins)
