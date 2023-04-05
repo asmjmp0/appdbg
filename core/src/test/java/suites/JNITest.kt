@@ -19,8 +19,12 @@ class JNITest:TestBase(),IAndroidInvokeFile {
     @Test
     override fun test(){
         val androidEnvironment = AndroidEnvironment(TestUtil.testApkFile,object : UnidbgInterceptor(TestUtil.testApkFile.copyApkFile,true){
-                    override fun otherNativeCalled(uuid: String, className: String, funcName: String,
-                                                   signature: String, param: Array<out Any?>
+                    override fun otherNativeCalled(
+                        uuid: String,
+                        className: String,
+                        funcName: String,
+                        signature: String,
+                        param: Array<Any?>
                     ): IInterceptor.ImplStatus {
                         TODO("Not yet implemented")
                     }
@@ -31,7 +35,7 @@ class JNITest:TestBase(),IAndroidInvokeFile {
                         instance: Any?,
                         funcName: String,
                         signature: String,
-                        param: Array<out Any?>
+                        param: Array<Any?>
                     ): Any? {
                         TestUtil.logger.info("$className.$funcName$signature called")
                         val res = CallBridge.methodCallReal(uuid, className, instance, funcName, signature, param)

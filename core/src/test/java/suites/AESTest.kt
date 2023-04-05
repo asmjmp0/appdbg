@@ -19,7 +19,7 @@ class AESTest:TestBase(),IAndroidInvokeFile {
                     className: String,
                     funcName: String,
                     signature: String,
-                    param: Array<out Any?>
+                    param: Array<Any?>
                 ): IInterceptor.ImplStatus {
                     return IInterceptor.ImplStatus(false,null)
                 }
@@ -30,10 +30,11 @@ class AESTest:TestBase(),IAndroidInvokeFile {
                     instance: Any?,
                     funcName: String,
                     signature: String,
-                    param: Array<out Any?>
+                    param: Array<Any?>
                 ): Any? {
                     if (funcName == "decrypt"){
-                        return CallBridge.methodCallReal(uuid, className, instance, funcName, signature, param)
+                        val result = CallBridge.methodCallReal(uuid, className, instance, funcName, signature, param)
+                        return result
                     }
                     return null
                 }

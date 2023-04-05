@@ -29,7 +29,7 @@ object CallBridge {
         val implMethod = MethodManager.getInstance(uuid).getNative(sig)
         val res = if (implMethod!=null)  implMethod.invoke(null,uuid,*param)
 
-        else callback.nativeCalled(uuid,className,funcName,signature,param).apply {
+        else callback.nativeCalled(uuid,className,funcName,signature,arrayOf(*param)).apply {
                 if (!implemented) throw NativeMethodNotImplementException(sig) }.result
         return res
     }
@@ -41,7 +41,7 @@ object CallBridge {
         //find implement method and ivoke
         val implMethod = MethodManager.getInstance(uuid).getMethodMap()[sig]
         val res = if (implMethod!=null)  implMethod.invoke(null,uuid,*param)
-        else callback.methodCalled(uuid,className, instance,funcName,signature, param)
+        else callback.methodCalled(uuid,className, instance,funcName,signature, arrayOf(*param))
         return res
     }
 

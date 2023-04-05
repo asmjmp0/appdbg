@@ -56,9 +56,9 @@ abstract class UnidbgInterceptor(val apkFile: File,private val autoLoad:Boolean)
         methodName: String,
         signature: String,
         signatureInfo: ReflectUtilsBase.SignatureInfo,
-        param: Array<out Any?>
+        param: Array<Any?>
     ): IInterceptor.ImplStatus {
-        val params = UnidbgWrapperUtils.wrapperToUnidbgParams(vm!!, param, signatureInfo)
+        val params = UnidbgWrapperUtils.wrapperToUnidbgParams(vm, param, signatureInfo)
         val res: Any? = when (signatureInfo.returnType!!) {
             Int::class.java -> clazz.callStaticJniMethodInt(emulator, methodName + signature, *params)
             Boolean::class.java -> clazz.callStaticJniMethodBoolean(emulator, methodName + signature, *params)
@@ -86,7 +86,7 @@ abstract class UnidbgInterceptor(val apkFile: File,private val autoLoad:Boolean)
         className: String,
         funcName: String,
         signature: String,
-        param: Array<out Any?>
+        param: Array<Any?>
     ): IInterceptor.ImplStatus
 
     override fun nativeCalled(
@@ -94,7 +94,7 @@ abstract class UnidbgInterceptor(val apkFile: File,private val autoLoad:Boolean)
         className: String,
         funcName: String,
         signature: String,
-        param: Array<out Any?>
+        param: Array<Any?>
     ): IInterceptor.ImplStatus {
         logger.info("call native method $className.$funcName$signature")
         val clazz = vm.resolveClass(className.replace('.', '/'))
