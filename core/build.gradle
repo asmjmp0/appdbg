@@ -25,7 +25,9 @@ repositories {
 }
 
 test{
-    if (file("agent/$agent_jar_name").exists() && file("agent/$bootstrap_jar_name").exists()) jvmArgs("-javaagent:agent/$agent_jar_name")
+    if (file("agent/$agent_jar_name").exists() && file("agent/$bootstrap_jar_name").exists()){
+        jvmArgs("-Xverify:none","-javaagent:agent/$agent_jar_name")
+    }
     else System.err.println("core/agent/$agent_jar_name or core/agent/$bootstrap_jar_name not exists, please run task [agentJar] in agent/build.gradle file first.")
     useJUnitPlatform()
 }
@@ -47,7 +49,7 @@ dependencies {
     implementation 'net.dongliu:apk-parser:2.6.10'
     compileOnly files('../libs/'+android_lib_name)
 
-    testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
+    testImplementation('org.junit.jupiter:junit-jupiter:5.9.2')
     testCompileOnly fileTree(dir:'../libs/tempLibs',includes:['*jar'])
     testCompileOnly files('../libs/'+android_lib_name)
 
