@@ -15,6 +15,7 @@ import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
 import jmp0.app.mock.system.service.MockServiceManager
+import jmp0.app.pathjvm.PatchMain
 import jmp0.conf.CommonConf
 import jmp0.util.SystemReflectUtils
 import jmp0.util.ZipUtility
@@ -53,6 +54,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
     var context:Any
 
     init {
+        PatchMain().patch()
         //create temp dir
         File(CommonConf.workDir,CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
