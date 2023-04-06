@@ -30,7 +30,6 @@ class IORedirect: IModifyRun {
                     if (mNameInterceptor != null){
                         java.lang.reflect.Method pathFilter = mNameInterceptor.getClass().getDeclaredMethod("pathFilter",new Class[]{String.class});
                         $1 = (String) pathFilter.invoke(mNameInterceptor,new Object[]{$1});
-                        System.out.println($1);
                     }
         """.trimIndent())
         instrumentation.redefineClasses(ClassDefinition(FileInputStream::class.java,ctClass.toBytecode()))

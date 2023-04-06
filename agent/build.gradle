@@ -20,12 +20,6 @@ jar{
         )
     }
     exclude('jmp0/java/bootstrap/**')
-    doLast{
-        copy {
-            from("build/libs/$agent_jar_name")
-            into('../core/agent')
-        }
-    }
 }
 
 task agentJar(type:Jar){
@@ -35,7 +29,7 @@ task agentJar(type:Jar){
     archiveFileName = "$bootstrap_jar_name"
     doLast{
         copy {
-            from("build/libs/$bootstrap_jar_name")
+            from("build/libs/")
             into('../core/agent')
         }
     }
