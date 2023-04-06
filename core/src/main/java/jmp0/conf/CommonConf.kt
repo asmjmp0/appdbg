@@ -16,6 +16,12 @@ object CommonConf {
     const val toolsName = "mtools"
     val apktoolResourcePath = "${toolsName}${File.separator}${apktoolName}"
 
+    val system by lazy {
+        val name = System.getProperty("os.name").lowercase()
+        if(name.contains("windows")) "windows"
+        else "unix like"
+    }
+
     object Mock{
         //system
         const val userSystemClassPackageName= "jmp0.app.mock.system"

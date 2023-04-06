@@ -1,4 +1,4 @@
-package jmp0.appdbg.external.osx.java.io;
+package jmp0.java.bootstrap.java.io;
 
 /**
  * @author jmp0 <jmp0@qq.com>
@@ -7,7 +7,7 @@ package jmp0.appdbg.external.osx.java.io;
 public final class PathInterceptorManager {
     private PathInterceptorManager(){ }
 
-    public volatile Object nameInterceptor = null;
+    public volatile IPathInterceptor nameInterceptor = null;
 
     public volatile static PathInterceptorManager instance =null;
 

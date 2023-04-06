@@ -39,8 +39,8 @@ class AESTest:TestBase(),IAndroidInvokeFile {
                     return null
                 }
 
-                override fun ioResolver(path: String): IInterceptor.ImplStatus {
-                    return IInterceptor.ImplStatus(false,"");
+                override fun ioResolver(path: String): String? {
+                    return null
                 }
 
             })

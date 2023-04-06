@@ -1,0 +1,50 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group 'jmp0'
+version '1.0-SNAPSHOT'
+
+jar.enabled(true)
+repositories {
+    mavenCentral()
+}
+jar{
+    archiveFileName = "$agent_jar_name"
+    manifest {
+        attributes(
+                'Premain-Class':'jmp0.java.agent.AgentApplication',
+                'Agent-Class':'jmp0.java.agent.AgentApplication',
+                'Can-Redefine-Classes':'true',
+                'Can-Retransform-Classes':'true'
+        )
+    }
+    exclude('jmp0/java/bootstrap/**')
+    doLast{
+        copy {
+            from("build/libs/$agent_jar_name")
+            into('../core/agent')
+        }
+    }
+}
+
+task agentJar(type:Jar){
+    dependsOn(jar)
+    from('build/classes/java/main/jmp0/java/bootstrap')
+    into('jmp0/java/bootstrap')
+    archiveFileName = "$bootstrap_jar_name"
+    doLast{
+        copy {
+            from("build/libs/$bootstrap_jar_name")
+            into('../core/agent')
+        }
+    }
+}
+
+
+dependencies {
+    implementation "org.javassist:javassist:$javassist_version"
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

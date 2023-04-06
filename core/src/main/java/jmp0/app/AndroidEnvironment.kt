@@ -80,37 +80,28 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
     private fun initIOResolver(){
         try {
-            val clazz = Class.forName("java.io.PathInterceptorManager")
-            val iPathInterceptorClazz = Class.forName("java.io.IPathInterceptor")
+            val clazz = Class.forName("jmp0.java.bootstrap.java.io.PathInterceptorManager")
+            val iPathInterceptorClazz = Class.forName("jmp0.java.bootstrap.java.io.IPathInterceptor")
             val method = clazz.getDeclaredMethod("getInstance")
             val ins = method.invoke(null);
             val field = clazz.getDeclaredField("nameInterceptor")
-            // FIXME: 2022/5/28 *** java.lang.instrument ASSERTION FAILED ***: "!errorOutstanding" with message transform method call failed at JPLISAgent.c line: 844
             field.set(ins, Proxy.newProxyInstance(null, arrayOf(iPathInterceptorClazz),object: InvocationHandler {
                 override fun invoke(proxy: Any?, method: Method, args: Array<out Any?>): Any? {
+                    //we can only use the class which has been load.
                     if(method.name == "pathFilter"){
                         if (args[0] == null) return null
-                        when(args[0]){
-                            is String->{
-                                val ret =try { methodInterceptor.ioResolver(args[0] as String) }
-                                catch (e:Exception){ IInterceptor.ImplStatus(false,null) }
-                                return if (!ret.implemented) args[0]
-                                else ret.result.toString()
-                            }
-                            is URI ->{
-                                val ret = methodInterceptor.ioResolver((args[0] as URI).path)
-                                return if (!ret.implemented) ret
-                                else URI(ret.result.toString())
-                            }
-                        }
+                        return if (CommonConf.system == "windows"){
+                            val path= (args[0] as String).replace('\\','/')
+                            val result = methodInterceptor.ioResolver(path)
+                            result?.replace('/','\\') ?: args[0]
+                        } else methodInterceptor.ioResolver(args[0] as String)?:args[0]
                     }
-                    throw Exception("unknown exception...")
+                    throw Exception("unknown proxy method exception...")
                 }
-
             }))
         }catch (e:Exception){
             logger.warn("io Resolver init failed, io redirect unusable!")
-            logger.warn("check rt.jar had been replaced!")
+            logger.warn("check appdbg-agent.jar had been set to jvm args [javaagent]!")
         }
     }
 

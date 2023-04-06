@@ -25,6 +25,7 @@ repositories {
 }
 
 test{
+    jvmArgs("-javaagent:agent/$agent_jar_name")
     useJUnitPlatform()
 }
 dependencies {

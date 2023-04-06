@@ -3,6 +3,8 @@ buildscript {
         log4j_version = '1.2.17'
         javassist_version = '3.28.0-GA'
         android_lib_name = 'android-all-6.0.0_r1-robolectric-0.jar'
+        agent_jar_name = 'apdbg-agent.jar'
+        bootstrap_jar_name = 'appdbg-bootstrap.jar'
     }
     repositories {
         maven { url 'https://maven.aliyun.com/repository/public/' }

@@ -32,11 +32,11 @@ class FileTest:TestBase(),IAndroidInvokeFile {
                     return null
                 }
 
-                override fun ioResolver(path: String): IInterceptor.ImplStatus {
+                override fun ioResolver(path: String): String? {
                     if (path == "/proc/self/maps"){
-                        return IInterceptor.ImplStatus(true,"../temp/appdbg-test.apk/assets/hello")
+                        return "../temp/appdbg-test.apk/assets/hello"
                     }
-                    return IInterceptor.ImplStatus(false,"");
+                    return null
                 }
 
             })

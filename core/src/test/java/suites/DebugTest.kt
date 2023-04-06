@@ -31,8 +31,8 @@ class DebugTest:TestBase(),IAndroidInvokeFile {
                 TODO("Not yet implemented")
             }
 
-            override fun ioResolver(path: String): IInterceptor.ImplStatus {
-                return IInterceptor.ImplStatus(false,"");
+            override fun ioResolver(path: String): String? {
+                return null
             }
 
         })

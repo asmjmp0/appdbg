@@ -1,4 +1,4 @@
-package jmp0.appdbg.external.osx.java.io;
+package jmp0.java.bootstrap.java.io;
 
 /**
  * @author jmp0 <jmp0@qq.com>
@@ -6,8 +6,7 @@ package jmp0.appdbg.external.osx.java.io;
  */
 public interface IPathInterceptor {
     /**
-     * @param path can be String or URI
      * @return path
      */
-    String pathFilter(Object path);
+    String pathFilter(String path);
 }
