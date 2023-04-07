@@ -12,8 +12,8 @@ import jmp0.app.interceptor.intf.NativeImplementInterceptor
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
-import jmp0.patchjvm.PatchMain
 import jmp0.conf.CommonConf
+import jmp0.patchjvm.PatchMain
 import jmp0.util.SystemReflectUtils
 import jmp0.util.ZipUtility
 import jmp0.util.reflection
@@ -50,8 +50,8 @@ class AndroidEnvironment(val apkFile: ApkFile,
     var context:Any
 
     init {
-        PatchMain().patch()
         //create temp dir
+        PatchMain().patch()
         File(CommonConf.workDir,CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
         checkAndReleaseFramework()
