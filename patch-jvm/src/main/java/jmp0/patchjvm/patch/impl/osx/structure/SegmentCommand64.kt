@@ -1,4 +1,4 @@
-package jmp0.patchjvm.impl.osx.structure
+package jmp0.patchjvm.patch.impl.osx.structure
 
 import com.sun.jna.Structure
 import com.sun.jna.Structure.FieldOrder

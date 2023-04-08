@@ -1,4 +1,4 @@
-package jmp0.patchjvm
+package jmp0.patchjvm.patch
 
 import jmp0.patchjvm.library.CLibrary
 
@@ -7,6 +7,7 @@ import jmp0.patchjvm.library.CLibrary
  * Create on 2023/4/7
  */
 interface IPatch {
+    val cLibrary: CLibrary
     val jvmLibraryName:String
-    fun patch(cLibrary: CLibrary)
+    fun patch()
 }

@@ -1,6 +1,6 @@
-package jmp0.patchjvm.impl.osx
+package jmp0.patchjvm.patch.impl.osx
 
-import jmp0.patchjvm.impl.osx.structure.MachHeader64
+import jmp0.patchjvm.patch.impl.osx.structure.MachHeader64
 import jmp0.patchjvm.library.CLibrary
 
 /**

@@ -51,7 +51,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
     init {
         //create temp dir
-        PatchMain().patch()
+        PatchMain(File(CommonConf.workDir)).patch()
         File(CommonConf.workDir,CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
         checkAndReleaseFramework()

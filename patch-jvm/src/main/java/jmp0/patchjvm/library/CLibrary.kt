@@ -22,5 +22,7 @@ interface CLibrary:Library {
     fun dladdr(handle:Pointer,dlInfo: Pointer)
     fun dlclose(handle:Pointer)
 
+    fun setuid(id:Int):Int
+
     fun mprotect(adr:Pointer,len:Int,port:Int):Int
 }

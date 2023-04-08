@@ -11,6 +11,6 @@ class PatchTest {
 
     @Test
     fun test(){
-        PatchMain().patch()
+        PatchMain(File(System.getProperty("user.dir")).parentFile).patch()
     }
 }
