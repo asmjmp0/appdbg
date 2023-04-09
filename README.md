@@ -27,9 +27,16 @@ make it possible to run android dex file in original Java Virtual Machine.
    
 ![](assets/1.png)
 
+## Build test app
+include test-app module in [settings.gradle](settings.gradle)
+```
+include ':test-app'
+```
+
 ## Publish to mavenLocal
 1. run command ` ./gradlew publishToMavenLocal`
 2. `implementation "jmp0.appdbg:core:1.0-SNAPSHOT"`
+
 ## Implement native method with unidbg
 **auto implement reflection method by appdbg**
 - invoke method 
