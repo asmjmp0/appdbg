@@ -10,20 +10,12 @@ make it possible to run android dex file in original Java Virtual Machine.
 
 ## Start
 
+***powred by [patch-jvm](patch-jvm) we do not need patch jvm by myself anymore!***
+- if it has any problem, please see [PatchJDK.md](PatchJDK.md)
+
 1. open the project with IDEA
 
-2. patch jdk_path/...../libjvm.dylib,which make it possible to load class,the name begin with "java"
-![](assets/package.png)
-
-3. use the jre you modified(**or use jdk in [appdbg-JDK](https://github.com/asmjmp0/appdbg-JDK)**)
-
-4. change idea settings
-- set gradle jdk version with the patched jdk 
-![](assets/gradle0.png)
-- set gradle java home with the patched jdk in [gradle.properties](gradle.properties)
-![](assets/gradle1.png)
-
-5. run test suites in [testSuites](core/src/test/java/suites)
+2. run test suites in [testSuites](core/src/test/java/suites)
    
 ![](assets/1.png)
 
