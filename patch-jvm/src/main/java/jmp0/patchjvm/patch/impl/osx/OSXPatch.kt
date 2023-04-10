@@ -82,14 +82,14 @@ class OSXPatch( workDir:File, override val cLibrary: CLibrary,override val jvmLi
                 val header = dyldLibrary._dyld_get_image_header(i)
                 var pointer = Pointer(Pointer.nativeValue(header.pointer) + header.size())
                 var loadCommand64 = Structure.newInstance(LoadCommand64::class.java,pointer).apply { read() }
-                for (c_idx in 0 until header.ncmds!!){
+                for (c_idx in 0 until header.ncmds){
                     if (loadCommand64.cmd == 25){ // LC_SEGMENT_64
                         val segmentCommand64 = Structure.newInstance(SegmentCommand64::class.java,pointer).apply { read() }
                         if(segmentCommand64.getSegnameStr().startsWith("__TEXT")){
-                            val base = Pointer(Pointer.nativeValue(header.pointer) + segmentCommand64.vmaddr!!)
-                            val size = segmentCommand64.vmsize!!
+                            val base = Pointer(Pointer.nativeValue(header.pointer) + segmentCommand64.vmaddr)
+                            val size = segmentCommand64.vmsize
                             if(segmentCommand64.maxprot == 7 && Platform.isARM()) return
-                            if (segmentCommand64.maxprot!! < 7){
+                            if (segmentCommand64.maxprot < 7){
                                 println("INFO: Patch libjvm.dylib file")
                                 patchStatic(File(name))
                                 return
@@ -97,11 +97,11 @@ class OSXPatch( workDir:File, override val cLibrary: CLibrary,override val jvmLi
                             if(cLibrary.mprotect(base,size.toInt(),CLibrary.PROT_EXEC or CLibrary.PROT_READ or CLibrary.PROT_WRITE) == 0){
                                 patchImpl(base,size)
                             }else throw Exception("ERROR: mprotect error.")
-                            cLibrary.mprotect(base,size.toInt(),segmentCommand64.initprot!!)
+                            cLibrary.mprotect(base,size.toInt(),segmentCommand64.initprot)
                             return
                         }
                     }
-                    pointer = Pointer(Pointer.nativeValue(pointer) + loadCommand64.cmdsize!!)
+                    pointer = Pointer(Pointer.nativeValue(pointer) + loadCommand64.cmdsize)
                     loadCommand64 = Structure.newInstance(LoadCommand64::class.java,pointer).apply { read() }
                 }
 

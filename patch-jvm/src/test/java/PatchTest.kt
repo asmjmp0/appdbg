@@ -12,5 +12,11 @@ class PatchTest {
     @Test
     fun test(){
         PatchMain(File(System.getProperty("user.dir")).parentFile).patch()
+        val bs = this.javaClass.classLoader.getResource("RandomAccess.class")!!.openStream().readBytes()
+        try {
+            TestClassLoader().testDefineClass(bs)
+        }catch (e:Exception){
+            assert(e !is SecurityException)
+        }
     }
 }

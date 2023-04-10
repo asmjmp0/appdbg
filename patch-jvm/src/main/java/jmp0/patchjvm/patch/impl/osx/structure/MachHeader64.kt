@@ -13,7 +13,7 @@ class MachHeader64:Structure() {
     @JvmField var cputype: Int? = null
     @JvmField var cpusubtype: Int? = null
     @JvmField var filetype: Int? = null
-    @JvmField var ncmds: Int? = null
+    @JvmField var ncmds: Int = 0
     @JvmField var sizeofcmds: Int? = null
     @JvmField var flags: Int? = null
     @JvmField var reserved: Int? = null

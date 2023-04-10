@@ -26,12 +26,12 @@ class SegmentCommand64: Structure() {
     @JvmField var cmd:Int? = null
     @JvmField var cmdsize:Int? = null
     @JvmField var segname: ByteArray? = ByteArray(16)
-    @JvmField var vmaddr:Long? = null
-    @JvmField var vmsize:Long? = null
+    @JvmField var vmaddr:Long = 0
+    @JvmField var vmsize:Long = 0
     @JvmField var fileoff:Long? = null
     @JvmField var filesize:Long? = null
-    @JvmField var maxprot:Int? = null
-    @JvmField var initprot:Int? = null
+    @JvmField var maxprot:Int = 0
+    @JvmField var initprot:Int = 0
     @JvmField var nsects:Int? = null
     @JvmField var flags:Int? = null
 

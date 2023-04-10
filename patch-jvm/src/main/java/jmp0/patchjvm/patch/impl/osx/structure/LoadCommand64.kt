@@ -9,6 +9,6 @@ import com.sun.jna.Structure.FieldOrder
  */
 @FieldOrder("cmd","cmdsize")
 class LoadCommand64:Structure(){
-    @JvmField var cmd:Int? = null
-    @JvmField var cmdsize:Int? = null
+    @JvmField var cmd:Int = 0
+    @JvmField var cmdsize:Int = 0
 }
