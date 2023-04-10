@@ -1,6 +1,5 @@
 package jmp0.app
 
-import io.github.classgraph.ClassGraph
 import javassist.*
 import jmp0.apk.ApkFile
 import jmp0.app.classloader.ClassLoadedCallbackBase
@@ -11,11 +10,10 @@ import jmp0.app.conversation.IAppdbgConversationHandler
 import jmp0.app.interceptor.intf.IInterceptor
 import jmp0.app.interceptor.intf.NativeImplementInterceptor
 import jmp0.app.interceptor.intf.RuntimeClassInterceptorBase
-import jmp0.app.interceptor.unidbg.UnidbgInterceptor
 import jmp0.app.mock.annotations.ClassReplaceTo
 import jmp0.app.mock.MethodManager
-import jmp0.app.mock.system.service.MockServiceManager
 import jmp0.conf.CommonConf
+import jmp0.patchjvm.PatchMain
 import jmp0.util.SystemReflectUtils
 import jmp0.util.ZipUtility
 import jmp0.util.reflection
@@ -24,7 +22,6 @@ import java.io.File
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
-import java.net.URI
 import java.util.*
 
 // TODO: 2022/3/9 模拟初始化Android activity，并载入自定义类加载器
@@ -54,6 +51,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
 
     init {
         //create temp dir
+        PatchMain(File(CommonConf.workDir)).patch()
         File(CommonConf.workDir,CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
         checkAndReleaseFramework()

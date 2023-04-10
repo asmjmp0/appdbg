@@ -1,0 +1,25 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group 'jmp0'
+version '1.0-SNAPSHOT'
+
+jar.enabled(true)
+
+repositories {
+    mavenCentral()
+}
+
+test{
+    useJUnitPlatform()
+}
+
+
+dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter:5.9.2')
+    implementation 'net.java.dev.jna:jna:5.10.0'
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
