@@ -6,11 +6,11 @@ make it possible to run android dex file in original Java Virtual Machine.
 - change every item of the class after it was loaded
 - hook java method
 - implement native method by yourself or [unidbg](https://github.com/zhkl0228/unidbg)...
-- provide fake source line level debug ability powered by fernflower!!!
+- provide fake source line level debug ability powered by fernflower(https://github.com/fesh0r/fernflower)!!!
 
 ## Start
 
-***powred by [patch-jvm](patch-jvm) we do not need patch jvm by myself anymore!***
+***powered by [patch-jvm](patch-jvm) we do not need to patch jvm by myself anymore!***
 - if it has any problem, please see [PatchJDK.md](PatchJDK.md)
 
 1. open the project with IDEA
