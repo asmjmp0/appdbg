@@ -26,6 +26,8 @@ class WindowsPatch(override val cLibrary: CLibrary, override val jvmLibraryName:
             val n = header.name()
             if(header.name().startsWith(".rdata")){
                 val bs = mHandle.getByteArray(header.VirtualAddress.toUInt().toLong(),header.VirtualSize)
+                //checkPatched
+                if(PatchUtil.findSubByteArray(bs,replaceString.toByteArray()).isNotEmpty()) return
                 val list = PatchUtil.findSubByteArray(bs,pattern)
                 if(list.isEmpty()){
                     println("ERROR: pattern not fount")

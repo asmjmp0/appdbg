@@ -15,11 +15,18 @@ import java.io.File
 class PatchMain(private val workDir:File) {
     private val cl = Native.load(if (Platform.isWindows()) "msvcrt" else "c", CLibrary::class.java) as CLibrary
 
-    fun patch() =
+    private fun checkJREVersion() =
+        try { PatchUtil.versionString.split('.')[0].toInt() < 18 }
+        catch (e:Exception){ true }
+
+    fun patch() {
+        if(!checkJREVersion()) throw Exception("patch jre version ${PatchUtil.versionString} not support.")
         when(Platform.getOSType()){
             Platform.MAC-> OSXPatch(workDir,cl)
             Platform.WINDOWS -> WindowsPatch(cl)
             Platform.LINUX -> LinuxPatch(cl)
             else -> throw Exception("patch jvm ${Platform.getOSType()} not support")
         }.patch()
+    }
+
 }

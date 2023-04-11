@@ -25,6 +25,8 @@ class LinuxPatch(override val cLibrary: CLibrary, override val jvmLibraryName: S
         if (!segmentList.isEmpty()){
             val pair = segmentList[0]
             val bs = pair.first.getByteArray(0,pair.second.toInt())
+            //checkPatched
+            if(PatchUtil.findSubByteArray(bs,replaceString.toByteArray()).isNotEmpty()) return
             val find = PatchUtil.findSubByteArray(bs,pattern)
             if (find.isEmpty()){
                 println("ERROR: LinuxPatch not find pattern.")

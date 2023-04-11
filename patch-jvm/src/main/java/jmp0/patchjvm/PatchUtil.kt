@@ -7,6 +7,7 @@ import java.util.*
  * Create on 2023/4/7
  */
 object PatchUtil {
+    val versionString: String = System.getProperty("java.version")
     private fun findSubByteArrayInner(byteArray: ByteArray,idx:Int,find: ByteArray): Boolean {
         if(idx + find.size > byteArray.size) return false
         for (i in find.indices){

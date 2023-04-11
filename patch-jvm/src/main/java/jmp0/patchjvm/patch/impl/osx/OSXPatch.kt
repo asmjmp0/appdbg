@@ -23,6 +23,8 @@ class OSXPatch( workDir:File, override val cLibrary: CLibrary,override val jvmLi
 
     private fun patchImpl(pointer: Pointer,size:Long){
         val bytes = pointer.getByteArray(0,size.toInt())
+        //checkPatched
+        if(PatchUtil.findSubByteArray(bytes,replaceString.toByteArray()).isNotEmpty()) return
         val list = PatchUtil.findSubByteArray(bytes,pattern)
         list.forEach{
             var str = pointer.getString(it.toLong())
