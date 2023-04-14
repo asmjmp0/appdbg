@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 
 class Base64Test:TestBase(),IAndroidInvokeFile {
 
-    @Test
     override fun test(){
         val androidEnvironment = AndroidEnvironment(
             TestUtil.testApkFile, object : IInterceptor {

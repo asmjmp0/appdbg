@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 
 class SharedPreferencesTest:TestBase(),IAndroidInvokeFile {
 
-    @Test override fun test() {
+    override fun test() {
         val ae = AndroidEnvironment(TestUtil.testApkFile, object : IInterceptor {
             override fun nativeCalled(
                 uuid: String,

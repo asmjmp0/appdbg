@@ -8,7 +8,6 @@ import jmp0.app.interceptor.intf.IInterceptor
 import org.junit.jupiter.api.Test
 
 class ContextTest:TestBase(),IAndroidInvokeFile {
-    @Test
     override fun test(){
         val androidEnvironment = AndroidEnvironment(
             TestUtil.testApkFile, object : IInterceptor {

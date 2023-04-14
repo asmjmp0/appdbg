@@ -9,5 +9,6 @@ abstract class TestBase {
         @BeforeAll
         fun init() { CommonConf.workDir = File(System.getProperty("user.dir")).parent }
     }
-    @Test abstract fun test();
+    abstract fun test();
+    @Test fun testReal() = test()
 }

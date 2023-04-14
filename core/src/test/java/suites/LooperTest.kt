@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 
 class LooperTest:TestBase(),IAndroidInvokeFile {
 
-    @Test
     override fun test(){
         val androidEnvironment = AndroidEnvironment(
             TestUtil.testApkFile, object : IInterceptor {

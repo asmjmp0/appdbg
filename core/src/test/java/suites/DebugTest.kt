@@ -7,8 +7,7 @@ import jmp0.app.interceptor.intf.IInterceptor
 import org.junit.jupiter.api.Test
 
 class DebugTest:TestBase(),IAndroidInvokeFile {
-
-    @Test override fun test() {
+    override fun test() {
         val ae = AndroidEnvironment(TestUtil.testApkFile, object : IInterceptor {
             override fun nativeCalled(
                 uuid: String,

@@ -43,6 +43,7 @@ dependencies {
     api "org.javassist:javassist:$javassist_version"
     implementation 'io.github.classgraph:classgraph:4.8.150'
     api 'com.github.zhkl0228:unidbg-api:0.9.7'
+    implementation 'com.github.zhkl0228:unicorn:1.0.13'
     api 'com.github.zhkl0228:unidbg-android:0.9.7'
     implementation 'net.lingala.zip4j:zip4j:2.10.0'
     implementation 'io.github.qsy7.java.dependencies:slf4j-simple:0.1.0'

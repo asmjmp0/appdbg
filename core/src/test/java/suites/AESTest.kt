@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 
 class AESTest:TestBase(),IAndroidInvokeFile {
 
-    @Test
     override fun test() {
         val ae = AndroidEnvironment(TestUtil.testApkFile, object : IInterceptor {
                 override fun nativeCalled(

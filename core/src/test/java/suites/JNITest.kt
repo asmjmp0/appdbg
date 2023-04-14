@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test
 
 class JNITest:TestBase(),IAndroidInvokeFile {
 
-    @Test
     override fun test(){
         val androidEnvironment = AndroidEnvironment(TestUtil.testApkFile,object : UnidbgInterceptor(TestUtil.testApkFile.copyApkFile,true){
                     override fun otherNativeCalled(
