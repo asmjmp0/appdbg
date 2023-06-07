@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <malloc.h>
 #include <android/log.h>
 #define KLOG_TAG "asmjmp0"
 
@@ -16,6 +17,26 @@ Java_jmp0_test_testapp_TestNative_getNativeLong(
         JNIEnv* env,
         jobject /* this */) {
         return jlong(10);
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_jmp0_test_testapp_TestNative_detectUnibdgNative(
+        JNIEnv* env,
+        jobject /* this */) {
+        jboolean copy;
+        jstring str = env->NewStringUTF("1");
+        unsigned long p1 = (unsigned long)(void*)env->GetStringUTFChars(str,&copy);
+        unsigned long p2 = (unsigned long)malloc(1);
+        env->ReleaseStringUTFChars(str,(char *)p1);
+        env->DeleteLocalRef(str);
+        size_t page_size = getpagesize();
+        size_t sub;
+        if(p2>p1) sub = p2 - p1;
+        else sub = p1 -p2;
+        bool condition= sub > page_size;
+        char buf[30];
+        sprintf(buf,"unidbg:%d,sub:%ld",condition,sub);
+        return env->NewStringUTF(buf);
 }
 
 extern "C" JNIEXPORT jstring JNICALL

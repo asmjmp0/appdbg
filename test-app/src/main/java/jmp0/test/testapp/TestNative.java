@@ -17,6 +17,7 @@ public class TestNative {
 //        getNativeLong();
 //        getNativeIntArr();
         Log.d("asmjmp0",AESFromJava("test"));
+        detectUnibdg();
     }
 
     public void getNativeLong(){
@@ -29,6 +30,10 @@ public class TestNative {
 
     public String AESFromJava(String str){ return testAESFromJava(str);}
 
+    public void detectUnibdg(){
+        Log.d("jmp0 test", detectUnibdgNative());
+    }
+
     /**
      * @param str string to encrypt
      * @return encrypted string with base64 encode
@@ -37,4 +42,6 @@ public class TestNative {
 
     public static native long JNI_LONG();
     public static native int[] JNI_INT_ARR();
+
+    public static native String detectUnibdgNative();
 }

@@ -55,7 +55,7 @@ class TestContext(private val context: Context) {
         testAssetManager()
         testResources()
         testContentResolver()
-        testIMEI()
+//        testIMEI()
         testPackageInfo()
     }
 }
