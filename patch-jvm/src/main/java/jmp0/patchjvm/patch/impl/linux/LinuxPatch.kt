@@ -16,28 +16,28 @@ class LinuxPatch(override val cLibrary: CLibrary, override val jvmLibraryName: S
         val jvmMapsLines = File("/proc/self/maps").readLines().filter { it.endsWith(jvmLibraryName) }
         val segmentList = LinkedList<Pair<Pointer,Long>>()
         jvmMapsLines.forEach {
-            if (it.contains("r-x")){
+            if (it.contains("r-x") or it.contains("r--")){
                 val spl = it.split(' ')
                 val ps = spl[0].split('-')
                 segmentList.push(Pair(Pointer(ps[0].toLong(16)),ps[1].toLong(16) - ps[0].toLong(16)))
             }
         }
         if (!segmentList.isEmpty()){
-            val pair = segmentList[0]
-            val bs = pair.first.getByteArray(0,pair.second.toInt())
-            //checkPatched
-            if(PatchUtil.findSubByteArray(bs,replaceString.toByteArray()).isNotEmpty()) return
-            val find = PatchUtil.findSubByteArray(bs,pattern)
-            if (find.isEmpty()){
-                println("ERROR: LinuxPatch not find pattern.")
-                return
-            }
-            if (this.cLibrary.mprotect(pair.first,pair.second.toInt(),CLibrary.PROT_EXEC or CLibrary.PROT_READ or CLibrary.PROT_WRITE) == 0){
-                pair.first.setString(find[0].toLong(), replaceString)
-                this.cLibrary.mprotect(pair.first,pair.second.toInt(),CLibrary.PROT_EXEC or CLibrary.PROT_READ)
-            }else{
-                println("ERROR: LinuxPatch mprotect error.")
-                return
+            var find:List<Int> = LinkedList<Int>()
+            for (pair:Pair<Pointer,Long> in segmentList){
+                val bs = pair.first.getByteArray(0,pair.second.toInt())
+                //checkPatched
+                if(PatchUtil.findSubByteArray(bs,replaceString.toByteArray()).isNotEmpty()) return
+                find = PatchUtil.findSubByteArray(bs,pattern)
+                if(find.isEmpty()) continue
+                if (this.cLibrary.mprotect(pair.first,pair.second.toInt(),CLibrary.PROT_EXEC or CLibrary.PROT_READ or CLibrary.PROT_WRITE) == 0){
+                    pair.first.setString(find[0].toLong(), replaceString)
+                    this.cLibrary.mprotect(pair.first,pair.second.toInt(),CLibrary.PROT_EXEC or CLibrary.PROT_READ)
+                    return
+                }else{
+                    println("ERROR: LinuxPatch mprotect error.")
+                    return
+                }
             }
 
         }else{
