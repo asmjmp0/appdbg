@@ -16,16 +16,15 @@ import java.util.LinkedList
  * Create on 2022/4/22
  */
 object UnidbgWrapperUtils {
-    private fun VM.resolveClassEx(obj:Any):DvmClass{
-        val clazz = obj::class.java
+    private fun VM.resolveClassEx(clazz:Class<*>):DvmClass{
         val interfaceList:LinkedList<DvmClass> = LinkedList<DvmClass>()
         var superClass:DvmClass? = null
-        val name = obj::class.java.name.replace(".","/")
+        val name = clazz.name.replace(".","/")
         clazz.interfaces.forEach { it->
-            interfaceList.add(resolveClass(it.name))
+            interfaceList.add(resolveClassEx(it))
         }
         clazz.superclass?.also {
-            superClass = resolveClass(it.name)
+            superClass = resolveClassEx(it)
         }
         return this.resolveClass(name,superClass,*interfaceList.toTypedArray())
     }
@@ -80,7 +79,6 @@ object UnidbgWrapperUtils {
 
     fun toUnidbgObject(vm:VM,obj:Any?,className:String? = null):DvmObject<out Any>{
         if (obj == null) return DvmObjectWrapper(vm.resolveClass("java/lang/Object"),null)
-        //fixme wrapper fix
         when(obj){
             is String -> return StringObject(vm,obj)
 
@@ -100,7 +98,7 @@ object UnidbgWrapperUtils {
                 return ArrayObject(*objectList.toTypedArray())
             }
         }
-        return DvmObjectWrapper(vm.resolveClassEx(obj),obj)
+        return DvmObjectWrapper(vm.resolveClassEx(obj::class.java),obj)
     }
 
     fun wrapperToUnidbgParams(vm: VM,param: Array<out Any?>,signatureInfo: ReflectUtilsBase.SignatureInfo): Array<out Any> {

@@ -1,6 +1,7 @@
 package jmp0.util
 
 import jmp0.app.DbgContext
+import java.lang.Exception
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.time.temporal.Temporal
@@ -93,6 +94,22 @@ abstract class ReflectUtilsBase {
         return if (appendUUID)getDeclaredMethod(signatureInfo.funcName,String::class.java,*(signatureInfo.paramTypes))
         else getDeclaredMethod(signatureInfo.funcName,*(signatureInfo.paramTypes))
     }
+
+    fun Class<*>.getMethodEx(signature: String,vararg classes:Class<*>): Method =
+         try {
+            this.getDeclaredMethod(signature,*classes)
+        }catch (exception:NoSuchMethodException){
+            this.getMethod(signature,*classes)
+        }
+
+    fun Class<*>.getFieldEx(name:String) =
+        try {
+            this.getDeclaredField(name)
+        }catch (exception:NoSuchFieldException){
+            this.getField(name)
+        }
+
+
 
     fun Method.invokeEx(ins:Any?,vararg parameter:Any?):Any? =
         setAccessibleEx().invoke(ins,*parameter)
