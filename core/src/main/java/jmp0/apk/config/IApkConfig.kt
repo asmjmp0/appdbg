@@ -7,6 +7,11 @@ interface IApkConfig {
     fun forceDecompile():Boolean
 
     /**
+     * not use class files in class directory.
+     */
+    fun notUseClassFiles():Boolean
+
+    /**
      * generate Jar file which make it possible to debug it.
      */
     fun generateJarFile():Boolean

@@ -2,6 +2,7 @@ package jmp0.app
 
 import javassist.*
 import jmp0.apk.ApkFile
+import jmp0.app.classloader.ClassFinder
 import jmp0.app.classloader.ClassLoadedCallbackBase
 import jmp0.app.classloader.FrameWorkClassNoFoundException
 import jmp0.app.classloader.XAndroidClassLoader
@@ -19,6 +20,7 @@ import jmp0.util.ZipUtility
 import jmp0.util.reflection
 import org.apache.log4j.Logger
 import java.io.File
+import java.io.InputStream
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -39,6 +41,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
                          }) {
     private val logger = Logger.getLogger(javaClass)
     private val androidLoader = XAndroidClassLoader(this)
+    private val classFinder = ClassFinder(this, androidRuntimeClass)
     private val conversationHandlerMap:EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler> = EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler>(AppdbgConversationSchemaEnum::class.java)
     private val serviceManager by lazy {
         reflection(androidLoader,"jmp0.app.mock.system.service.MockServiceManager"){
@@ -172,47 +175,19 @@ class AndroidEnvironment(val apkFile: ApkFile,
         }
     }
 
-    private fun androidFindClass(className: String):File?=
-        findFromAndroidFramework(className)?:findFromApkFile(className)
-
-
-    private fun findFromDir(dir:File,className:String):File?{
-        val filePath = className.replace('.','/')+".class"
-        val f = File(dir,filePath)
-        if (f.exists()) return f
-        return null
-    }
-
-    private fun findFromApkFile(className: String):File? =
-        findFromDir(apkFile.classesDir,className)
-
-    private fun findFromAndroidFramework(className: String): File? =
-        findFromDir(File(CommonConf.workDir+File.separator+CommonConf.tempDirName+File.separator+CommonConf.frameworkDirName),className)
-
-
-    private fun loadClass(file: File): Class<*> {
-        val data = androidRuntimeClass.afterResolveClass(
-            this,ClassPool.getDefault().makeClass(file.inputStream(),false)
-        ).toBytecode()
-        return androidLoader.xDefineClass(null,data,0,data.size)
-    }
 
     /**
      * look for it from apk path
-     * @param className 形如 com.example.myapplication.TestJava
+     * @param className exp. com.example.myapplication.TestJava
      * @return class类对象
      */
-    fun loadClass(className: String): Class<*> {
-        val mClassName = className.replace("[]","")
-        return androidRuntimeClass.beforeResolveClass(this,mClassName,androidLoader)
-           ?:loadClass(androidFindClass(mClassName)?:throw FrameWorkClassNoFoundException("$mClassName not find from frame work")).apply { logger.trace("$this loaded!") }
-    }
+    fun loadClass(className: String): Class<*> = this.classFinder.loadClass(className)
 
     /**
      * look for it from this project
      * this will not pass the resolve-callback
-     * @param className 形如 com.example.myapplication.TestJava
-     * @return class类对象
+     * @param className exp. com.example.myapplication.TestJava
+     * @return class object
      */
     fun loadClassProject(className: String): Class<*>{
         val ctClass = ClassPool.getDefault().getCtClass(className)
@@ -222,12 +197,10 @@ class AndroidEnvironment(val apkFile: ApkFile,
         }
     }
 
-    fun findClass(name: String)
-        = Class.forName(name,false,androidLoader)
+    fun findClass(name: String): Class<*> = Class.forName(name,false,androidLoader)
 
     /**
      * @param signature which looks like xxxxx
-     * @param implemented if it is ture the method while be replace by your method
      */
     fun registerMethodHook(signature:String)
         = DbgContext.registerMethodHook(id,signature)

@@ -16,7 +16,7 @@ import java.util.StringJoiner
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class ApkFile(private val stream:InputStream,private val name:String,apkConfig: IApkConfig = DefaultApkConfig()) {
+class ApkFile(private val stream:InputStream,private val name:String,val apkConfig: IApkConfig = DefaultApkConfig()) {
 
     constructor(apkFile: File,apkConfig: IApkConfig = DefaultApkConfig()):this(apkFile.inputStream(),apkFile.name,apkConfig)
 
@@ -26,6 +26,7 @@ class ApkFile(private val stream:InputStream,private val name:String,apkConfig: 
     }
     val dir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${name}")
     val classesDir = File(dir,"classes")
+    val classesJar = File(classesDir,"classes.jar")
     val copyApkFile:File
 
     var packageName:String
