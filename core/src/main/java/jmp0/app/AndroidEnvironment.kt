@@ -41,7 +41,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
                          }) {
     private val logger = Logger.getLogger(javaClass)
     private val androidLoader = XAndroidClassLoader(this)
-    private val classFinder = ClassFinder(this, androidRuntimeClass)
+    private val classFinder:ClassFinder
     private val conversationHandlerMap:EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler> = EnumMap<AppdbgConversationSchemaEnum,IAppdbgConversationHandler>(AppdbgConversationSchemaEnum::class.java)
     private val serviceManager by lazy {
         reflection(androidLoader,"jmp0.app.mock.system.service.MockServiceManager"){
@@ -58,6 +58,7 @@ class AndroidEnvironment(val apkFile: ApkFile,
         File(CommonConf.workDir,CommonConf.tempDirName).apply { if (!exists()) mkdir() }
         registerToContext()
         checkAndReleaseFramework()
+        classFinder = ClassFinder(this, androidRuntimeClass)
         loadUserSystemClass()
         //impotent init MethodManager and set java method hook
         MethodManager.getInstance(id).getMethodMap().forEach{
@@ -171,7 +172,16 @@ class AndroidEnvironment(val apkFile: ApkFile,
             frameworkDir.mkdir()
             val f = File("libs${File.separator}${CommonConf.frameworkFileName}.jar")
             if (f.exists()) ZipUtility.unzip(f.canonicalPath,frameworkDir.canonicalPath)
-            else ZipUtility.unzip(ClassLoader.getSystemClassLoader().getResource(CommonConf.frameworkFileName)!!.openStream(),frameworkDir.canonicalPath)
+            else{
+                val stream = ClassLoader.getSystemClassLoader().getResource(CommonConf.frameworkFileName)!!.openStream()
+                if(!apkFile.apkConfig.useClassFiles()){
+                    val frameworkFile = File(frameworkDir,CommonConf.frameworkFileName)
+                    if (!frameworkFile.exists()) frameworkFile.createNewFile()
+                    frameworkFile.writeBytes(stream.readBytes())
+                }
+                ZipUtility.unzip(stream, frameworkDir.canonicalPath)
+            }
+
         }
     }
 

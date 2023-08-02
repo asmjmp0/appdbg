@@ -26,7 +26,6 @@ class ApkFile(private val stream:InputStream,private val name:String,val apkConf
     }
     val dir = File("${CommonConf.workDir}${File.separator}${CommonConf.tempDirName}${File.separator}${name}")
     val classesDir = File(dir,"classes")
-    val classesJar = File(classesDir,"classes.jar")
     val copyApkFile:File
 
     var packageName:String
@@ -56,7 +55,7 @@ class ApkFile(private val stream:InputStream,private val name:String,val apkConf
         if (!dir.exists()){
             copyApkFile = copyApk()
             releaseApkFile()
-            releaseDex(apkConfig.jarWithDebugInfo())
+            releaseDex()
             DexUtils.generateDevelopJar(classesDir,apkConfig.generateJarFile())
         }else{
             if (apkConfig.forceDecompile()){
@@ -64,7 +63,7 @@ class ApkFile(private val stream:InputStream,private val name:String,val apkConf
                 logger.debug("force enabled, delete the dir")
                 dir.deleteRecursively()
                 releaseApkFile()
-                releaseDex(apkConfig.jarWithDebugInfo())
+                releaseDex()
                 DexUtils.generateDevelopJar(classesDir,apkConfig.generateJarFile())
             }else {
                 copyApkFile = File(copyDir,name)
@@ -109,7 +108,7 @@ class ApkFile(private val stream:InputStream,private val name:String,val apkConf
         }
     }
 
-    private fun releaseDex(generateSourceLine:Boolean){
+    private fun releaseDex(){
         val list = LinkedList<File>();
         classesDir.apply { if(!exists()) mkdir() else return }
         dir.listFiles()!!.forEach {
@@ -117,15 +116,15 @@ class ApkFile(private val stream:InputStream,private val name:String,val apkConf
                 list.add(it)
             }
         }
-        releaseDexFileImpl(list.toTypedArray(),generateSourceLine)
+        releaseDexFileImpl(list.toTypedArray())
     }
 
-    private fun releaseDexFileImpl(dexArr:Array<File>,generateSourceLine:Boolean){
+    private fun releaseDexFileImpl(dexArr:Array<File>){
         val service = Executors.newFixedThreadPool(1)
         dexArr.forEach {
             service.execute {
                 logger.info("$it has submitted to decompiler")
-                DexUtils.releaseDexClassFile(it,classesDir,generateSourceLine)
+                DexUtils.releaseDexClassFile(it,classesDir,this)
                 logger.info("$it decompile completely")
             }
         }

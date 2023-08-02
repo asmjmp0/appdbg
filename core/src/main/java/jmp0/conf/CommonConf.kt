@@ -8,7 +8,7 @@ object CommonConf {
     var workDir: String = System.getProperty("user.dir")
 
     //framework
-    val frameworkFileName = "android-all-6.0.0_r1-robolectric-0"
+    const val frameworkFileName = "android-all-6.0.0_r1-robolectric-0"
     const val frameworkDirName = "framework"
 
     const val appJarDir = "tempLibs"
