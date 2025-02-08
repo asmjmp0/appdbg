@@ -89,6 +89,11 @@ class AppdbgJni(private val androidEnvironment: AndroidEnvironment):AbstractJni(
         return this.callObjectMethod(vm, dvmObject, dvmMethod, varArg).value as Int
     }
 
+    override fun callIntMethodV(vm: BaseVM, dvmObject: DvmObject<*>, dvmMethod: DvmMethod, vaList: VaList): Int {
+        logger.info("callIntMethodV ${dvmObject.objectType.className}.${dvmMethod.methodName}${dvmMethod.args} pass to appdbg[callIntMethodV]!!")
+        return this.callIntMethod(vm,dvmObject,dvmMethod,vaList)
+    }
+
     override fun callBooleanMethod(
         vm: BaseVM,
         dvmObject: DvmObject<*>,

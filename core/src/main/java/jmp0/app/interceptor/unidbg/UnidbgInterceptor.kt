@@ -32,6 +32,7 @@ import unicorn.ArmConst
 import unicorn.CodeHook
 import unicorn.Unicorn
 import java.io.File
+import java.util.LinkedList
 
 /**
  * @author jmp0 <jmp0@qq.com>
@@ -97,6 +98,15 @@ abstract class UnidbgInterceptor(val apkFile: File,private val autoLoad:Boolean)
         }else vm.loadLibrary(soName, true).apply { callJNI_OnLoad(emulator) }
     }
 
+    private fun fixParam(param: Array<out Any>):Array<Any?>{
+        val result = LinkedList<Any?>();
+        for (i in param.indices){
+            val obj = param[i]
+            result.add(if (obj is DvmObject<*> && obj.value == null) null else obj);
+        }
+        return result.toTypedArray()
+    }
+
 
     private fun callUnidbgJniMethod(
         clazz: DvmClass,
@@ -105,7 +115,7 @@ abstract class UnidbgInterceptor(val apkFile: File,private val autoLoad:Boolean)
         signatureInfo: ReflectUtilsBase.SignatureInfo,
         param: Array<Any?>
     ): IInterceptor.ImplStatus {
-        val params = UnidbgWrapperUtils.wrapperToUnidbgParams(vm, param, signatureInfo)
+        val params = fixParam(UnidbgWrapperUtils.wrapperToUnidbgParams(vm, param, signatureInfo))
         val res: Any? = when (signatureInfo.returnType!!) {
             Int::class.java -> clazz.callStaticJniMethodInt(emulator, methodName + signature, *params)
             Boolean::class.java -> clazz.callStaticJniMethodBoolean(emulator, methodName + signature, *params)

@@ -69,7 +69,7 @@ class OSXPatch( workDir:File, override val cLibrary: CLibrary,override val jvmLi
         println("patch it at your own risk!!!")
         println("you need to do something:\n" +
                 "1. execute command: ```security find-identity -v -p codesigning``` to find available certification.\n" +
-                "2. execute command: ```sudo codesign --force --timestamp --sign <name of certificate> ${patchFile.canonicalPath}``` to replace libjvm.dylibc signature.\n" +
+                "2. execute command: ```codesign --force --sign <name of certificate> ${patchFile.canonicalPath}``` to replace libjvm.dylibc signature.\n" +
                 "3. execute command: ```sudo cp ${patchFile.canonicalPath} ${file.canonicalPath}``` to replace patch file.")
 
     }
